@@ -200,7 +200,7 @@ definePageMetadata(computed(() => page ? {
 
 .xcukqgmh {
 	> .main {
-		padding: 32px;
+		padding: 16px;
 
 		> .header {
 			padding: 16px;
@@ -221,11 +221,11 @@ definePageMetadata(computed(() => page ? {
 				overflow: hidden;
 				object-fit: cover;
 			}
+			margin-bottom: 16px;
 		}
 
 		> .content {
-			margin-top: 16px;
-			padding: 16px 0 0 0;
+			padding: 0;
 		}
 
 		> .actions {
