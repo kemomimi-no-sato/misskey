@@ -15,9 +15,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<h1>{{ page.title }}</h1>
 				</div>
 				-->
-					<div class="banner">
+					<div v-if="page.eyeCatchingImageId" class="banner">
 						<MkMediaImage
-							v-if="page.eyeCatchingImageId"
 							:image="page.eyeCatchingImage"
 							:cover="true"
 							:disableImageLink="true"
@@ -200,7 +199,7 @@ definePageMetadata(computed(() => page ? {
 
 .xcukqgmh {
 	> .main {
-		padding: 16px;
+		padding: 0 16px 0;
 
 		> .header {
 			padding: 16px;
