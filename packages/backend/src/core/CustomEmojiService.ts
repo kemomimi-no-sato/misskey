@@ -17,7 +17,7 @@ import { bindThis } from '@/decorators.js';
 import { MemoryKVCache, RedisSingleCache } from '@/misc/cache.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { query } from '@/misc/prelude/url.js';
-import type { Serialized } from '@/server/api/stream/types.js';
+import type { Serialized } from '@/types.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 
 const parseEmojiStrRegexp = /^(\w+)(?:@([\w.-]+))?$/;
@@ -48,7 +48,6 @@ export class CustomEmojiService implements OnApplicationShutdown {
 			fetcher: () => this.emojisRepository.find({ where: { host: IsNull() } }).then(emojis => new Map(emojis.map(emoji => [emoji.name, emoji]))),
 			toRedisConverter: (value) => JSON.stringify(Array.from(value.values())),
 			fromRedisConverter: (value) => {
-				if (!Array.isArray(JSON.parse(value))) return undefined; // 古いバージョンの壊れたキャッシュが残っていることがある(そのうち消す)
 				return new Map(JSON.parse(value).map((x: Serialized<MiEmoji>) => [x.name, {
 					...x,
 					updatedAt: x.updatedAt ? new Date(x.updatedAt) : null,
@@ -134,11 +133,11 @@ export class CustomEmojiService implements OnApplicationShutdown {
 
 		this.localEmojisCache.refresh();
 
-		const updated = await this.emojiEntityService.packDetailed(emoji.id);
+		const packed = await this.emojiEntityService.packDetailed(emoji.id);
 
 		if (emoji.name === data.name) {
 			this.globalEventService.publishBroadcastStream('emojiUpdated', {
-				emojis: [updated],
+				emojis: [packed],
 			});
 		} else {
 			this.globalEventService.publishBroadcastStream('emojiDeleted', {
@@ -146,11 +145,12 @@ export class CustomEmojiService implements OnApplicationShutdown {
 			});
 
 			this.globalEventService.publishBroadcastStream('emojiAdded', {
-				emoji: updated,
+				emoji: packed,
 			});
 		}
 
 		if (moderator) {
+			const updated = await this.emojisRepository.findOneByOrFail({ id: id });
 			this.moderationLogService.log(moderator, 'updateCustomEmoji', {
 				emojiId: emoji.id,
 				before: emoji,
@@ -377,6 +377,20 @@ export class CustomEmojiService implements OnApplicationShutdown {
 		for (const emoji of _emojis) {
 			this.cache.set(`${emoji.name} ${emoji.host}`, emoji);
 		}
+	}
+
+	/**
+	 * ローカル内の絵文字に重複がないかチェックします
+	 * @param name 絵文字名
+	 */
+	@bindThis
+	public checkDuplicate(name: string): Promise<boolean> {
+		return this.emojisRepository.exist({ where: { name, host: IsNull() } });
+	}
+
+	@bindThis
+	public getEmojiById(id: string): Promise<MiEmoji | null> {
+		return this.emojisRepository.findOneBy({ id });
 	}
 
 	@bindThis

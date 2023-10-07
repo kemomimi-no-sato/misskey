@@ -123,7 +123,11 @@ export class UserFollowingService implements OnModuleInit {
 		// フォロワーがBotであり、フォロー対象がBotからのフォローに慎重である or
 		// フォロワーがローカルユーザーであり、フォロー対象がリモートユーザーである
 		// 上記のいずれかに当てはまる場合はすぐフォローせずにフォローリクエストを発行しておく
-		if (!followeeProfile.allowFollow || followee.isLocked || (followeeProfile.carefulBot && follower.isBot) || (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee))) {
+		if (
+			!followeeProfile.allowFollow ||
+			followee.isLocked ||
+			(followeeProfile.carefulBot && follower.isBot) ||
+			(this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee) && process.env.FORCE_FOLLOW_REMOTE_USER_FOR_TESTING !== 'true')) {
 			let autoAccept = false;
 
 			// 鍵アカウントであっても、既にフォローされていた場合はスルー
@@ -245,8 +249,7 @@ export class UserFollowingService implements OnModuleInit {
 
 			// 通知を作成
 			this.notificationService.createNotification(follower.id, 'followRequestAccepted', {
-				notifierId: followee.id,
-			});
+			}, followee.id);
 		}
 
 		if (alreadyFollowed) return;
@@ -319,8 +322,7 @@ export class UserFollowingService implements OnModuleInit {
 
 			// 通知を作成
 			this.notificationService.createNotification(followee.id, 'follow', {
-				notifierId: follower.id,
-			});
+			}, follower.id);
 		}
 	}
 
@@ -503,9 +505,8 @@ export class UserFollowingService implements OnModuleInit {
 
 			// 通知を作成
 			this.notificationService.createNotification(followee.id, 'receiveFollowRequest', {
-				notifierId: follower.id,
 				followRequestId: followRequest.id,
-			});
+			}, follower.id);
 		}
 
 		if (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee)) {

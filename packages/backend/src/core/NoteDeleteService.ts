@@ -64,12 +64,6 @@ export class NoteDeleteService {
 		const deletedAt = new Date();
 		const cascadingNotes = await this.findCascadingNotes(note);
 
-		// この投稿を除く指定したユーザーによる指定したノートのリノートが存在しないとき
-		if (note.renoteId && (await this.noteEntityService.countSameRenotes(user.id, note.renoteId, note.id)) === 0) {
-			this.notesRepository.decrement({ id: note.renoteId }, 'renoteCount', 1);
-			if (!user.isBot) this.notesRepository.decrement({ id: note.renoteId }, 'score', 1);
-		}
-
 		if (note.replyId) {
 			await this.notesRepository.decrement({ id: note.replyId }, 'repliesCount', 1);
 		}
@@ -135,9 +129,12 @@ export class NoteDeleteService {
 		});
 
 		if (deleter && (note.userId !== deleter.id)) {
+			const user = await this.usersRepository.findOneByOrFail({ id: note.userId });
 			this.moderationLogService.log(deleter, 'deleteNote', {
 				noteId: note.id,
 				noteUserId: note.userId,
+				noteUserUsername: user.username,
+				noteUserHost: user.host,
 				note: note,
 			});
 		}
