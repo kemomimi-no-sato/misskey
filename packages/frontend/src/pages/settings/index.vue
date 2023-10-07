@@ -179,7 +179,8 @@ const menuDef = computed(() => [{
 		text: i18n.ts.other,
 		to: '/settings/other',
 		active: currentPage?.route.name === 'other',
-	}],
+	},
+],
 }, {
 	items: [{
 		icon: 'ti ti-device-floppy',

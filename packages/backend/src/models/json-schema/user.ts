@@ -55,6 +55,14 @@ export const packedUserLiteSchema = {
 			type: 'boolean',
 			nullable: false, optional: true,
 		},
+		isFox: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
+		speakAsCat: {
+			type: 'boolean',
+			nullable: false, optional: true,
+		},
 		onlineStatus: {
 			type: 'string',
 			format: 'url',
@@ -315,6 +323,10 @@ export const packedMeDetailedOnlySchema = {
 			nullable: true, optional: false,
 		},
 		autoAcceptFollowed: {
+			type: 'boolean',
+			nullable: true, optional: false,
+		},
+		allowFollow: {
 			type: 'boolean',
 			nullable: true, optional: false,
 		},

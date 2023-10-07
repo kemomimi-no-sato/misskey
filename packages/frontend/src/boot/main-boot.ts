@@ -19,6 +19,7 @@ import { claimAchievement, claimedAchievements } from '@/scripts/achievements.js
 import { mainRouter } from '@/router.js';
 import { initializeSw } from '@/scripts/initialize-sw.js';
 import { deckStore } from '@/ui/deck/deck-store.js';
+import { userName } from '@/filters/user.js';
 
 export async function mainBoot() {
 	const { isClientUpdated } = await common(() => createApp(
@@ -196,7 +197,7 @@ export async function mainBoot() {
 			// 二時間以上前なら
 			if (Date.now() - lastUsedDate > 1000 * 60 * 60 * 2) {
 				toast(i18n.t('welcomeBackWithName', {
-					name: $i.name || $i.username,
+					name: userName($i),
 				}));
 			}
 		}

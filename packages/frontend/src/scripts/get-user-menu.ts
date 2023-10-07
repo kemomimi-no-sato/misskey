@@ -15,6 +15,7 @@ import { $i, iAmModerator } from '@/account.js';
 import { mainRouter } from '@/router.js';
 import { Router } from '@/nirax.js';
 import { antennasCache, rolesCache, userListsCache } from '@/cache.js';
+import { editNickname } from '@/scripts/edit-nickname.js';
 
 export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router = mainRouter) {
 	const meId = $i ? $i.id : null;
@@ -174,7 +175,13 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 		action: () => {
 			editMemo();
 		},
-	}, {
+	}, null, ...(defaultStore.state.nicknameEnabled ? [{
+		icon: 'ti ti-edit',
+		text: 'ニックネームを編集',
+		action: () => {
+			editNickname(user);
+		},
+	}] : []), null, {
 		type: 'parent',
 		icon: 'ti ti-list',
 		text: i18n.ts.addToList,

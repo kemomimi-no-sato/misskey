@@ -25,6 +25,7 @@ import { deckStore } from '@/ui/deck/deck-store.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { fetchCustomEmojis } from '@/custom-emojis.js';
 import { mainRouter } from '@/router.js';
+import { userName } from '@/filters/user.js';
 
 export async function common(createVue: () => App<Element>) {
 	console.info(`Misskey v${version}`);

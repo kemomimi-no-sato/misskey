@@ -42,6 +42,7 @@ import { useStream } from '@/stream.js';
 import { i18n } from '@/i18n.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { $i } from '@/account.js';
+import { userName } from '@/filters/user';
 
 const props = withDefaults(defineProps<{
 	user: Misskey.entities.UserDetailed,
@@ -78,7 +79,7 @@ async function onClick() {
 		if (isFollowing) {
 			const { canceled } = await os.confirm({
 				type: 'warning',
-				text: i18n.t('unfollowConfirm', { name: props.user.name || props.user.username }),
+				text: i18n.t('unfollowConfirm', { name: userName(props.user) }),
 			});
 
 			if (canceled) return;

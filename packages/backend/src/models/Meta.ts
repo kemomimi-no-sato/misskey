@@ -142,6 +142,18 @@ export class MiMeta {
 	})
 	public infoImageUrl: string | null;
 
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public loadImageUrl: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public splashImageUrl: string | null;
+
 	@Column('boolean', {
 		default: false,
 	})

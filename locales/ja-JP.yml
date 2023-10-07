@@ -1295,6 +1295,10 @@ _achievements:
       title: "吾輩は猫である"
       description: "アカウントをCatとして設定した"
       flavor: "名前はまだない。"
+    _markedAsFox:
+      title: "わらわはきつねじゃ"
+      description: "アカウントをFoxとして設定した"
+      flavor: "ロリでもババアでもないのじゃ！"
     _following1:
       title: "はじめてのフォロー"
       description: "初めてフォローした"

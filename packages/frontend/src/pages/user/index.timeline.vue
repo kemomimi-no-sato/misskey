@@ -4,18 +4,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkSpacer :contentMax="800" style="padding-top: 0">
-	<MkStickyContainer>
-		<template #header>
-			<MkTab v-model="include" :class="$style.tab">
-				<option :value="null">{{ i18n.ts.notes }}</option>
-				<option value="replies">{{ i18n.ts.notesAndReplies }}</option>
-				<option value="files">{{ i18n.ts.withFiles }}</option>
-			</MkTab>
-		</template>
-		<MkNotes :noGap="true" :pagination="pagination" :class="$style.tl"/>
-	</MkStickyContainer>
-</MkSpacer>
+<MkStickyContainer>
+	<template #header>
+		<MkTab v-model="include" :class="$style.tab">
+			<option :value="null">{{ i18n.ts.notes }}</option>
+			<option value="replies">{{ i18n.ts.notesAndReplies }}</option>
+			<option value="files">{{ i18n.ts.withFiles }}</option>
+		</MkTab>
+	</template>
+	<MkNotes :noGap="true" :pagination="pagination" :class="$style.tl"/>
+</MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
@@ -54,4 +52,5 @@ const pagination = {
     border-radius: var(--radius);
     overflow: clip;
 }
+
 </style>

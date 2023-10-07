@@ -9,7 +9,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div>
 		<div v-if="user">
 			<XHome v-if="tab === 'home'" :user="user"/>
-			<XTimeline v-else-if="tab === 'notes'" :user="user"/>
 			<XActivity v-else-if="tab === 'activity'" :user="user"/>
 			<XAchievements v-else-if="tab === 'achievements'" :user="user"/>
 			<XReactions v-else-if="tab === 'reactions'" :user="user"/>
@@ -35,7 +34,6 @@ import { i18n } from '@/i18n.js';
 import { $i } from '@/account.js';
 
 const XHome = defineAsyncComponent(() => import('./home.vue'));
-const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
 const XActivity = defineAsyncComponent(() => import('./activity.vue'));
 const XAchievements = defineAsyncComponent(() => import('./achievements.vue'));
 const XReactions = defineAsyncComponent(() => import('./reactions.vue'));
@@ -76,10 +74,6 @@ const headerTabs = $computed(() => user ? [{
 	key: 'home',
 	title: i18n.ts.overview,
 	icon: 'ti ti-home',
-}, {
-	key: 'notes',
-	title: i18n.ts.notes,
-	icon: 'ti ti-pencil',
 }, {
 	key: 'activity',
 	title: i18n.ts.activity,

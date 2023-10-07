@@ -25,6 +25,8 @@ export const infoImageUrl = computed(() => instance.infoImageUrl ?? DEFAULT_INFO
 
 export const notFoundImageUrl = computed(() => instance.notFoundImageUrl ?? DEFAULT_NOT_FOUND_IMAGE_URL);
 
+export const splashImageUrl = computed(() => instance.splashImageUrl ?? instance.iconUrl);
+
 export async function fetchInstance() {
 	const meta = await api('meta', {
 		detail: false,

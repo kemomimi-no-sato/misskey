@@ -34,6 +34,7 @@ html
 		link(rel='prefetch' href=serverErrorImageUrl)
 		link(rel='prefetch' href=infoImageUrl)
 		link(rel='prefetch' href=notFoundImageUrl)
+		link(rel='prefetch' href=splashImageUrl)
 		//- https://github.com/misskey-dev/misskey/issues/9842
 		link(rel='stylesheet' href='/assets/tabler-icons/tabler-icons.min.css?v2.35.0')
 		link(rel='modulepreload' href=`/vite/${clientEntry.file}`)
@@ -76,7 +77,7 @@ html
 			br
 			| Please turn on your JavaScript
 		div#splash
-			img#splashIcon(src= icon || '/static-assets/splash.png')
+			img#splashIcon(src= splashImageUrl || icon || '/static-assets/splash.png')
 			div#splashSpinner
 				<svg class="spinner bg" viewBox="0 0 152 152" xmlns="http://www.w3.org/2000/svg">
 					<g transform="matrix(1,0,0,1,12,12)">

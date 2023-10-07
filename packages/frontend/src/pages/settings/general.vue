@@ -165,6 +165,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</FormSection>
 
 	<FormSection>
+		<template #label>{{ '追加機能(Kemomimisskey)' }}</template>
+
+		<div class="_gaps_s">
+			<MkSwitch v-model="enableNumericButton">{{ '数字引用・パクリボタンを表示する' }}</MkSwitch>
+			<MkSwitch v-model="seperateRenoteQuote">{{ 'リノートボタンと引用ボタンを分離する' }}</MkSwitch>
+			<MkSwitch v-model="separateFavoriteButton">{{ 'お気に入り追加ボタンを表示する' }}</MkSwitch>
+		</div>
+	</FormSection>
+
+	<FormSection>
 		<template #label>{{ i18n.ts.other }}</template>
 
 		<div class="_gaps">
@@ -251,6 +261,9 @@ const notificationPosition = computed(defaultStore.makeGetterSetter('notificatio
 const notificationStackAxis = computed(defaultStore.makeGetterSetter('notificationStackAxis'));
 const showTimelineReplies = computed(defaultStore.makeGetterSetter('showTimelineReplies'));
 const keepScreenOn = computed(defaultStore.makeGetterSetter('keepScreenOn'));
+const enableNumericButton = computed(defaultStore.makeGetterSetter('enableNumericButton'));
+const seperateRenoteQuote = computed(defaultStore.makeGetterSetter('seperateRenoteQuote'));
+const separateFavoriteButton = computed(defaultStore.makeGetterSetter('separateFavoriteButton'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);

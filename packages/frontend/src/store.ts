@@ -118,7 +118,7 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'deviceAccount',
 		default: [
 			'notifications',
-			'clips',
+			'favorites',
 			'drive',
 			'followRequests',
 			'-',
@@ -327,7 +327,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	reactionsDisplaySize: {
 		where: 'device',
-		default: 'medium' as 'small' | 'medium' | 'large',
+		default: 'small' as 'small' | 'medium' | 'large', //kemomimisskey
 	},
 	forceShowAds: {
 		where: 'device',
@@ -365,6 +365,42 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+	stealConfirmed: {
+		where: 'account',
+		default: false, //kemomimisskey from ebisskey
+	},
+	enableNumericButton: {
+		where: 'account',
+		default: true, //kemomimisskey
+	},
+	numberQuoteConfirmed: {
+		where: 'account',
+		default: false, //kemomimisskey from ebisskey
+	},
+	nicknameEnabled: {
+		where: 'account',
+		default: true, //kemomimisskey from ebisskey
+	},
+	nicknameMap: {
+		where: 'account',
+		default: {} as Record<string, string>, //kemomimisskey from ebisskey
+	},
+	seperateRenoteQuote: {
+		where: 'account',
+		default: false, //kemomimisskey from firefish
+	},
+	separateFavoriteButton: {
+		where: 'account',
+		default: true, //kemomimisskey
+	},
+	defaultNumberQuoteVisibility: {
+		where: 'account',
+		default: 'inherits',
+	},
+	defaultNumberQuoteLocalOnly: {
+		where: 'account',
+		default: false,
+	},
 }));
 
 // TODO: 他のタブと永続化されたstateを同期
@@ -396,6 +432,7 @@ interface Watcher {
  */
 import lightTheme from '@/themes/l-light.json5';
 import darkTheme from '@/themes/d-green-lime.json5';
+import tlColumnVue from './ui/deck/tl-column.vue';
 
 export class ColdDeviceStorage {
 	public static default = {

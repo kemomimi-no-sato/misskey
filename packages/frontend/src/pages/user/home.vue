@@ -20,7 +20,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<div ref="bannerEl" class="banner" :style="style"></div>
 						<div class="fade"></div>
 						<div class="title">
-							<MkUserName class="name" :user="user" :nowrap="true"/>
+							<div class="name">
+								<MkUserName :user="user" :nowrap="true" @click="editNickname(props.user)"/>
+							</div>
 							<div class="bottom">
 								<span class="username"><MkAcct :user="user" :detail="true"/></span>
 								<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
@@ -39,7 +41,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</div>
 					<MkAvatar class="avatar" :user="user" indicator/>
 					<div class="title">
-						<MkUserName :user="user" :nowrap="false" class="name"/>
+						<MkUserName :user="user" :nowrap="false" class="name" @click="editNickname(props.user)"/>
 						<div class="bottom">
 							<span class="username"><MkAcct :user="user" :detail="true"/></span>
 							<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
@@ -126,12 +128,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div v-if="user.pinnedNotes.length > 0" class="_gaps">
 					<MkNote v-for="note in user.pinnedNotes" :key="note.id" class="note _panel" :note="note" :pinned="true"/>
 				</div>
-				<MkInfo v-else-if="$i && $i.id === user.id">{{ i18n.ts.userPagePinTip }}</MkInfo>
-				<template v-if="narrow">
-					<XPhotos :key="user.id" :user="user"/>
-					<XActivity :key="user.id" :user="user"/>
-				</template>
-				<MkNotes v-if="!disableNotes" :class="$style.tl" :noGap="true" :pagination="pagination"/>
+			</div>
+			<div>
+				<XUserTimeline :user="user" :pagination="pagination"/>
 			</div>
 		</div>
 		<div v-if="!narrow" class="sub _gaps" style="container-type: inline-size;">
@@ -145,6 +144,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { defineAsyncComponent, computed, onMounted, onUnmounted, nextTick, watch } from 'vue';
 import * as Misskey from 'misskey-js';
+import XUserTimeline from './index.timeline.vue';
 import MkNote from '@/components/MkNote.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import MkAccountMoved from '@/components/MkAccountMoved.vue';
@@ -164,8 +164,10 @@ import { $i, iAmModerator } from '@/account.js';
 import { dateString } from '@/filters/date.js';
 import { confetti } from '@/scripts/confetti.js';
 import MkNotes from '@/components/MkNotes.vue';
+import { defaultStore } from '@/store.js';
 import { api } from '@/os.js';
 import { isFfVisibleForMe } from '@/scripts/isFfVisibleForMe.js';
+import { editNickname } from '@/scripts/edit-nickname.js';
 
 function calcAge(birthdate: string): number {
 	const date = new Date(birthdate);
@@ -390,12 +392,25 @@ onUnmounted(() => {
 						color: #fff;
 
 						> .name {
-							display: block;
+							display: flex;
+							gap: 8px;
 							margin: 0;
 							line-height: 32px;
 							font-weight: bold;
 							font-size: 1.8em;
 							text-shadow: 0 0 8px #000;
+
+							> .nickname-button {
+								-webkit-backdrop-filter: var(--blur, blur(8px));
+								backdrop-filter: var(--blur, blur(8px));
+								background: rgba(0, 0, 0, 0.2);
+								color: #ccc;
+								font-size: 0.7em;
+								line-height: 1;
+								width: 1.8em;
+								height: 1.8em;
+								border-radius: 100%;
+							}
 						}
 
 						> .bottom {
@@ -439,6 +454,10 @@ onUnmounted(() => {
 					}
 				}
 
+				> .nickname-button {
+						margin-left: 8px;
+					}
+					
 				> .avatar {
 					display: block;
 					position: absolute;

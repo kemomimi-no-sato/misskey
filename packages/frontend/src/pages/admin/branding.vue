@@ -62,6 +62,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #label>{{ i18n.ts.somethingHappened }}</template>
 					</MkInput>
 
+					<MkInput v-model="splashImageUrl">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label>{{ "スプラッシュスクリーン(読み込み画面)に表示させるアイコン" }}</template>
+						<template #caption>{{ "これを指定すると、スプラッシュスクリーンに表示されるアイコンがインスタンスのアイコンからここで指定されたアイコンに変わります。" }}</template>
+					</MkInput>
+
 					<MkColorInput v-model="themeColor">
 						<template #label>{{ i18n.ts.themeColor }}</template>
 					</MkColorInput>
@@ -123,6 +129,7 @@ let serverErrorImageUrl: string | null = $ref(null);
 let infoImageUrl: string | null = $ref(null);
 let notFoundImageUrl: string | null = $ref(null);
 let manifestJsonOverride: string = $ref('{}');
+let splashImageUrl: string | null = $ref(null);
 
 async function init() {
 	const meta = await os.api('admin/meta');
@@ -138,6 +145,7 @@ async function init() {
 	infoImageUrl = meta.infoImageUrl;
 	notFoundImageUrl = meta.notFoundImageUrl;
 	manifestJsonOverride = meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t');
+	splashImageUrl = meta.splashImageUrl;
 }
 
 function save() {
@@ -154,6 +162,7 @@ function save() {
 		notFoundImageUrl,
 		serverErrorImageUrl,
 		manifestJsonOverride: manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride)),
+		splashImageUrl,
 	}).then(() => {
 		fetchInstance();
 	});

@@ -99,7 +99,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					ref="renoteButton"
 					:class="$style.footerButton"
 					class="_button"
-					@mousedown="renote()"
+					@click.stop="renote(false, $event)"
 				>
 					<i class="ti ti-repeat"></i>
 					<p v-if="appearNote.renoteCount > 0" :class="$style.footerButtonCount">{{ appearNote.renoteCount }}</p>
@@ -107,16 +107,29 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-else :class="$style.footerButton" class="_button" disabled>
 					<i class="ti ti-ban"></i>
 				</button>
+				<button v-if="appearNote.text && defaultStore.state.enableNumericButton" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown="stealMenu(appearNote, stealButton)">
+					<i class="ti ti-swipe"></i>
+				</button>
 				<button v-if="appearNote.myReaction == null" ref="reactButton" :class="$style.footerButton" class="_button" @mousedown="react()">
 					<i v-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
-					<i v-else class="ti ti-plus"></i>
+					<i v-else class="ti ti-mood-plus"></i>
 				</button>
 				<button v-if="appearNote.myReaction != null" ref="reactButton" :class="$style.footerButton" class="_button" @click="undoReact(appearNote)">
-					<i class="ti ti-minus"></i>
+					<i class="ti ti-mood-minus"></i>
+				</button>
+				<button v-if="isFavorited == false && defaultStore.state.separateFavoriteButton" ref="favoriteButton" :class="$style.footerButton" class="_button" @mousedown="addFavorited()">
+					<i class="ti ti-bookmark-plus"></i>
+				</button>
+				<button v-if="isFavorited == true && defaultStore.state.separateFavoriteButton" ref="favoriteButton" :class="$style.footerButton" class="_button" @mousedown="removeFavorited()">
+					<i class="ti ti-bookmark-minus"></i>
+				</button>
+				<button v-if="canRenote && defaultStore.state.seperateRenoteQuote" ref="quoteButton" :class="$style.footerButton" class="_button" @mousedown="quote()">
+					<i class="ti ti-quote"></i>
 				</button>
 				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown="clip()">
 					<i class="ti ti-paperclip"></i>
 				</button>
+
 				<button ref="menuButton" :class="$style.footerButton" class="_button" @mousedown="menu()">
 					<i class="ti ti-dots"></i>
 				</button>
@@ -169,6 +182,7 @@ import { MenuItem } from '@/types/menu';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import { shouldCollapsed } from '@/scripts/collapsed.js';
+import { stealMenu } from '@/scripts/steal-menu';
 
 const props = defineProps<{
 	note: Misskey.entities.Note;
@@ -203,6 +217,7 @@ const menuButton = shallowRef<HTMLElement>();
 const renoteButton = shallowRef<HTMLElement>();
 const renoteTime = shallowRef<HTMLElement>();
 const reactButton = shallowRef<HTMLElement>();
+const stealButton = shallowRef<HTMLElement>(); // shrimpia
 const clipButton = shallowRef<HTMLElement>();
 let appearNote = $computed(() => isRenote ? note.renote as Misskey.entities.Note : note);
 const isMyRenote = $i && ($i.id === note.userId);
@@ -253,7 +268,30 @@ useTooltip(renoteButton, async (showing) => {
 	}, {}, 'closed');
 });
 
+let isFavorited = ref(false);
+onMounted(async () => {
+	if ($i) {
+		const response = await os.api('notes/state', {
+			noteId: appearNote.id,
+		});
+		if (response) {
+			isFavorited.value = response.isFavorited;
+		}
+	} else {
+		isFavorited.value = false;
+	}
+});
+
 type Visibility = 'public' | 'home' | 'followers' | 'specified';
+
+const hasRenotedBefore = ref(false);
+os.api('notes/renotes', {
+	noteId: props.note.id,
+	userId: $i?.id,
+	limit: 1,
+}).then((res) => {
+	hasRenotedBefore.value = res.length > 0;
+});
 
 // defaultStore.state.visibilityがstringなためstringも受け付けている
 function smallerVisibility(a: Visibility | string, b: Visibility | string): Visibility {
@@ -264,86 +302,230 @@ function smallerVisibility(a: Visibility | string, b: Visibility | string): Visi
 	return 'public';
 }
 
-function renote(viaKeyboard = false) {
+function renote(viaKeyboard = false, ev?: MouseEvent) {
 	pleaseLogin();
 	showMovedDialog();
 
 	let items = [] as MenuItem[];
 
-	if (appearNote.channel) {
-		items = items.concat([{
-			text: i18n.ts.inChannelRenote,
+	if (props.note.visibility === 'public') {
+		items.push({
+			text: i18n.ts.renote,
 			icon: 'ti ti-repeat',
+			danger: false,
 			action: () => {
-				const el = renoteButton.value as HTMLElement | null | undefined;
+				os.api('notes/create', {
+					renoteId: props.note.id,
+					visibility: 'public',
+				});
+				hasRenotedBefore.value = true;
+				const el =
+					ev &&
+					((ev.currentTarget ?? ev.target) as
+						| HTMLElement
+						| null
+						| undefined);
 				if (el) {
 					const rect = el.getBoundingClientRect();
-					const x = rect.left + (el.offsetWidth / 2);
-					const y = rect.top + (el.offsetHeight / 2);
+					const x = rect.left + el.offsetWidth / 2;
+					const y = rect.top + el.offsetHeight / 2;
 					os.popup(MkRippleEffect, { x, y }, {}, 'end');
 				}
-
-				os.api('notes/create', {
-					renoteId: appearNote.id,
-					channelId: appearNote.channelId,
-				}).then(() => {
-					os.toast(i18n.ts.renoted);
-				});
 			},
-		}, {
-			text: i18n.ts.inChannelQuote,
-			icon: 'ti ti-quote',
-			action: () => {
-				os.post({
-					renote: appearNote,
-					channel: appearNote.channel,
-				});
-			},
-		}, null]);
+		});
 	}
 
-	items = items.concat([{
-		text: i18n.ts.renote,
-		icon: 'ti ti-repeat',
-		action: () => {
-			const el = renoteButton.value as HTMLElement | null | undefined;
-			if (el) {
-				const rect = el.getBoundingClientRect();
-				const x = rect.left + (el.offsetWidth / 2);
-				const y = rect.top + (el.offsetHeight / 2);
-				os.popup(MkRippleEffect, { x, y }, {}, 'end');
-			}
+	if (['public', 'home'].includes(props.note.visibility)) {
+		items.push({
+			text: `${i18n.ts.renote} (${i18n.ts._visibility.home})`,
+			icon: 'ti ti-home',
+			danger: false,
+			action: () => {
+				os.api('notes/create', {
+					renoteId: props.note.id,
+					visibility: 'home',
+				});
+				hasRenotedBefore.value = true;
+				const el =
+					ev &&
+					((ev.currentTarget ?? ev.target) as
+						| HTMLElement
+						| null
+						| undefined);
+				if (el) {
+					const rect = el.getBoundingClientRect();
+					const x = rect.left + el.offsetWidth / 2;
+					const y = rect.top + el.offsetHeight / 2;
+					os.popup(MkRippleEffect, { x, y }, {}, 'end');
+				}
+			},
+		});
+	}
 
-			const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
-			const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
+	if (props.note.visibility === 'specified') {
+		items.push({
+			text: `${i18n.ts.renote} (${i18n.ts.recipient})`,
+			icon: 'ti ti-mail-open',
+			danger: false,
+			action: () => {
+				os.api('notes/create', {
+					renoteId: props.note.id,
+					visibility: 'specified',
+					visibleUserIds: props.note.visibleUserIds,
+				});
+				hasRenotedBefore.value = true;
+				const el =
+					ev &&
+					((ev.currentTarget ?? ev.target) as
+						| HTMLElement
+						| null
+						| undefined);
+				if (el) {
+					const rect = el.getBoundingClientRect();
+					const x = rect.left + el.offsetWidth / 2;
+					const y = rect.top + el.offsetHeight / 2;
+					os.popup(MkRippleEffect, { x, y }, {}, 'end');
+				}
+			},
+		});
+	} else {
+		items.push({
+			text: `${i18n.ts.renote} (${i18n.ts._visibility.followers})`,
+			icon: 'ti ti-lock',
+			danger: false,
+			action: () => {
+				os.api('notes/create', {
+					renoteId: props.note.id,
+					visibility: 'followers',
+				});
+				hasRenotedBefore.value = true;
+				const el =
+					ev &&
+					((ev.currentTarget ?? ev.target) as
+						| HTMLElement
+						| null
+						| undefined);
+				if (el) {
+					const rect = el.getBoundingClientRect();
+					const x = rect.left + el.offsetWidth / 2;
+					const y = rect.top + el.offsetHeight / 2;
+					os.popup(MkRippleEffect, { x, y }, {}, 'end');
+				}
+			},
+		});
+	}
 
-			let visibility = appearNote.visibility;
-			visibility = smallerVisibility(visibility, configuredVisibility);
-			if (appearNote.channel?.isSensitive) {
-				visibility = smallerVisibility(visibility, 'home');
-			}
+	if (canRenote.value) {
+		items.push({
+			text: `${i18n.ts.renote} (${i18n.ts.local})`,
+			icon: 'ti ti-rocket',
+			danger: false,
+			action: () => {
+				os.api(
+					'notes/create',
+					props.note.visibility === 'specified'
+						? {
+							renoteId: props.note.id,
+							visibility: props.note.visibility,
+							visibleUserIds: props.note.visibleUserIds,
+							localOnly: true,
+						}
+						: {
+							renoteId: props.note.id,
+							visibility: props.note.visibility,
+							localOnly: true,
+						},
+				);
+				hasRenotedBefore.value = true;
+				const el =
+					ev &&
+					((ev.currentTarget ?? ev.target) as
+						| HTMLElement
+						| null
+						| undefined);
+				if (el) {
+					const rect = el.getBoundingClientRect();
+					const x = rect.left + el.offsetWidth / 2;
+					const y = rect.top + el.offsetHeight / 2;
+					os.popup(MkRippleEffect, { x, y }, {}, 'end');
+				}
+			},
+		});
+	}
 
-			os.api('notes/create', {
-				localOnly,
-				visibility,
-				renoteId: appearNote.id,
-			}).then(() => {
-				os.toast(i18n.ts.renoted);
-			});
-		},
-	}, {
-		text: i18n.ts.quote,
-		icon: 'ti ti-quote',
-		action: () => {
-			os.post({
-				renote: appearNote,
-			});
-		},
-	}]);
+	if (!defaultStore.state.seperateRenoteQuote) {
+		items.push({
+			text: i18n.ts.quote,
+			icon: 'ti ti-quote',
+			danger: false,
+			action: () => {
+				os.post({
+					renote: props.note,
+				});
+			},
+		});
+	}
+
+	items[0].textStyle = 'font-weight: bold';
 
 	os.popupMenu(items, renoteButton.value, {
 		viaKeyboard,
 	});
+}
+
+async function getIsFavorited(): Promise<boolean> {
+	if($i) {
+			const response = await os.api('notes/state', {
+				noteId: appearNote.id,
+			});
+			if (response) {
+				return response.isFavorited;
+			}
+		} else {
+			return false;
+		}
+}
+
+async function addFavorited(): Promise<boolean> {
+	const state = await getIsFavorited();
+	isFavorited.value = state;
+	if(state == false || isFavorited.value == false) {
+		pleaseLogin();
+		const { canceled } = await os.confirm({
+			type: "question",
+			text: "お気に入りに登録しますか？"
+		})
+		if (canceled) {
+			return false;
+		}
+		os.apiWithDialog('notes/favorites/create',{
+			noteId: appearNote.id,
+		}).then(()=> {
+			isFavorited.value = true;
+		});
+	}
+	return isFavorited.value = true;
+}
+
+async function removeFavorited(): Promise<boolean> {
+	const state = await getIsFavorited();
+	isFavorited.value = state;
+	if(state == true || isFavorited.value == true) {
+		pleaseLogin();
+		const { canceled } = await os.confirm({
+			type: "question",
+			text: "お気に入りを解除しますか？"
+		})
+		if (canceled) {
+			return false;
+		}
+		os.apiWithDialog('notes/favorites/delete',{
+			noteId: appearNote.id,
+		}).then(()=> {
+			isFavorited.value = false;
+		});
+	}
+	return isFavorited.value = false;
 }
 
 function reply(viaKeyboard = false): void {
@@ -415,6 +597,13 @@ function onContextmenu(ev: MouseEvent): void {
 		const { menu, cleanup } = getNoteMenu({ note: note, translating, translation, menuButton, isDeleted, currentClip: currentClip?.value });
 		os.contextMenu(menu, ev).then(focus).finally(cleanup);
 	}
+}
+
+function quote(): void {
+	pleaseLogin();
+	os.post({
+		renote: props.note,
+	});
 }
 
 function menu(viaKeyboard = false): void {
@@ -800,7 +989,7 @@ function readPromo() {
 	opacity: 0.7;
 
 	&:not(:last-child) {
-		margin-right: 28px;
+		margin-right: 22px;
 	}
 
 	&:hover {

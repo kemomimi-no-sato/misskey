@@ -5,8 +5,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="_gaps_m">
-	<MkSwitch v-model="isLocked" @update:modelValue="save()">{{ i18n.ts.makeFollowManuallyApprove }}<template #caption>{{ i18n.ts.lockedAccountInfo }}</template></MkSwitch>
-	<MkSwitch v-if="isLocked" v-model="autoAcceptFollowed" @update:modelValue="save()">{{ i18n.ts.autoAcceptFollowed }}</MkSwitch>
+	<MkSwitch v-model="allowFollow" @update:modelValue="save()">{{ "フォローを許可する" }}<template #caption>{{ "オフにすると、管理人以外からのアカウントからのフォローを拒否します。" }}</template></MkSwitch>
+	<MkSwitch v-if="allowFollow" v-model="isLocked" @update:modelValue="save()">{{ i18n.ts.makeFollowManuallyApprove }}<template #caption>{{ i18n.ts.lockedAccountInfo }}</template></MkSwitch>
+	<MkSwitch v-if="!allowFollow || isLocked" v-model="autoAcceptFollowed" @update:modelValue="save()">{{ i18n.ts.autoAcceptFollowed }}</MkSwitch>
 
 	<MkSwitch v-model="publicReactions" @update:modelValue="save()">
 		{{ i18n.ts.makeReactionsPublic }}
@@ -58,6 +59,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkSwitch v-model="defaultNoteLocalOnly">{{ i18n.ts._visibility.disableFederation }}</MkSwitch>
 				</div>
 			</MkFolder>
+
+			<MkFolder>
+				<template #label>{{ i18n.ts.defaultNoteVisibility }} (数字引用 / パクる)</template>
+				<template v-if="defaultNumberQuoteVisibility === 'inherits'" #suffix>元のノートに合わせる</template>
+				<template v-if="defaultNumberQuoteVisibility === 'public'" #suffix>{{ i18n.ts._visibility.public }}</template>
+				<template v-else-if="defaultNumberQuoteVisibility === 'home'" #suffix>{{ i18n.ts._visibility.home }}</template>
+				<template v-else-if="defaultNumberQuoteVisibility === 'followers'" #suffix>{{ i18n.ts._visibility.followers }}</template>
+				<template v-else-if="defaultNumberQuoteVisibility === 'specified'" #suffix>{{ i18n.ts._visibility.specified }}</template>
+
+				<div class="_gaps_m">
+					<MkSelect v-model="defaultNumberQuoteVisibility">
+						<option value="inherits">元のノートに合わせる</option>
+						<option value="public">{{ i18n.ts._visibility.public }}</option>
+						<option value="home">{{ i18n.ts._visibility.home }}</option>
+						<option value="followers">{{ i18n.ts._visibility.followers }}</option>
+						<option value="specified">{{ i18n.ts._visibility.specified }}</option>
+					</MkSelect>
+					<MkSwitch v-if="defaultNumberQuoteVisibility !== 'inherits'" v-model="defaultNumberQuoteLocalOnly">{{ i18n.ts._visibility.disableFederation }}</MkSwitch>
+				</div>
+			</MkFolder>
 		</div>
 	</FormSection>
 
@@ -79,6 +100,7 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 
 let isLocked = $ref($i.isLocked);
 let autoAcceptFollowed = $ref($i.autoAcceptFollowed);
+let allowFollow = $ref($i.allowFollow);
 let noCrawle = $ref($i.noCrawle);
 let preventAiLearning = $ref($i.preventAiLearning);
 let isExplorable = $ref($i.isExplorable);
@@ -88,6 +110,8 @@ let ffVisibility = $ref($i.ffVisibility);
 
 let defaultNoteVisibility = $computed(defaultStore.makeGetterSetter('defaultNoteVisibility'));
 let defaultNoteLocalOnly = $computed(defaultStore.makeGetterSetter('defaultNoteLocalOnly'));
+let defaultNumberQuoteVisibility = $computed(defaultStore.makeGetterSetter('defaultNumberQuoteVisibility'));
+let defaultNumberQuoteLocalOnly = $computed(defaultStore.makeGetterSetter('defaultNumberQuoteLocalOnly'));
 let rememberNoteVisibility = $computed(defaultStore.makeGetterSetter('rememberNoteVisibility'));
 let keepCw = $computed(defaultStore.makeGetterSetter('keepCw'));
 
@@ -95,6 +119,7 @@ function save() {
 	os.api('i/update', {
 		isLocked: !!isLocked,
 		autoAcceptFollowed: !!autoAcceptFollowed,
+		allowFollow: !!allowFollow,
 		noCrawle: !!noCrawle,
 		preventAiLearning: !!preventAiLearning,
 		isExplorable: !!isExplorable,
@@ -103,6 +128,8 @@ function save() {
 		ffVisibility: ffVisibility,
 	});
 }
+
+console.log(allowFollow);
 
 const headerActions = $computed(() => []);
 

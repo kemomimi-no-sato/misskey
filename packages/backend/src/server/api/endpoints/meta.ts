@@ -149,6 +149,14 @@ export const meta = {
 				type: 'string',
 				optional: false, nullable: true,
 			},
+			loadImageUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			splashImageUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
 			iconUrl: {
 				type: 'string',
 				optional: false, nullable: true,
@@ -314,6 +322,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				infoImageUrl: instance.infoImageUrl,
 				serverErrorImageUrl: instance.serverErrorImageUrl,
 				notFoundImageUrl: instance.notFoundImageUrl,
+				loadImageUrl: instance.loadImageUrl,
+				splashImageUrl: instance.splashImageUrl,
 				iconUrl: instance.iconUrl,
 				backgroundImageUrl: instance.backgroundImageUrl,
 				logoImageUrl: instance.logoImageUrl,

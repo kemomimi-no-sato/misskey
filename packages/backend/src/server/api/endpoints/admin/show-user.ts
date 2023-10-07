@@ -72,6 +72,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				email: profile.email,
 				emailVerified: profile.emailVerified,
 				autoAcceptFollowed: profile.autoAcceptFollowed,
+				allowFollow: profile.allowFollow,
 				noCrawle: profile.noCrawle,
 				preventAiLearning: profile.preventAiLearning,
 				alwaysMarkNsfw: profile.alwaysMarkNsfw,

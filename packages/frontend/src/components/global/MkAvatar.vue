@@ -4,10 +4,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<component :is="link ? MkA : 'span'" v-user-preview="preview ? user.id : undefined" v-bind="bound" class="_noSelect" :class="[$style.root, { [$style.animation]: animation, [$style.cat]: user.isCat, [$style.square]: squareAvatars }]" :style="{ color }" :title="acct(user)" @click="onClick">
+<component :is="link ? MkA : 'span'" v-user-preview="preview ? user.id : undefined" v-bind="bound" class="_noSelect" :class="[$style.root, { [$style.animation]: animation, [$style.fox]: user.isFox, [$style.square]: squareAvatars, [$style.cat]: user.isCat}]" :style="{ color }" :title="acct(user)" @click="onClick">
 	<MkImgWithBlurhash :class="$style.inner" :src="url" :hash="user?.avatarBlurhash" :cover="true" :onlyAvgColor="true"/>
 	<MkUserOnlineIndicator v-if="indicator" :class="$style.indicator" :user="user"/>
-	<div v-if="user.isCat" :class="[$style.ears]">
+	<div v-if="user.isFox || user.isCat" :class="[$style.ears]">
 		<div :class="$style.earLeft">
 			<div v-if="false" :class="$style.layer">
 				<div :class="$style.plot" :style="{ backgroundImage: `url(${JSON.stringify(url)})` }"/>
@@ -176,6 +176,136 @@ watch(() => props.user.avatarBlurhash, () => {
 				height: 60%;
 				margin: 20%;
 				background: #df548f;
+			}
+
+			> .layer {
+				contain: strict;
+				position: absolute;
+				top: 0;
+				width: 280%;
+				height: 280%;
+
+				> .plot {
+					contain: strict;
+					position: absolute;
+					width: 100%;
+					height: 100%;
+					clip-path: path('M0 0H1V1H0z');
+					transform: scale(32767);
+					transform-origin: 0 0;
+					opacity: 0.5;
+
+					&:first-child {
+						opacity: 1;
+					}
+
+					&:last-child {
+						opacity: calc(1 / 3);
+					}
+				}
+			}
+		}
+
+		> .earLeft {
+			transform: rotate(37.5deg) skew(30deg);
+
+			&, &::after {
+				border-radius: 25% 75% 75%;
+			}
+
+			> .layer {
+				left: 0;
+				transform:
+					skew(-30deg)
+					rotate(-37.5deg)
+					translate(-2.82842712475%, /* -2 * sqrt(2) */
+										-38.5857864376%); /* 40 - 2 * sqrt(2) */
+
+				> .plot {
+					background-position: 20% 10%; /* ~= 37.5deg */
+
+					&:first-child {
+						background-position-x: 21%;
+					}
+
+					&:last-child {
+						background-position-y: 11%;
+					}
+				}
+			}
+		}
+
+		> .earRight {
+			transform: rotate(-37.5deg) skew(-30deg);
+
+			&, &::after {
+				border-radius: 75% 25% 75% 75%;
+			}
+
+			> .layer {
+				right: 0;
+				transform:
+					skew(30deg)
+					rotate(37.5deg)
+					translate(2.82842712475%, /* 2 * sqrt(2) */
+										-38.5857864376%); /* 40 - 2 * sqrt(2) */
+
+				> .plot {
+					position: absolute;
+					background-position: 80% 10%; /* ~= 37.5deg */
+
+					&:first-child {
+						background-position-x: 79%;
+					}
+
+					&:last-child {
+						background-position-y: 11%;
+					}
+				}
+			}
+		}
+	}
+
+	&.animation:hover {
+		> .ears {
+			> .earLeft {
+				animation: earwiggleleft 1s infinite;
+			}
+
+			> .earRight {
+				animation: earwiggleright 1s infinite;
+			}
+		}
+	}
+}
+
+.fox {
+	> .ears {
+		contain: strict;
+		position: absolute;
+		top: -50%;
+		left: -50%;
+		width: 100%;
+		height: 100%;
+		padding: 50%;
+		pointer-events: none;
+
+		> .earLeft,
+		> .earRight {
+			contain: strict;
+			display: inline-block;
+			height: 50%;
+			width: 50%;
+			background: #e6da3d;
+
+			&::after {
+				contain: strict;
+				content: '';
+				display: block;
+				width: 60%;
+				height: 60%;
+				margin: 20%;
+				background: currentColor;
 			}
 
 			> .layer {

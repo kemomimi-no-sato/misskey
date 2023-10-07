@@ -1333,6 +1333,11 @@ export interface Locale {
                 "description": string;
                 "flavor": string;
             };
+            "_markedAsFox": {
+                "title": string;
+                "description": string;
+                "flavor": string;
+            };
             "_following1": {
                 "title": string;
                 "description": string;

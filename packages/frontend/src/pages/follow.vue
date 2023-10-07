@@ -14,11 +14,12 @@ import * as Misskey from 'misskey-js';
 import * as os from '@/os.js';
 import { mainRouter } from '@/router.js';
 import { i18n } from '@/i18n.js';
+import { userName } from '@/filters/user.js';
 
 async function follow(user): Promise<void> {
 	const { canceled } = await os.confirm({
 		type: 'question',
-		text: i18n.t('followConfirm', { name: user.name || user.username }),
+		text: i18n.t('followConfirm', { name: userName(user) }),
 	});
 
 	if (canceled) {

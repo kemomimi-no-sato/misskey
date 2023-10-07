@@ -48,6 +48,7 @@ export const ACHIEVEMENT_TYPES = [
 	'myNoteFavorited1',
 	'profileFilled',
 	'markedAsCat',
+	'markedAsFox',
 	'following1',
 	'following10',
 	'following50',
@@ -262,6 +263,11 @@ export const ACHIEVEMENT_BADGES = {
 	},
 	'markedAsCat': {
 		img: '/fluent-emoji/1f408.png',
+		bg: 'linear-gradient(0deg, rgb(187 183 59), rgb(255 143 77))',
+		frame: 'bronze',
+	},
+	'markedAsFox': {
+		img: '/fluent-emoji/1f98a.png',
 		bg: 'linear-gradient(0deg, rgb(187 183 59), rgb(255 143 77))',
 		frame: 'bronze',
 	},

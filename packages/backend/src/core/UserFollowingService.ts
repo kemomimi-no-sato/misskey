@@ -5,7 +5,7 @@
 
 import { Inject, Injectable, OnModuleInit, forwardRef } from '@nestjs/common';
 import { ModuleRef } from '@nestjs/core';
-import { IsNull } from 'typeorm';
+import { IsNull, ReturnDocument } from 'typeorm';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
 import { QueueService } from '@/core/QueueService.js';
@@ -123,7 +123,7 @@ export class UserFollowingService implements OnModuleInit {
 		// フォロワーがBotであり、フォロー対象がBotからのフォローに慎重である or
 		// フォロワーがローカルユーザーであり、フォロー対象がリモートユーザーである
 		// 上記のいずれかに当てはまる場合はすぐフォローせずにフォローリクエストを発行しておく
-		if (followee.isLocked || (followeeProfile.carefulBot && follower.isBot) || (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee))) {
+		if (!followeeProfile.allowFollow || followee.isLocked || (followeeProfile.carefulBot && follower.isBot) || (this.userEntityService.isLocalUser(follower) && this.userEntityService.isRemoteUser(followee))) {
 			let autoAccept = false;
 
 			// 鍵アカウントであっても、既にフォローされていた場合はスルー
@@ -161,6 +161,21 @@ export class UserFollowingService implements OnModuleInit {
 					}),
 					true,
 				));
+			}
+			if (!autoAccept && this.userEntityService.isLocalUser(followee) && !followeeProfile.allowFollow) {
+				if (this.userEntityService.isRemoteUser(follower) && this.userEntityService.isLocalUser(followee)) {
+					const content = this.apRendererService.addContext(this.apRendererService.renderDelete(this.apRendererService.renderFollow(follower, followee, requestId), followee));
+					this.queueService.deliver(followee, content, follower.inbox, false);
+					return;
+				}	else {
+					throw new IdentifiableError('3338392a-f764-498d-8855-db939dcf8c48', 'blocked');
+					return;
+				}
+			}
+
+			//ローカルでフォローを許可していない人およびフォローを承認制にしている人の防御をisRootなアカウントは突破出来るようにする。オプトアウト化も検討。
+			if (follower.isRoot && ((this.userEntityService.isLocalUser(followee) && followee.isLocked) || (this.userEntityService.isLocalUser(followee) && !followeeProfile.allowFollow))) {
+				autoAccept = true;
 			}
 
 			if (!autoAccept) {
