@@ -55,6 +55,7 @@ if (props.id) {
 		isAdministrator: false,
 		isModerator: false,
 		color: null,
+		bgcolor: null,
 		iconUrl: null,
 		target: 'manual',
 		condFormula: { id: uuid(), type: 'isRemote' },

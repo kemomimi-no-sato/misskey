@@ -120,6 +120,11 @@ export class MiRole {
 	public color: string | null;
 
 	@Column('varchar', {
+		length: 256, nullable: true,
+	})
+	public bgColor: string | null;
+
+	@Column('varchar', {
 		length: 512, nullable: true,
 	})
 	public iconUrl: string | null;

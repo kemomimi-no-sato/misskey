@@ -55,6 +55,7 @@ export class RoleEntityService {
 			name: role.name,
 			description: role.description,
 			color: role.color,
+			bgColor: role.bgColor,
 			iconUrl: role.iconUrl,
 			target: role.target,
 			condFormula: role.condFormula,

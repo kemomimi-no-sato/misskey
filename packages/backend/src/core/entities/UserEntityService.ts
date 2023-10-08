@@ -402,6 +402,7 @@ export class UserEntityService implements OnModuleInit {
 					id: role.id,
 					name: role.name,
 					color: role.color,
+					bgColor: role.bgColor,
 					iconUrl: role.iconUrl,
 					description: role.description,
 					isModerator: role.isModerator,

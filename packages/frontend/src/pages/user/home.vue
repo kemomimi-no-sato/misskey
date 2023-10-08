@@ -25,9 +25,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</div>
 							<div class="bottom">
 								<span class="username"><MkAcct :user="user" :detail="true"/></span>
+								<!--
 								<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
 								<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="ti ti-lock"></i></span>
 								<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="ti ti-robot"></i></span>
+								-->
+								<div v-if="user.roles.length > 0" class="roles">
+									<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor}">
+										{{ role.name }}
+									</span>
+								</div>
 								<button v-if="!isEditingMemo && !memoDraft" class="_button add-note-button" @click="showMemoTextarea">
 									<i class="ti ti-edit"/> {{ i18n.ts.addMemo }}
 								</button>
@@ -44,18 +51,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<MkUserName :user="user" :nowrap="false" class="name" @click="editNickname(props.user)"/>
 						<div class="bottom">
 							<span class="username"><MkAcct :user="user" :detail="true"/></span>
+							<!--
 							<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
 							<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="ti ti-lock"></i></span>
 							<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="ti ti-robot"></i></span>
+							-->
+							<div v-if="user.roles.length > 0" class="roles">
+								<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor}">
+									{{ role.name }}
+								</span>
+							</div>
 						</div>
-					</div>
-					<div v-if="user.roles.length > 0" class="roles">
-						<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color }">
-							<MkA v-adaptive-bg :to="`/roles/${role.id}`">
-								<img v-if="role.iconUrl" style="height: 1.3em; vertical-align: -22%;" :src="role.iconUrl"/>
-								{{ role.name }}
-							</MkA>
-						</span>
 					</div>
 					<div v-if="iAmModerator" class="moderationNote">
 						<MkTextarea v-if="editModerationNote || (moderationNote != null && moderationNote !== '')" v-model="moderationNote" manualSave>
@@ -478,6 +484,7 @@ onUnmounted(() => {
 
 					> .role {
 						border: solid 1px var(--color, var(--divider));
+						background-color: var(--role-bg-color, var(--divider));
 						border-radius: 999px;
 						margin-right: 4px;
 						padding: 3px 8px;
@@ -686,6 +693,19 @@ onUnmounted(() => {
 		}
 	}
 }
+
+.role {
+	display: inline-block;
+	border: solid 1px;
+	border-radius: 6px;
+	padding: 1px 6px;
+	font-size: 90%;
+	font-weight: 300;
+	color: var(--color, var(--divider));
+	border-color: var(--color, var(--divider));
+	background-color: var(--role-bg-color, var(--divider));
+}
+
 </style>
 
 <style lang="scss" module>

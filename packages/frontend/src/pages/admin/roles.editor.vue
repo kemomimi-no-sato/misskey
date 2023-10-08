@@ -21,6 +21,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #label>{{ i18n.ts.color }}</template>
 	</MkColorInput>
 
+	<MkColorInput v-model="role.bgColor">
+		<template #label>{{ "背景色" }}</template>
+	</MkColorInput>
+
 	<MkInput v-model="role.iconUrl">
 		<template #label>{{ i18n.ts._role.iconUrl }}</template>
 	</MkInput>
@@ -581,6 +585,7 @@ const save = throttle(100, () => {
 		name: role.name,
 		description: role.description,
 		color: role.color === '' ? null : role.color,
+		bgColor: role.bgColor === '' ? null : role.bgColor,
 		iconUrl: role.iconUrl === '' ? null : role.iconUrl,
 		displayOrder: role.displayOrder,
 		target: role.target,
