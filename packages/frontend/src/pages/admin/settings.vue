@@ -153,7 +153,7 @@ let perRemoteUserUserTimelineCacheMax: number = $ref(0);
 let perUserHomeTimelineCacheMax: number = $ref(0);
 let perUserListTimelineCacheMax: number = $ref(0);
 
-async function init(): Promise<void> {
+async function init() {
 	const meta = await os.api('admin/meta');
 	name = meta.name;
 	shortName = meta.shortName;

@@ -68,6 +68,24 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #caption>{{ "これを指定すると、スプラッシュスクリーンに表示されるアイコンがインスタンスのアイコンからここで指定されたアイコンに変わります。" }}</template>
 					</MkInput>
 
+					<MkInput v-model="signupText">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label>{{ "新規登録ボタンの文言" }}</template>
+						<template #caption>{{ "新規登録ボタンの文言を変更できます。" }}</template>
+					</MkInput>
+
+					<MkInput v-model="exploreOtherServersText">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label>{{ "他のサーバーを探すボタンの文言" }}</template>
+						<template #caption>{{ "他のサーバーを探すボタンの文言を変更できます。" }}</template>
+					</MkInput>
+
+					<MkInput v-model="loginText">
+						<template #prefix><i class="ti ti-link"></i></template>
+						<template #label>{{ "ログインボタンの文言" }}</template>
+						<template #caption>{{ "ログインボタンの文言を変更できます。" }}</template>
+					</MkInput>
+
 					<MkColorInput v-model="themeColor">
 						<template #label>{{ i18n.ts.themeColor }}</template>
 					</MkColorInput>
@@ -130,6 +148,9 @@ let infoImageUrl: string | null = $ref(null);
 let notFoundImageUrl: string | null = $ref(null);
 let manifestJsonOverride: string = $ref('{}');
 let splashImageUrl: string | null = $ref(null);
+let signupText: string | null = $ref(null);
+let loginText: string | null = $ref(null);
+let exploreOtherServersText: string | null = $ref(null);
 
 async function init() {
 	const meta = await os.api('admin/meta');
@@ -146,6 +167,9 @@ async function init() {
 	notFoundImageUrl = meta.notFoundImageUrl;
 	manifestJsonOverride = meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t');
 	splashImageUrl = meta.splashImageUrl;
+	signupText = meta.signupText;
+	loginText = meta.loginText;
+	exploreOtherServersText = meta.exploreOtherServersText;
 }
 
 function save() {
@@ -163,6 +187,9 @@ function save() {
 		serverErrorImageUrl,
 		manifestJsonOverride: manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride)),
 		splashImageUrl,
+		signupText,
+		loginText,
+		exploreOtherServersText,
 	}).then(() => {
 		fetchInstance();
 	});

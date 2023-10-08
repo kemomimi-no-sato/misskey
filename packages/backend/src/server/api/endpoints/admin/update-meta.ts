@@ -40,6 +40,9 @@ export const paramDef = {
 		notFoundImageUrl: { type: 'string', nullable: true },
 		loadImageUrl: { type: 'string', nullable: true },
 		splashImageUrl: { type: 'string', nullable: true },
+		signupText: { type: 'string', nullable: true },
+		loginText: { type: 'string', nullable: true },
+		exploreOtherServersText: { type: 'string', nullable: true },
 		iconUrl: { type: 'string', nullable: true },
 		app192IconUrl: { type: 'string', nullable: true },
 		app512IconUrl: { type: 'string', nullable: true },
@@ -86,10 +89,10 @@ export const paramDef = {
 		swPublicKey: { type: 'string', nullable: true },
 		swPrivateKey: { type: 'string', nullable: true },
 		tosUrl: { type: 'string', nullable: true },
-		repositoryUrl: { type: 'string' },
-		feedbackUrl: { type: 'string' },
-		impressumUrl: { type: 'string' },
-		privacyPolicyUrl: { type: 'string' },
+		repositoryUrl: { type: 'string', nullable: true  },
+		feedbackUrl: { type: 'string', nullable: true  },
+		impressumUrl: { type: 'string', nullable: true  },
+		privacyPolicyUrl: { type: 'string', nullable: true  },
 		useObjectStorage: { type: 'boolean' },
 		objectStorageBaseUrl: { type: 'string', nullable: true },
 		objectStorageBucket: { type: 'string', nullable: true },
@@ -111,7 +114,7 @@ export const paramDef = {
 		enableIdenticonGeneration: { type: 'boolean' },
 		serverRules: { type: 'array', items: { type: 'string' } },
 		preservedUsernames: { type: 'array', items: { type: 'string' } },
-		manifestJsonOverride: { type: 'string' },
+		manifestJsonOverride: { type: 'string', nullable: true  },
 		perLocalUserUserTimelineCacheMax: { type: 'integer' },
 		perRemoteUserUserTimelineCacheMax: { type: 'integer' },
 		perUserHomeTimelineCacheMax: { type: 'integer' },
@@ -191,6 +194,18 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.splashImageUrl !== undefined) {
 				set.splashImageUrl = ps.splashImageUrl;
+			}
+
+			if (ps.signupText !== undefined) {
+				set.signupText = ps.signupText;
+			}
+
+			if (ps.loginText !== undefined) {
+				set.loginText = ps.loginText;
+			}
+
+			if (ps.exploreOtherServersText !== undefined) {
+				set.exploreOtherServersText = ps.exploreOtherServersText;
 			}
 
 			if (ps.backgroundImageUrl !== undefined) {
