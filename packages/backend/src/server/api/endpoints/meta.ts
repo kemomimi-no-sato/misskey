@@ -205,6 +205,11 @@ export const meta = {
 					},
 				},
 			},
+			notesPerOneAd: {
+				type: 'number',
+				optional: false, nullable: false,
+				default: 0,
+			},
 			requireSetup: {
 				type: 'boolean',
 				optional: false, nullable: false,
@@ -361,6 +366,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					imageUrl: ad.imageUrl,
 					dayOfWeek: ad.dayOfWeek,
 				})),
+				notesPerOneAd: instance.notesPerOneAd,
 				enableEmail: instance.enableEmail,
 				enableServiceWorker: instance.enableServiceWorker,
 
