@@ -10,8 +10,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
 			<FormSuspense :p="init">
 				<div class="_gaps_m">
-					<MkSwitch v-model="enableRegistration">
+					<MkSwitch v-if="!enableLoginOnlyMode" v-model="enableRegistration">
 						<template #label>{{ i18n.ts.enableRegistration }}</template>
+					</MkSwitch>
+
+					<MkSwitch v-model="enableLoginOnlyMode">
+						<template #label>{{ "ログインオンリーモードを有効にする" }}</template>
 					</MkSwitch>
 
 					<MkSwitch v-model="emailRequiredForSignup">
@@ -70,6 +74,7 @@ import MkButton from '@/components/MkButton.vue';
 import FormLink from '@/components/form/link.vue';
 
 let enableRegistration: boolean = $ref(false);
+let enableLoginOnlyMode: boolean = $ref(false);
 let emailRequiredForSignup: boolean = $ref(false);
 let sensitiveWords: string = $ref('');
 let preservedUsernames: string = $ref('');
@@ -79,6 +84,7 @@ let privacyPolicyUrl: string | null = $ref(null);
 async function init() {
 	const meta = await os.api('admin/meta');
 	enableRegistration = !meta.disableRegistration;
+	enableLoginOnlyMode = meta.enableLoginOnlyMode;
 	emailRequiredForSignup = meta.emailRequiredForSignup;
 	sensitiveWords = meta.sensitiveWords.join('\n');
 	preservedUsernames = meta.preservedUsernames.join('\n');
@@ -89,6 +95,7 @@ async function init() {
 function save() {
 	os.apiWithDialog('admin/update-meta', {
 		disableRegistration: !enableRegistration,
+		enableLoginOnlyMode,
 		emailRequiredForSignup,
 		tosUrl,
 		privacyPolicyUrl,

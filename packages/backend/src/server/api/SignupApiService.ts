@@ -5,7 +5,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import bcrypt from 'bcryptjs';
-import { IsNull } from 'typeorm';
+import { InsertQueryBuilder, IsNull } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { RegistrationTicketsRepository, UsedUsernamesRepository, UserPendingsRepository, UserProfilesRepository, UsersRepository, MiRegistrationTicket } from '@/models/_.js';
 import type { Config } from '@/config.js';
@@ -140,6 +140,11 @@ export class SignupApiService {
 				reply.code(400);
 				return;
 			}
+		}
+
+		if (instance.enableLoginOnlyMode) {
+			reply.code(400);
+			return;
 		}
 
 		if (instance.emailRequiredForSignup) {

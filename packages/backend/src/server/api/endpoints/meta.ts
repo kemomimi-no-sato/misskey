@@ -88,6 +88,10 @@ export const meta = {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
+			enableLoginOnlyMode: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
 			cacheRemoteFiles: {
 				type: 'boolean',
 				optional: false, nullable: false,
@@ -322,6 +326,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				impressumUrl: instance.impressumUrl,
 				privacyPolicyUrl: instance.privacyPolicyUrl,
 				disableRegistration: instance.disableRegistration,
+				enableLoginOnlyMode: instance.enableLoginOnlyMode,
 				emailRequiredForSignup: instance.emailRequiredForSignup,
 				enableHcaptcha: instance.enableHcaptcha,
 				hcaptchaSiteKey: instance.hcaptchaSiteKey,
@@ -381,7 +386,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 				response.proxyAccountName = proxyAccount ? proxyAccount.username : null;
 				response.features = {
-					registration: !instance.disableRegistration,
+					registration: !instance.disableRegistration || !instance.enableLoginOnlyMode,
 					emailRequiredForSignup: instance.emailRequiredForSignup,
 					hcaptcha: instance.enableHcaptcha,
 					recaptcha: instance.enableRecaptcha,

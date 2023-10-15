@@ -20,6 +20,7 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		disableRegistration: { type: 'boolean', nullable: true },
+		enableLoginOnlyMode: { type: 'boolean', nullable: true },
 		pinnedUsers: { type: 'array', nullable: true, items: {
 			type: 'string',
 		} },
@@ -134,6 +135,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (typeof ps.disableRegistration === 'boolean') {
 				set.disableRegistration = ps.disableRegistration;
+			}
+
+			if (typeof ps.enableLoginOnlyMode === 'boolean') {
+				set.enableLoginOnlyMode = ps.enableLoginOnlyMode;
 			}
 
 			if (Array.isArray(ps.pinnedUsers)) {
