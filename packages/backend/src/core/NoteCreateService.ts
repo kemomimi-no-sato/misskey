@@ -55,7 +55,7 @@ import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { FeaturedService } from '@/core/FeaturedService.js';
 import { RedisTimelineService } from '@/core/RedisTimelineService.js';
-import { nyaize } from '@/misc/nyaize.js';
+// import { nyaize } from '@/misc/nyaize.js';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -224,8 +224,8 @@ export class NoteCreateService implements OnApplicationShutdown {
 		host: MiUser['host'];
 		createdAt: MiUser['createdAt'];
 		isBot: MiUser['isBot'];
-		isCat: MiUser['isCat'];
-		speakAsCat: MiUser['speakAsCat'];
+	//	isCat: MiUser['isCat'];
+	//	speakAsCat: MiUser['speakAsCat'];
 	}, data: Option, silent = false): Promise<MiNote> {
 		let patsedText: mfm.MfmNode[] | null = null;
 
@@ -303,10 +303,39 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		if (data.text) {
+//			console.log("Text is present");  // Add debug statement
+
 			if (data.text.length > DB_MAX_NOTE_TEXT_LENGTH) {
 				data.text = data.text.slice(0, DB_MAX_NOTE_TEXT_LENGTH);
 			}
 			data.text = data.text.trim();
+/*
+			if (user.isCat && user.speakAsCat) {
+				console.log("Nyaizing...");  // Add debug statement
+				patsedText = patsedText ?? mfm.parse(data.text);
+				function nyaizeNode(node: mfm.MfmNode) {
+					console.log("In NyaizeNode function for node type:", node.type);  // Add debug statement
+					if (node.type === 'quote') return;
+					if (node.type === 'text') {
+						node.props.text = nyaize(node.props.text);
+					}
+					if (node.children) {
+						for (const child of node.children) {
+							nyaizeNode(child);
+						}
+					}
+				}
+				for (const node of patsedText) {
+					console.log("Processing node");  // Add debug statement
+
+					nyaizeNode(node);
+				}
+				data.text = mfm.toString(patsedText);
+			} else {
+				console.log("Not nyaizing");  // Add debug statement
+				data.text;
+			}
+*/
 		} else {
 			data.text = null;
 		}
