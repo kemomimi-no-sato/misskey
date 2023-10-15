@@ -17,7 +17,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<span class="state">
 							<span v-if="suspended" class="suspended">Suspended</span>
 							<span v-if="silenced" class="silenced">Silenced</span>
-							<span v-if="moderator" class="moderator">Moderator</span>
+							<span v-if="moderator && !root" class="moderator">Moderator</span>
+							<span v-if="root" class="suspended">isRoot</span>
 						</span>
 					</div>
 				</div>
@@ -93,6 +94,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 				<FormSection>
 					<div class="_gaps">
+						<MkFolder v-if="user.host == null && $i?.isAdmin && (root || !user.isAdmin)" >
+							<template #icon><i class="ti ti-alert-triangle"></i></template>
+							<template #label>{{ "Warning!" }}</template>
+							<MkSwitch v-if="user.host == null && $i?.isAdmin && (root || !user.isAdmin)" v-model="root" class="_formBlock" @update:modelValue="toggleRoot">
+								{{ "isRoot?" }}
+								<template #caption>{{ "isRootの切替ができます。余程のことが無い限りは外さないでください！" }}</template>
+							</MkSwitch>
+						</MkFolder>
 						<MkSwitch v-model="suspended" @update:modelValue="toggleSuspend">{{ i18n.ts.suspend }}</MkSwitch>
 
 						<div>
@@ -238,6 +247,7 @@ let info = $ref();
 let ips = $ref(null);
 let ap = $ref(null);
 let moderator = $ref(false);
+let root = $ref(false);
 let silenced = $ref(false);
 let suspended = $ref(false);
 let moderationNote = $ref('');
@@ -270,6 +280,7 @@ function createFetcher() {
 		ips = _ips;
 		moderator = info.isModerator;
 		silenced = info.isSilenced;
+		root = info.isRoot;
 		suspended = info.isSuspended;
 		moderationNote = info.moderationNote;
 
@@ -318,6 +329,11 @@ async function toggleSuspend(v) {
 		await os.api(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.id });
 		await refreshUser();
 	}
+}
+
+async function toggleRoot(v) {
+	await os.api(v ? 'admin/root/add' : 'admin/root/remove', { userId: user.id });
+	await refreshUser();
 }
 
 async function deleteAllFiles() {

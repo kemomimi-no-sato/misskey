@@ -35,6 +35,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 										{{ role.name }}
 									</span>
 								</div>
+								<div v-if="$i?.isAdmin" class="Root">{{ "isRoot" }}</div>
 								<button v-if="!isEditingMemo && !memoDraft" class="_button add-note-button" @click="showMemoTextarea">
 									<i class="ti ti-edit"/> {{ i18n.ts.addMemo }}
 								</button>
@@ -700,10 +701,22 @@ onUnmounted(() => {
 	border-radius: 6px;
 	padding: 1px 6px;
 	font-size: 90%;
-	font-weight: 300;
+	font-weight: bold;
 	color: var(--color, var(--divider));
 	border-color: var(--color, var(--divider));
-	background-color: var(--role-bg-color, var(--divider));
+	background-color: var(--role-bg-color);
+}
+
+.Root {
+	display: inline-block;
+	border: solid 1px;
+	border-radius: 6px;
+	padding: 1px 6px;
+	font-size: 90%;
+	font-weight: bold;
+	color: var(--success);
+	border-color: var(--success);
+//	background-color: rgb(255, 255, 255); 見にくい
 }
 
 </style>
