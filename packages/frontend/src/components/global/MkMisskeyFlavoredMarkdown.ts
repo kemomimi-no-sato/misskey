@@ -18,7 +18,6 @@ import MkSparkle from '@/components/MkSparkle.vue';
 import MkA from '@/components/global/MkA.vue';
 import { host } from '@/config.js';
 import { defaultStore } from '@/store.js';
-import { nyaize } from '@/scripts/nyaize.js';
 
 const QUOTE_STYLE = `
 display: block;
@@ -58,14 +57,10 @@ onClick(arg0: any, onClick: any): unknown;
 	 * @param ast MFM AST
 	 * @param scale How times large the text is
 	 */
-	const genEl = (ast: mfm.MfmNode[], scale: number, disableNyaize = false) => ast.map((token): VNode | string | (VNode | string)[] => {
+	const genEl = (ast: mfm.MfmNode[], scale: number) => ast.map((token): VNode | string | (VNode | string)[] => {
 		switch (token.type) {
 			case 'text': {
-				let text = token.props.text.replace(/(\r\n|\n|\r)/g, '\n');
-				if (!disableNyaize && props.author?.isCat) {
-					text = nyaize(text);
-				}
-
+				const text = token.props.text.replace(/(\r\n|\n|\r)/g, '\n');
 				if (!props.plain) {
 					const res: (VNode | string)[] = [];
 					for (const t of text.split('\n')) {
@@ -266,7 +261,7 @@ onClick(arg0: any, onClick: any): unknown;
 					key: Math.random(),
 					url: token.props.url,
 					rel: 'nofollow noopener',
-				}, genEl(token.children, scale, true))];
+				}, genEl(token.children, scale))];
 			}
 
 			case 'mention': {
@@ -305,11 +300,11 @@ onClick(arg0: any, onClick: any): unknown;
 				if (!props.nowrap) {
 					return [h('div', {
 						style: QUOTE_STYLE,
-					}, genEl(token.children, scale, true))];
+					}, genEl(token.children, scale))];
 				} else {
 					return [h('span', {
 						style: QUOTE_STYLE,
-					}, genEl(token.children, scale, true))];
+					}, genEl(token.children, scale))];
 				}
 			}
 
@@ -372,7 +367,7 @@ onClick(arg0: any, onClick: any): unknown;
 			}
 
 			case 'plain': {
-				return [h('span', genEl(token.children, scale, true))];
+				return [h('span', genEl(token.children, scale))];
 			}
 
 			default: {
