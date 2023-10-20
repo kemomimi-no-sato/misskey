@@ -35,7 +35,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 										{{ role.name }}
 									</span>
 								</div>
-								<div v-if="user.isAdmin" class="Root">{{ "isRoot" }}</div>
 								<button v-if="!isEditingMemo && !memoDraft" class="_button add-note-button" @click="showMemoTextarea">
 									<i class="ti ti-edit"/> {{ i18n.ts.addMemo }}
 								</button>
