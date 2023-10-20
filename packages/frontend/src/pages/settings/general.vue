@@ -29,6 +29,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div class="_gaps_s">
 			<MkSwitch v-model="showFixedPostForm">{{ i18n.ts.showFixedPostForm }}</MkSwitch>
 			<MkSwitch v-model="showFixedPostFormInChannel">{{ i18n.ts.showFixedPostFormInChannel }}</MkSwitch>
+			<MkSwitch v-model="defaultWithReplies">{{ i18n.ts.withRepliesByDefaultForNewlyFollowed }}</MkSwitch>
 			<MkFolder>
 				<template #label>{{ i18n.ts.pinnedList }}</template>
 				<!-- 複数ピン止め管理できるようにしたいけどめんどいので一旦ひとつのみ -->
@@ -262,6 +263,7 @@ const keepScreenOn = computed(defaultStore.makeGetterSetter('keepScreenOn'));
 const enableNumericButton = computed(defaultStore.makeGetterSetter('enableNumericButton'));
 const seperateRenoteQuote = computed(defaultStore.makeGetterSetter('seperateRenoteQuote'));
 const separateFavoriteButton = computed(defaultStore.makeGetterSetter('separateFavoriteButton'));
+const defaultWithReplies = computed(defaultStore.makeGetterSetter('defaultWithReplies'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);
