@@ -8,7 +8,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	ref="buttonEl"
 	v-ripple="canToggle"
 	class="_button"
-	:class="[$style.root, { [$style.reacted]: note.myReaction == reaction, [$style.canToggle]: canToggle, [$style.small]: defaultStore.state.reactionsDisplaySize === 'small', [$style.large]: defaultStore.state.reactionsDisplaySize === 'large' }]"
+	:class="[$style.root, { [$style.reacted]: note.myReaction == reaction, [$style.canToggle]: canToggle, [$style.small]: defaultStore.state.reactionsDisplaySize === 'small', [$style.large]: defaultStore.state.reactionsDisplaySize === 'large', [$style.very_large]: defaultStore.state.reactionsDisplaySize === 'very large', [$style.huge]: defaultStore.state.reactionsDisplaySize === 'huge', }]"
 	@click="toggleReaction()"
 >
 	<MkReactionIcon :class="$style.icon" :reaction="reaction" :emojiUrl="note.reactionEmojis[reaction.substring(1, reaction.length - 1)]"/>
@@ -146,6 +146,28 @@ useTooltip(buttonEl, async (showing) => {
 
 	&.large {
 		height: 52px;
+		font-size: 2em;
+		border-radius: 8px;
+
+		> .count {
+			font-size: 0.6em;
+			line-height: 52px;
+		}
+	}
+
+	&.very_large {
+		height: 61px;
+		font-size: 2em;
+		border-radius: 8px;
+
+		> .count {
+			font-size: 0.6em;
+			line-height: 52px;
+		}
+	}
+
+	&.huge {
+		height: 64px;
 		font-size: 2em;
 		border-radius: 8px;
 

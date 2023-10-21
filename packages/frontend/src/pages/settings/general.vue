@@ -57,6 +57,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<option value="small">{{ i18n.ts.small }}</option>
 					<option value="medium">{{ i18n.ts.medium }}</option>
 					<option value="large">{{ i18n.ts.large }}</option>
+					<option value="very large">でかい</option>
+					<option value="huge">すごくでかい</option>
 				</MkRadios>
 			</div>
 

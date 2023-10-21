@@ -71,7 +71,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	defaultNoteVisibility: {
 		where: 'account',
-		default: 'public',
+		default: 'home',
 	},
 	defaultNoteLocalOnly: {
 		where: 'account',
@@ -187,7 +187,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	animatedMfm: {
 		where: 'device',
-		default: false,
+		default: true,
 	},
 	advancedMfm: {
 		where: 'device',
@@ -207,7 +207,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	disableShowingAnimatedImages: {
 		where: 'device',
-		default: window.matchMedia('(prefers-reduced-motion)').matches,
+		default: true,
 	},
 	emojiStyle: {
 		where: 'device',
@@ -239,7 +239,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	useReactionPickerForContextMenu: {
 		where: 'device',
-		default: false,
+		default: true,
 	},
 	showGapBetweenNotesInTimeline: {
 		where: 'device',
@@ -291,7 +291,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	squareAvatars: {
 		where: 'device',
-		default: false,
+		default: true,
 	},
 	postFormWithHashtags: {
 		where: 'device',
@@ -319,7 +319,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	reactionsDisplaySize: {
 		where: 'device',
-		default: 'small' as 'small' | 'medium' | 'large', //kemomimisskey
+		default: 'small' as 'small' | 'medium' | 'large' | 'very large' | 'huge' ,
 	},
 	forceShowAds: {
 		where: 'device',
