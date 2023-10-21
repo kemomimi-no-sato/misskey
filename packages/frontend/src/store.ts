@@ -379,7 +379,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	seperateRenoteQuote: {
 		where: 'account',
-		default: false, //kemomimisskey from firefish
+		default: true, //kemomimisskey from firefish
 	},
 	separateFavoriteButton: {
 		where: 'account',

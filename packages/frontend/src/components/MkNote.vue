@@ -86,7 +86,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 			<MkReactionsViewer :note="appearNote" :maxNumber="16">
 				<template #more>
-					<div :class="$style.reactionOmitted">{{ i18n.ts.more }}</div>
+					<button class="_button" :class="$style.reactionDetailsButton" @click="showReactions">
+						{{ i18n.ts.more }}
+					</button>
 				</template>
 			</MkReactionsViewer>
 			<footer :class="$style.footer">
@@ -475,16 +477,16 @@ function renote(viaKeyboard = false, ev?: MouseEvent) {
 }
 
 async function getIsFavorited(): Promise<boolean> {
-	if($i) {
-			const response = await os.api('notes/state', {
-				noteId: appearNote.id,
-			});
-			if (response) {
-				return response.isFavorited;
-			}
-		} else {
-			return false;
+	if ($i) {
+		const response = await os.api('notes/state', {
+			noteId: appearNote.id,
+		});
+		if (response) {
+			return response.isFavorited;
 		}
+	} else {
+		return false;
+	}
 }
 
 async function addFavorited(): Promise<boolean> {
@@ -675,6 +677,12 @@ function readPromo() {
 		noteId: appearNote.id,
 	});
 	isDeleted.value = true;
+}
+
+function showReactions(): void {
+	os.popup(defineAsyncComponent(() => import('@/components/MkReactedUsersDialog.vue')), {
+		noteId: appearNote.id,
+	}, {}, 'closed');
 }
 </script>
 
@@ -1123,11 +1131,15 @@ function readPromo() {
 	opacity: 0.7;
 }
 
-.reactionOmitted {
+.reactionDetailsButton {
 	display: inline-block;
 	height: 32px;
 	margin: 2px;
 	padding: 0 6px;
 	opacity: .8;
+
+	&:hover {
+		background: var(--X5);
+	}
 }
 </style>
