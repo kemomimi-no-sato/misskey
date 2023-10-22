@@ -305,155 +305,210 @@ function smallerVisibility(a: Visibility | string, b: Visibility | string): Visi
 	return 'public';
 }
 
-function renote(viaKeyboard = false, ev?: MouseEvent) {
+function renote(viaKeyboard = false) {
 	pleaseLogin();
 	showMovedDialog();
 
 	let items = [] as MenuItem[];
 
+	if (appearNote.channel) {
+		items = items.concat([{
+			text: i18n.ts.inChannelRenote,
+			icon: 'ti ti-repeat',
+			action: () => {
+				const el = renoteButton.value as HTMLElement | null | undefined;
+				if (el) {
+					const rect = el.getBoundingClientRect();
+					const x = rect.left + (el.offsetWidth / 2);
+					const y = rect.top + (el.offsetHeight / 2);
+					os.popup(MkRippleEffect, { x, y }, {}, 'end');
+				}
+
+				os.api('notes/create', {
+					renoteId: appearNote.id,
+					channelId: appearNote.channelId,
+				}).then(() => {
+					os.toast(i18n.ts.renoted);
+				});
+			},
+		}, {
+			text: i18n.ts.inChannelQuote,
+			icon: 'ti ti-quote',
+			action: () => {
+				os.post({
+					renote: appearNote,
+					channel: appearNote.channel,
+				});
+			},
+		}, null]);
+	}
 	if (props.note.visibility === 'public') {
-		items.push({
+		items = items.concat([{
 			text: i18n.ts.renote,
 			icon: 'ti ti-repeat',
-			danger: false,
 			action: () => {
-				os.api('notes/create', {
-					renoteId: props.note.id,
-					visibility: 'public',
-				});
-				hasRenotedBefore.value = true;
-				const el =
-					ev &&
-					((ev.currentTarget ?? ev.target) as
-						| HTMLElement
-						| null
-						| undefined);
+				const el = renoteButton.value as HTMLElement | null | undefined;
 				if (el) {
 					const rect = el.getBoundingClientRect();
-					const x = rect.left + el.offsetWidth / 2;
-					const y = rect.top + el.offsetHeight / 2;
+					const x = rect.left + (el.offsetWidth / 2);
+					const y = rect.top + (el.offsetHeight / 2);
 					os.popup(MkRippleEffect, { x, y }, {}, 'end');
 				}
+
+				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
+				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
+
+				let visibility = appearNote.visibility;
+				visibility = smallerVisibility(visibility, configuredVisibility);
+				if (appearNote.channel?.isSensitive) {
+					visibility = smallerVisibility(visibility, 'home');
+				}
+
+				os.api('notes/create', {
+					visibility: "public",
+					renoteId: appearNote.id,
+				}).then(() => {
+					os.toast(i18n.ts.renoted);
+				});
 			},
-		});
+		}]);
 	}
 
-	if (['public', 'home'].includes(props.note.visibility)) {
-		items.push({
+	if (["public", "home"].includes(props.note.visibility)) {
+		items = items.concat([{
 			text: `${i18n.ts.renote} (${i18n.ts._visibility.home})`,
 			icon: 'ti ti-home',
-			danger: false,
 			action: () => {
-				os.api('notes/create', {
-					renoteId: props.note.id,
-					visibility: 'home',
-				});
-				hasRenotedBefore.value = true;
-				const el =
-					ev &&
-					((ev.currentTarget ?? ev.target) as
-						| HTMLElement
-						| null
-						| undefined);
+				const el = renoteButton.value as HTMLElement | null | undefined;
 				if (el) {
 					const rect = el.getBoundingClientRect();
-					const x = rect.left + el.offsetWidth / 2;
-					const y = rect.top + el.offsetHeight / 2;
+					const x = rect.left + (el.offsetWidth / 2);
+					const y = rect.top + (el.offsetHeight / 2);
 					os.popup(MkRippleEffect, { x, y }, {}, 'end');
 				}
+
+				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
+				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
+
+				let visibility = appearNote.visibility;
+				visibility = smallerVisibility(visibility, configuredVisibility);
+				if (appearNote.channel?.isSensitive) {
+					visibility = smallerVisibility(visibility, 'home');
+				}
+
+				os.api('notes/create', {
+					visibility: "home",
+					renoteId: appearNote.id,
+				}).then(() => {
+					os.toast(i18n.ts.renoted);
+				});
 			},
-		});
+		}]);
 	}
 
 	if (props.note.visibility === 'specified') {
-		items.push({
+		items = items.concat([{
 			text: `${i18n.ts.renote} (${i18n.ts.recipient})`,
-			icon: 'ti ti-mail-open',
-			danger: false,
+			icon: 'ti ti-mail',
 			action: () => {
-				os.api('notes/create', {
-					renoteId: props.note.id,
-					visibility: 'specified',
-					visibleUserIds: props.note.visibleUserIds,
-				});
-				hasRenotedBefore.value = true;
-				const el =
-					ev &&
-					((ev.currentTarget ?? ev.target) as
-						| HTMLElement
-						| null
-						| undefined);
+				const el = renoteButton.value as HTMLElement | null | undefined;
 				if (el) {
 					const rect = el.getBoundingClientRect();
-					const x = rect.left + el.offsetWidth / 2;
-					const y = rect.top + el.offsetHeight / 2;
+					const x = rect.left + (el.offsetWidth / 2);
+					const y = rect.top + (el.offsetHeight / 2);
 					os.popup(MkRippleEffect, { x, y }, {}, 'end');
 				}
+
+				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
+				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
+
+				let visibility = appearNote.visibility;
+				visibility = smallerVisibility(visibility, configuredVisibility);
+				if (appearNote.channel?.isSensitive) {
+					visibility = smallerVisibility(visibility, 'specified');
+				}
+
+				os.api('notes/create', {
+					visibility: "specified",
+					visibleUserIds: props.note.visibleUserIds,
+					renoteId: appearNote.id,
+				}).then(() => {
+					os.toast(i18n.ts.renoted);
+				});
 			},
-		});
+		}]);
 	} else {
-		items.push({
+		items = items.concat([{
 			text: `${i18n.ts.renote} (${i18n.ts._visibility.followers})`,
 			icon: 'ti ti-lock',
-			danger: false,
 			action: () => {
-				os.api('notes/create', {
-					renoteId: props.note.id,
-					visibility: 'followers',
-				});
-				hasRenotedBefore.value = true;
-				const el =
-					ev &&
-					((ev.currentTarget ?? ev.target) as
-						| HTMLElement
-						| null
-						| undefined);
+				const el = renoteButton.value as HTMLElement | null | undefined;
 				if (el) {
 					const rect = el.getBoundingClientRect();
-					const x = rect.left + el.offsetWidth / 2;
-					const y = rect.top + el.offsetHeight / 2;
+					const x = rect.left + (el.offsetWidth / 2);
+					const y = rect.top + (el.offsetHeight / 2);
 					os.popup(MkRippleEffect, { x, y }, {}, 'end');
 				}
+
+				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
+				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
+
+				let visibility = appearNote.visibility;
+				visibility = smallerVisibility(visibility, configuredVisibility);
+				if (appearNote.channel?.isSensitive) {
+					visibility = smallerVisibility(visibility, 'followers');
+				}
+
+				os.api('notes/create', {
+					visibility: "followers",
+					renoteId: appearNote.id,
+				}).then(() => {
+					os.toast(i18n.ts.renoted);
+				});
 			},
-		});
+		}]);
 	}
 
 	if (canRenote.value) {
-		items.push({
+		items = items.concat([{
 			text: `${i18n.ts.renote} (${i18n.ts.local})`,
-			icon: 'ti ti-rocket',
-			danger: false,
+			icon: 'ti ti-rocket-off',
 			action: () => {
-				os.api(
-					'notes/create',
-					props.note.visibility === 'specified'
-						? {
-							renoteId: props.note.id,
-							visibility: props.note.visibility,
-							visibleUserIds: props.note.visibleUserIds,
-							localOnly: true,
-						}
-						: {
-							renoteId: props.note.id,
-							visibility: props.note.visibility,
-							localOnly: true,
-						},
-				);
-				hasRenotedBefore.value = true;
-				const el =
-					ev &&
-					((ev.currentTarget ?? ev.target) as
-						| HTMLElement
-						| null
-						| undefined);
+				const el = renoteButton.value as HTMLElement | null | undefined;
 				if (el) {
 					const rect = el.getBoundingClientRect();
-					const x = rect.left + el.offsetWidth / 2;
-					const y = rect.top + el.offsetHeight / 2;
+					const x = rect.left + (el.offsetWidth / 2);
+					const y = rect.top + (el.offsetHeight / 2);
 					os.popup(MkRippleEffect, { x, y }, {}, 'end');
 				}
+
+				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
+				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
+
+				let visibility = appearNote.visibility;
+				visibility = smallerVisibility(visibility, configuredVisibility);
+				if (appearNote.channel?.isSensitive) {
+					visibility = smallerVisibility(visibility, 'specified');
+				}
+
+				os.api('notes/create',
+					props.note.visibility === "specified"
+						? {
+							visibility: "specified",
+							visibleUserIds: props.note.visibleUserIds,
+							localOnly: true,
+							renoteId: appearNote.id,
+							}
+						:	{
+							renoteId: props.note.id,
+							visibility: props.note.visibility,
+							localOnly: true,
+							},
+				).then(() => {
+					os.toast(i18n.ts.renoted);
+				});
 			},
-		});
+		}]);
 	}
 
 	if (!defaultStore.state.seperateRenoteQuote) {
@@ -468,8 +523,6 @@ function renote(viaKeyboard = false, ev?: MouseEvent) {
 			},
 		});
 	}
-
-	items[0].textStyle = 'font-weight: bold';
 
 	os.popupMenu(items, renoteButton.value, {
 		viaKeyboard,
