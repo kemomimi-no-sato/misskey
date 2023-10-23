@@ -172,6 +172,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkSwitch v-model="enableNumericButton">{{ '数字引用・パクリボタンを表示する' }}</MkSwitch>
 			<MkSwitch v-model="seperateRenoteQuote">{{ 'リノートボタンと引用ボタンを分離する' }}</MkSwitch>
 			<MkSwitch v-model="separateFavoriteButton">{{ 'お気に入り追加ボタンを表示する' }}</MkSwitch>
+			<MkSwitch v-model="disableOnlineStatus">{{ 'オンライン状態を非表示にする' }}</MkSwitch>
 		</div>
 	</FormSection>
 
@@ -266,6 +267,7 @@ const enableNumericButton = computed(defaultStore.makeGetterSetter('enableNumeri
 const seperateRenoteQuote = computed(defaultStore.makeGetterSetter('seperateRenoteQuote'));
 const separateFavoriteButton = computed(defaultStore.makeGetterSetter('separateFavoriteButton'));
 const defaultWithReplies = computed(defaultStore.makeGetterSetter('defaultWithReplies'));
+const disableOnlineStatus = computed(defaultStore.makeGetterSetter('disableOnlineStatus'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);
