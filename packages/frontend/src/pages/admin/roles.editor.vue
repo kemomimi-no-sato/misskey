@@ -26,7 +26,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</MkColorInput>
 
 	<MkInput v-model="role.iconUrl">
-	<MkInput v-model="role.iconUrl" type="url">
 		<template #label>{{ i18n.ts._role.iconUrl }}</template>
 	</MkInput>
 
