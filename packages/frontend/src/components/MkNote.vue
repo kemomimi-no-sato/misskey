@@ -312,7 +312,8 @@ if (!props.mock) {
 			targetElement: renoteButton.value,
 		}, {}, 'closed');
 	});
-	
+}
+
 let isFavorited = ref(false);
 onMounted(async () => {
 	if ($i) {
