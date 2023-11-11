@@ -411,6 +411,10 @@ export const packedMeDetailedOnlySchema = {
 			type: 'boolean',
 			nullable: false, optional: false,
 		},
+		unreadNotificationsCount: {
+			type: 'number',
+			nullable: false, optional: false,
+		},
 		mutedWords: {
 			type: 'array',
 			nullable: false, optional: false,
