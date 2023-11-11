@@ -28,22 +28,29 @@ border-left: solid 3px var(--fg);
 opacity: 0.7;
 `.split('\n').join(' ');
 
-export default function(props: {
-onClick(arg0: any, onClick: any): unknown;
+type MfmProps = {
 	text: string;
 	plain?: boolean;
 	nowrap?: boolean;
 	author?: Misskey.entities.UserLite;
-	i?: Misskey.entities.UserLite;
 	isNote?: boolean;
 	emojiUrls?: string[];
 	rootScale?: number;
-}) {
-	const isNote = props.isNote !== undefined ? props.isNote : true;
+	nyaize: boolean | 'account';
+	parsedNodes?: mfm.MfmNode[] | null;
+	enableEmojiMenu?: boolean;
+	enableEmojiMenuReaction?: boolean;
+};
 
+// eslint-disable-next-line import/no-default-export
+export default function(props: MfmProps) {
+	const isNote = props.isNote ?? true;
+	const shouldNyaize = props.nyaize ? props.nyaize === 'account' ? props.author?.isCat : false : false;
+
+	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
 	if (props.text == null || props.text === '') return;
 
-	const ast = (props.plain ? mfm.parseSimple : mfm.parse)(props.text);
+	const rootAst = props.parsedNodes ?? (props.plain ? mfm.parseSimple : mfm.parse)(props.text);
 
 	const validTime = (t: string | null | undefined) => {
 		if (t == null) return null;
@@ -56,6 +63,7 @@ onClick(arg0: any, onClick: any): unknown;
 	 * Gen Vue Elements from MFM AST
 	 * @param ast MFM AST
 	 * @param scale How times large the text is
+	 * @param disableNyaize Whether nyaize is disabled or not
 	 */
 	const genEl = (ast: mfm.MfmNode[], scale: number) => ast.map((token): VNode | string | (VNode | string)[] => {
 		switch (token.type) {
@@ -317,6 +325,8 @@ onClick(arg0: any, onClick: any): unknown;
 						normal: props.plain,
 						host: null,
 						useOriginalSize: scale >= 2.5,
+						menu: props.enableEmojiMenu,
+						menuReaction: props.enableEmojiMenuReaction,
 					})];
 				} else {
 					// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -340,6 +350,8 @@ onClick(arg0: any, onClick: any): unknown;
 				return [h(MkEmoji, {
 					key: Math.random(),
 					emoji: token.props.emoji,
+					menu: props.enableEmojiMenu,
+					menuReaction: props.enableEmojiMenuReaction,
 				})];
 			}
 
@@ -382,5 +394,5 @@ onClick(arg0: any, onClick: any): unknown;
 	return h('span', {
 		// https://codeday.me/jp/qa/20190424/690106.html
 		style: props.nowrap ? 'white-space: pre; word-wrap: normal; overflow: hidden; text-overflow: ellipsis;' : 'white-space: pre-wrap;',
-	}, genEl(ast, props.rootScale ?? 1));
+	}, genEl(rootAst, props.rootScale ?? 1));
 }
