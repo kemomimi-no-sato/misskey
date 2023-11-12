@@ -452,13 +452,13 @@ watch(() => props.user.avatarBlurhash, () => {
 			}
 		}
 	}
-	.decoration {
-		position: absolute;
-		z-index: 1;
-		top: -50%;
-		left: -50%;
-		width: 200%;
-		pointer-events: none;
-	}
+}
+.decoration {
+	position: absolute;
+	z-index: 1;
+	top: -50%;
+	left: -50%;
+	width: 200%;
+	pointer-events: none;
 }
 </style>
