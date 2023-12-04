@@ -372,6 +372,26 @@ onMounted(async () => {
 	}
 });
 
+type Visibility = 'public' | 'home' | 'followers' | 'specified';
+
+const hasRenotedBefore = ref(false);
+os.api('notes/renotes', {
+	noteId: props.note.id,
+	userId: $i?.id,
+	limit: 1,
+}).then((res) => {
+	hasRenotedBefore.value = res.length > 0;
+});
+
+// defaultStore.state.visibilityがstringなためstringも受け付けている
+function smallerVisibility(a: Visibility | string, b: Visibility | string): Visibility {
+	if (a === 'specified' || b === 'specified') return 'specified';
+	if (a === 'followers' || b === 'followers') return 'followers';
+	if (a === 'home' || b === 'home') return 'home';
+	// if (a === 'public' || b === 'public')
+	return 'public';
+}
+
 function renote(viaKeyboard = false) {
 	pleaseLogin();
 	showMovedDialog();
