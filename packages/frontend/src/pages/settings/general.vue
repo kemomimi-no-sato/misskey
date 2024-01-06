@@ -305,10 +305,8 @@ const keepScreenOn = computed(defaultStore.makeGetterSetter('keepScreenOn'));
 const enableNumericButton = computed(defaultStore.makeGetterSetter('enableNumericButton'));
 const seperateRenoteQuote = computed(defaultStore.makeGetterSetter('seperateRenoteQuote'));
 const separateFavoriteButton = computed(defaultStore.makeGetterSetter('separateFavoriteButton'));
-const defaultWithReplies = computed(defaultStore.makeGetterSetter('defaultWithReplies'));
 const disableOnlineStatus = computed(defaultStore.makeGetterSetter('disableOnlineStatus'));
 const disableStreamingTimeline = computed(defaultStore.makeGetterSetter('disableStreamingTimeline'));
-const disableOnlineStatus = computed(defaultStore.makeGetterSetter('disableOnlineStatus'));
 const useGroupedNotifications = computed(defaultStore.makeGetterSetter('useGroupedNotifications'));
 
 const enableSeasonalScreenEffect = computed(defaultStore.makeGetterSetter('enableSeasonalScreenEffect'));
