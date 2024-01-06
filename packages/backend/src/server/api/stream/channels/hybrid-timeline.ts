@@ -12,12 +12,13 @@ import { MetaService } from '@/core/MetaService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
-import Channel from '../channel.js';
+import Channel, { type MiChannelService } from '../channel.js';
 
 class HybridTimelineChannel extends Channel {
 	public readonly chName = 'hybridTimeline';
 	public static shouldShare = false;
-	public static requireCredential = true;
+	public static requireCredential = true as const;
+	public static kind = 'read:account';
 	private withRenotes: boolean;
 	private withReplies: boolean;
 	private withFiles: boolean;
@@ -67,17 +68,21 @@ class HybridTimelineChannel extends Channel {
 		if (note.visibility === 'followers') {
 			if (!isMe && !Object.hasOwn(this.following, note.userId)) return;
 		} else if (note.visibility === 'specified') {
-			if (!note.visibleUserIds!.includes(this.user!.id)) return;
+			if (!isMe && !note.visibleUserIds!.includes(this.user!.id)) return;
 		}
 
 		// Ignore notes from instances the user has muted
 		if (isInstanceMuted(note, new Set<string>(this.userProfile!.mutedInstances))) return;
 
-		// 関係ない返信は除外
-		if (note.reply && !this.following[note.userId]?.withReplies && !this.withReplies) {
+		if (note.reply) {
 			const reply = note.reply;
-			// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
-			if (reply.userId !== this.user!.id && !isMe && reply.userId !== note.userId) return;
+			if ((this.following[note.userId]?.withReplies ?? false) || this.withReplies) {
+				// 自分のフォローしていないユーザーの visibility: followers な投稿への返信は弾く
+				if (reply.visibility === 'followers' && !Object.hasOwn(this.following, reply.userId)) return;
+			} else {
+				// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
+				if (reply.userId !== this.user!.id && !isMe && reply.userId !== note.userId) return;
+			}
 		}
 
 		if (note.renote && note.text == null && (note.fileIds == null || note.fileIds.length === 0) && !this.withRenotes) return;
@@ -110,9 +115,10 @@ class HybridTimelineChannel extends Channel {
 }
 
 @Injectable()
-export class HybridTimelineChannelService {
+export class HybridTimelineChannelService implements MiChannelService<true> {
 	public readonly shouldShare = HybridTimelineChannel.shouldShare;
 	public readonly requireCredential = HybridTimelineChannel.requireCredential;
+	public readonly kind = HybridTimelineChannel.kind;
 
 	constructor(
 		private metaService: MetaService,

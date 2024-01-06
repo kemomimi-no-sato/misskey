@@ -24,12 +24,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 					<FormLink to="/admin/server-rules">{{ i18n.ts.serverRules }}</FormLink>
 
-					<MkInput v-model="tosUrl">
+					<MkInput v-model="tosUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
 						<template #label>{{ i18n.ts.tosUrl }}</template>
 					</MkInput>
 
-					<MkInput v-model="privacyPolicyUrl">
+					<MkInput v-model="privacyPolicyUrl" type="url">
 						<template #prefix><i class="ti ti-link"></i></template>
 						<template #label>{{ i18n.ts.privacyPolicyUrl }}</template>
 					</MkInput>
@@ -42,6 +42,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkTextarea v-model="sensitiveWords">
 						<template #label>{{ i18n.ts.sensitiveWords }}</template>
 						<template #caption>{{ i18n.ts.sensitiveWordsDescription }}<br>{{ i18n.ts.sensitiveWordsDescription2 }}</template>
+					</MkTextarea>
+
+					<MkTextarea v-model="hiddenTags">
+						<template #label>{{ i18n.ts.hiddenTags }}</template>
+						<template #caption>{{ i18n.ts.hiddenTagsDescription }}</template>
 					</MkTextarea>
 				</div>
 			</FormSuspense>
@@ -58,55 +63,56 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
+import { ref, computed } from 'vue';
 import XHeader from './_header_.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
-import FormSection from '@/components/form/section.vue';
-import FormSplit from '@/components/form/split.vue';
 import FormSuspense from '@/components/form/suspense.vue';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { fetchInstance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkButton from '@/components/MkButton.vue';
 import FormLink from '@/components/form/link.vue';
 
-let enableRegistration: boolean = $ref(false);
-let enableLoginOnlyMode: boolean = $ref(false);
-let emailRequiredForSignup: boolean = $ref(false);
-let sensitiveWords: string = $ref('');
-let preservedUsernames: string = $ref('');
-let tosUrl: string | null = $ref(null);
-let privacyPolicyUrl: string | null = $ref(null);
+const enableLoginOnlyMode: ref<boolean>(false);
+const enableRegistration = ref<boolean>(false);
+const emailRequiredForSignup = ref<boolean>(false);
+const sensitiveWords = ref<string>('');
+const hiddenTags = ref<string>('');
+const preservedUsernames = ref<string>('');
+const tosUrl = ref<string | null>(null);
+const privacyPolicyUrl = ref<string | null>(null);
 
 async function init() {
-	const meta = await os.api('admin/meta');
-	enableRegistration = !meta.disableRegistration;
-	enableLoginOnlyMode = meta.enableLoginOnlyMode;
-	emailRequiredForSignup = meta.emailRequiredForSignup;
-	sensitiveWords = meta.sensitiveWords.join('\n');
-	preservedUsernames = meta.preservedUsernames.join('\n');
-	tosUrl = meta.tosUrl;
-	privacyPolicyUrl = meta.privacyPolicyUrl;
+	const meta = await misskeyApi('admin/meta');
+	enableLoginOnlyMode.value = meta.enableLoginOnlyMode;
+	enableRegistration.value = !meta.disableRegistration;
+	emailRequiredForSignup.value = meta.emailRequiredForSignup;
+	sensitiveWords.value = meta.sensitiveWords.join('\n');
+	hiddenTags.value = meta.hiddenTags.join('\n');
+	preservedUsernames.value = meta.preservedUsernames.join('\n');
+	tosUrl.value = meta.tosUrl;
+	privacyPolicyUrl.value = meta.privacyPolicyUrl;
 }
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
-		disableRegistration: !enableRegistration,
-		enableLoginOnlyMode,
-		emailRequiredForSignup,
-		tosUrl,
-		privacyPolicyUrl,
-		sensitiveWords: sensitiveWords.split('\n'),
-		preservedUsernames: preservedUsernames.split('\n'),
+		disableRegistration: !enableRegistration.value,
+		enableLoginOnlyMode: enableLoginOnlyMode.value,
+		emailRequiredForSignup: emailRequiredForSignup.value,
+		tosUrl: tosUrl.value,
+		privacyPolicyUrl: privacyPolicyUrl.value,
+		sensitiveWords: sensitiveWords.value.split('\n'),
+		hiddenTags: hiddenTags.value.split('\n'),
 	}).then(() => {
 		fetchInstance();
 	});
 }
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.moderation,

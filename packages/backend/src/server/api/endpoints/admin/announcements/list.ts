@@ -16,6 +16,7 @@ export const meta = {
 
 	requireCredential: true,
 	requireModerator: true,
+	kind: 'read:admin:announcements',
 
 	res: {
 		type: 'array',
@@ -86,6 +87,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const query = this.queryService.makePaginationQuery(this.announcementsRepository.createQueryBuilder('announcement'), ps.sinceId, ps.untilId);
+			query.andWhere('announcement.isActive = true');
 			if (ps.userId) {
 				query.andWhere('announcement.userId = :userId', { userId: ps.userId });
 			} else {
@@ -113,6 +115,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				display: announcement.display,
 				isActive: announcement.isActive,
 				forExistingUsers: announcement.forExistingUsers,
+				silence: announcement.silence,
 				needConfirmationToRead: announcement.needConfirmationToRead,
 				userId: announcement.userId,
 				reads: reads.get(announcement)!,

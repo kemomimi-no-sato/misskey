@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { $i } from '@/account.js';
 
 export const ACHIEVEMENT_TYPES = [
@@ -83,6 +83,7 @@ export const ACHIEVEMENT_TYPES = [
 	'cookieClicked',
 	'brainDiver',
 	'smashTestNotificationButton',
+	'tutorialCompleted',
 ] as const;
 
 export const ACHIEVEMENT_BADGES = {
@@ -466,6 +467,11 @@ export const ACHIEVEMENT_BADGES = {
 		bg: 'linear-gradient(0deg, rgb(187 183 59), rgb(255 143 77))',
 		frame: 'bronze',
 	},
+	'tutorialCompleted': {
+		img: '/fluent-emoji/1f393.png',
+		bg: 'linear-gradient(0deg, rgb(220 223 225), rgb(172 192 207))',
+		frame: 'bronze',
+	},
 /* @see <https://github.com/misskey-dev/misskey/pull/10365#discussion_r1155511107>
 } as const satisfies Record<typeof ACHIEVEMENT_TYPES[number], {
 	img: string;
@@ -489,7 +495,7 @@ export async function claimAchievement(type: typeof ACHIEVEMENT_TYPES[number]) {
 	window.setTimeout(() => {
 		claimingQueue.delete(type);
 	}, 500);
-	os.api('i/claim-achievement', { name: type });
+	misskeyApi('i/claim-achievement', { name: type });
 }
 
 if (_DEV_) {

@@ -25,7 +25,7 @@ const JSON_UTF8 = 'application/json; charset=utf-8';
 describe('Webリソース', () => {
 	let app: INestApplicationContext;
 
-	let alice: misskey.entities.MeSignup;
+	let alice: misskey.entities.SignupResponse;
 	let aliceUploadedFile: any;
 	let alicesPost: any;
 	let alicePage: any;
@@ -34,7 +34,7 @@ describe('Webリソース', () => {
 	let aliceGalleryPost: any;
 	let aliceChannel: any;
 
-	let bob: misskey.entities.MeSignup;
+	let bob: misskey.entities.SignupResponse;
 
 	type Request = {
 		path: string,
@@ -93,7 +93,7 @@ describe('Webリソース', () => {
 		});
 		aliceChannel = await channel(alice, {});
 
-		bob = await signup({ username: 'alice' });
+		bob = await signup({ username: 'bob' });
 	}, 1000 * 60 * 2);
 
 	afterAll(async () => {
@@ -149,6 +149,11 @@ describe('Webリソース', () => {
 
 		test('がGETできる。', async () => await ok({
 			path: path(alice.username),
+			type,
+		}));
+
+		test('がGETできる。(ノートが存在しない場合でも。)', async () => await ok({
+			path: path(bob.username),
 			type,
 		}));
 

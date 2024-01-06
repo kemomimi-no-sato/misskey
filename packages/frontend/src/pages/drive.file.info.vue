@@ -56,6 +56,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #key>{{ i18n.ts._fileViewer.size }}</template>
 				<template #value>{{ bytes(file.size) }}</template>
 			</MkKeyValue>
+			<MkKeyValue :class="$style.fileMetaDataChildren" :copy="file.url">
+				<template #key>URL</template>
+				<template #value>{{ file.url }}</template>
+			</MkKeyValue>
 		</div>
 	</div>
 	<div v-else class="_fullinfo">
@@ -75,6 +79,7 @@ import bytes from '@/filters/bytes.js';
 import { infoImageUrl } from '@/instance.js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { useRouter } from '@/router.js';
 
 const router = useRouter();
@@ -90,7 +95,7 @@ const isImage = computed(() => file.value?.type.startsWith('image/'));
 async function fetch() {
 	fetching.value = true;
 
-	file.value = await os.api('drive/files/show', {
+	file.value = await misskeyApi('drive/files/show', {
 		fileId: props.fileId,
 	}).catch((err) => {
 		console.error(err);

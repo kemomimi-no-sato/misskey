@@ -10,12 +10,13 @@ import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { bindThis } from '@/decorators.js';
-import Channel from '../channel.js';
+import Channel, { type MiChannelService } from '../channel.js';
 
 class HomeTimelineChannel extends Channel {
 	public readonly chName = 'homeTimeline';
 	public static shouldShare = false;
-	public static requireCredential = true;
+	public static requireCredential = true as const;
+	public static kind = 'read:account';
 	private withRenotes: boolean;
 	private withFiles: boolean;
 
@@ -56,14 +57,18 @@ class HomeTimelineChannel extends Channel {
 		if (note.visibility === 'followers') {
 			if (!isMe && !Object.hasOwn(this.following, note.userId)) return;
 		} else if (note.visibility === 'specified') {
-			if (!note.visibleUserIds!.includes(this.user!.id)) return;
+			if (!isMe && !note.visibleUserIds!.includes(this.user!.id)) return;
 		}
 
-		// 関係ない返信は除外
-		if (note.reply && !this.following[note.userId]?.withReplies) {
+		if (note.reply) {
 			const reply = note.reply;
-			// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
-			if (reply.userId !== this.user!.id && !isMe && reply.userId !== note.userId) return;
+			if (this.following[note.userId]?.withReplies) {
+				// 自分のフォローしていないユーザーの visibility: followers な投稿への返信は弾く
+				if (reply.visibility === 'followers' && !Object.hasOwn(this.following, reply.userId)) return;
+			} else {
+				// 「チャンネル接続主への返信」でもなければ、「チャンネル接続主が行った返信」でもなければ、「投稿者の投稿者自身への返信」でもない場合
+				if (reply.userId !== this.user!.id && !isMe && reply.userId !== note.userId) return;
+			}
 		}
 
 		if (note.renote && note.text == null && (note.fileIds == null || note.fileIds.length === 0) && !this.withRenotes) return;
@@ -95,9 +100,10 @@ class HomeTimelineChannel extends Channel {
 }
 
 @Injectable()
-export class HomeTimelineChannelService {
+export class HomeTimelineChannelService implements MiChannelService<true> {
 	public readonly shouldShare = HomeTimelineChannel.shouldShare;
 	public readonly requireCredential = HomeTimelineChannel.requireCredential;
+	public readonly kind = HomeTimelineChannel.kind;
 
 	constructor(
 		private noteEntityService: NoteEntityService,
