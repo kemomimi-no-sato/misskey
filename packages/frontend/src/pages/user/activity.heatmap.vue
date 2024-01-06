@@ -13,10 +13,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, nextTick, watch } from 'vue';
+import { onMounted, nextTick, watch, shallowRef, ref } from 'vue';
 import { Chart } from 'chart.js';
 import * as Misskey from 'misskey-js';
-import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore } from '@/store.js';
 import { useChartTooltip } from '@/scripts/use-chart-tooltip.js';
 import { alpha } from '@/scripts/color.js';
@@ -29,11 +29,11 @@ const props = defineProps<{
 	user: Misskey.entities.User;
 }>();
 
-const rootEl = $shallowRef<HTMLDivElement>(null);
-const chartEl = $shallowRef<HTMLCanvasElement>(null);
+const rootEl = shallowRef<HTMLDivElement>(null);
+const chartEl = shallowRef<HTMLCanvasElement>(null);
 const now = new Date();
 let chartInstance: Chart = null;
-let fetching = $ref(true);
+const fetching = ref(true);
 
 const { handler: externalTooltipHandler } = useChartTooltip({
 	position: 'middle',
@@ -44,8 +44,8 @@ async function renderChart() {
 		chartInstance.destroy();
 	}
 
-	const wide = rootEl.offsetWidth > 700;
-	const narrow = rootEl.offsetWidth < 400;
+	const wide = rootEl.value.offsetWidth > 700;
+	const narrow = rootEl.value.offsetWidth < 400;
 
 	const weeks = wide ? 50 : narrow ? 10 : 25;
 	const chartLimit = 7 * weeks;
@@ -74,11 +74,11 @@ async function renderChart() {
 	let values;
 
 	if (props.src === 'notes') {
-		const raw = await os.api('charts/user/notes', { userId: props.user.id, limit: chartLimit, span: 'day' });
+		const raw = await misskeyApi('charts/user/notes', { userId: props.user.id, limit: chartLimit, span: 'day' });
 		values = raw.inc;
 	}
 
-	fetching = false;
+	fetching.value = false;
 
 	await nextTick();
 
@@ -91,7 +91,7 @@ async function renderChart() {
 
 	const marginEachCell = 4;
 
-	chartInstance = new Chart(chartEl, {
+	chartInstance = new Chart(chartEl.value, {
 		type: 'matrix',
 		data: {
 			datasets: [{
@@ -203,7 +203,7 @@ async function renderChart() {
 }
 
 watch(() => props.src, () => {
-	fetching = true;
+	fetching.value = true;
 	renderChart();
 });
 

@@ -332,13 +332,13 @@ export class UserEntityService implements OnModuleInit {
 		const profile = opts.detail ? (opts.userProfile ?? await this.userProfilesRepository.findOneByOrFail({ userId: user.id })) : null;
 
 		const followingCount = profile == null ? null :
-			(profile.ffVisibility === 'public') || isMe ? user.followingCount :
-			(profile.ffVisibility === 'followers') && (relation && relation.isFollowing) ? user.followingCount :
+			(profile.followingVisibility === 'public') || isMe ? user.followingCount :
+			(profile.followingVisibility === 'followers') && (relation && relation.isFollowing) ? user.followingCount :
 			null;
 
 		const followersCount = profile == null ? null :
-			(profile.ffVisibility === 'public') || isMe ? user.followersCount :
-			(profile.ffVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount :
+			(profile.followersVisibility === 'public') || isMe ? user.followersCount :
+			(profile.followersVisibility === 'followers') && (relation && relation.isFollowing) ? user.followersCount :
 			null;
 
 		const isModerator = isMe && opts.detail ? this.roleService.isModerator(user) : null;
@@ -358,16 +358,18 @@ export class UserEntityService implements OnModuleInit {
 			host: user.host,
 			avatarUrl: user.avatarUrl ?? this.getIdenticonUrl(user),
 			avatarBlurhash: user.avatarBlurhash,
-			isBot: user.isBot,
-			isCat: user.isCat,
-			isFox: user.isFox,
-			speakAsCat: user.speakAsCat ?? falsy,
 			avatarDecorations: user.avatarDecorations.length > 0 ? this.avatarDecorationService.getAll().then(decorations => user.avatarDecorations.filter(ud => decorations.some(d => d.id === ud.id)).map(ud => ({
 				id: ud.id,
 				angle: ud.angle || undefined,
 				flipH: ud.flipH || undefined,
+				offsetX: ud.offsetX || undefined,
+				offsetY: ud.offsetY || undefined,
 				url: decorations.find(d => d.id === ud.id)!.url,
 			}))) : [],
+			isBot: user.isBot,
+			isCat: user.isCat,
+			isFox: user.isFox,
+			speakAsCat: user.speakAsCat,
 			instance: user.host ? this.federatedInstanceService.federatedInstanceCache.fetch(user.host).then(instance => instance ? {
 				name: instance.name,
 				softwareName: instance.softwareName,
@@ -417,7 +419,8 @@ export class UserEntityService implements OnModuleInit {
 				pinnedPageId: profile!.pinnedPageId,
 				pinnedPage: profile!.pinnedPageId ? this.pageEntityService.pack(profile!.pinnedPageId, me) : null,
 				publicReactions: profile!.publicReactions,
-				ffVisibility: profile!.ffVisibility,
+				followersVisibility: profile!.followersVisibility,
+				followingVisibility: profile!.followingVisibility,
 				twoFactorEnabled: profile!.twoFactorEnabled,
 				usePasswordLessLogin: profile!.usePasswordLessLogin,
 				securityKeys: profile!.twoFactorEnabled

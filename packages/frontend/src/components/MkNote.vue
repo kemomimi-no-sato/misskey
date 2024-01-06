@@ -54,7 +54,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div style="container-type: inline-size;">
 				<p v-if="appearNote.cw != null" :class="$style.cw">
 					<Mfm v-if="appearNote.cw != ''" style="margin-right: 8px;" :text="appearNote.cw" :author="appearNote.user" :nyaize="'respect'"/>
-					<MkCwButton v-model="showContent" :text="appearNote.text" :files="appearNote.files" :poll="appearNote.poll" style="margin: 4px 0;"/>
+					<MkCwButton v-model="showContent" :text="appearNote.text" :renote="appearNote.renote" :files="appearNote.files" :poll="appearNote.poll" style="margin: 4px 0;"/>
 				</p>
 				<div v-show="appearNote.cw == null || showContent" :class="[{ [$style.contentCollapsed]: collapsed }]">
 					<div :class="$style.text">
@@ -166,7 +166,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, inject, onMounted, ref, shallowRef, Ref, defineAsyncComponent, watch, provide } from 'vue';
+import { computed, inject, onMounted, ref, shallowRef, Ref, watch, provide, defineAsyncComponent } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import MkNoteSub from '@/components/MkNoteSub.vue';
@@ -185,6 +185,7 @@ import { checkWordMute } from '@/scripts/check-word-mute.js';
 import { userPage } from '@/filters/user.js';
 import * as os from '@/os.js';
 import * as sound from '@/scripts/sound.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore, noteViewInterruptors } from '@/store.js';
 import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
@@ -200,7 +201,7 @@ import { MenuItem } from '@/types/menu.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import { shouldCollapsed } from '@/scripts/collapsed.js';
-import { stealMenu } from '@/scripts/steal-menu';
+import { stealMenu } from '@/scripts/steal-menu.js';
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note;
@@ -221,12 +222,12 @@ const emit = defineEmits<{
 const inChannel = inject('inChannel', null);
 const currentClip = inject<Ref<Misskey.entities.Clip> | null>('currentClip', null);
 
-let note = $ref(deepClone(props.note));
+const note = ref(deepClone(props.note));
 
 // plugin
 if (noteViewInterruptors.length > 0) {
 	onMounted(async () => {
-		let result: Misskey.entities.Note | null = deepClone(note);
+		let result: Misskey.entities.Note | null = deepClone(note.value);
 		for (const interruptor of noteViewInterruptors) {
 			try {
 				result = await interruptor.handler(result);
@@ -238,15 +239,16 @@ if (noteViewInterruptors.length > 0) {
 				console.error(err);
 			}
 		}
-		note = result;
+		note.value = result;
 	});
 }
 
 const isRenote = (
-	note.renote != null &&
-	note.text == null &&
-	note.fileIds.length === 0 &&
-	note.poll == null
+	note.value.renote != null &&
+	note.value.text == null &&
+	note.value.cw == null &&
+	note.value.fileIds.length === 0 &&
+	note.value.poll == null
 );
 
 const el = shallowRef<HTMLElement>();
@@ -256,21 +258,21 @@ const renoteTime = shallowRef<HTMLElement>();
 const reactButton = shallowRef<HTMLElement>();
 const stealButton = shallowRef<HTMLElement>(); // shrimpia
 const clipButton = shallowRef<HTMLElement>();
-let appearNote = $computed(() => isRenote ? note.renote as Misskey.entities.Note : note);
-const isMyRenote = $i && ($i.id === note.userId);
+const appearNote = computed(() => isRenote ? note.value.renote as Misskey.entities.Note : note.value);
+const isMyRenote = $i && ($i.id === note.value.userId);
 const showContent = ref(false);
-const parsed = $computed(() => appearNote.text ? mfm.parse(appearNote.text) : null);
-const urls = $computed(() => parsed ? extractUrlFromMfm(parsed) : null);
-const isLong = shouldCollapsed(appearNote, urls ?? []);
-const collapsed = ref(appearNote.cw == null && isLong);
+const parsed = computed(() => appearNote.value.text ? mfm.parse(appearNote.value.text) : null);
+const urls = computed(() => parsed.value ? extractUrlFromMfm(parsed.value) : null);
+const isLong = shouldCollapsed(appearNote.value, urls.value ?? []);
+const collapsed = ref(appearNote.value.cw == null && isLong);
 const isDeleted = ref(false);
-const muted = ref(checkMute(appearNote, $i?.mutedWords));
-const hardMuted = ref(props.withHardMute && checkMute(appearNote, $i?.hardMutedWords));
-const translation = ref<any>(null);
+const muted = ref(checkMute(appearNote.value, $i?.mutedWords));
+const hardMuted = ref(props.withHardMute && checkMute(appearNote.value, $i?.hardMutedWords));
+const translation = ref<Misskey.entities.NotesTranslateResponse | null>(null);
 const translating = ref(false);
-const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultStore.state.instanceTicker === 'remote' && appearNote.user.instance);
-const canRenote = computed(() => ['public', 'home'].includes(appearNote.visibility) || (appearNote.visibility === 'followers' && appearNote.userId === $i.id));
-let renoteCollapsed = $ref(defaultStore.state.collapseRenotes && isRenote && (($i && ($i.id === note.userId || $i.id === appearNote.userId)) || (appearNote.myReaction != null)));
+const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultStore.state.instanceTicker === 'remote' && appearNote.value.user.instance);
+const canRenote = computed(() => ['public', 'home'].includes(appearNote.value.visibility) || (appearNote.value.visibility === 'followers' && appearNote.value.userId === $i.id));
+const renoteCollapsed = ref(defaultStore.state.collapseRenotes && isRenote && (($i && ($i.id === note.value.userId || $i.id === appearNote.value.userId)) || (appearNote.value.myReaction != null)));
 
 function checkMute(note: Misskey.entities.Note, mutedWords: Array<string | string[]> | undefined | null): boolean {
 	if (mutedWords == null) return false;
@@ -293,40 +295,39 @@ const keymap = {
 };
 
 provide('react', (reaction: string) => {
-	os.api('notes/reactions/create', {
-		noteId: appearNote.id,
+	misskeyApi('notes/reactions/create', {
+		noteId: appearNote.value.id,
 		reaction: reaction,
 	});
 });
 
 if (props.mock) {
 	watch(() => props.note, (to) => {
-		note = deepClone(to);
+		note.value = deepClone(to);
 	}, { deep: true });
 } else {
 	useNoteCapture({
 		rootEl: el,
-		note: $$(appearNote),
-		pureNote: $$(note),
+		note: appearNote,
+		pureNote: note,
 		isDeletedRef: isDeleted,
 	});
 }
 
 if (!props.mock) {
 	useTooltip(renoteButton, async (showing) => {
-		const renotes = await os.api('notes/renotes', {
-			noteId: appearNote.id,
+		const renotes = await misskeyApi('notes/renotes', {
+			noteId: appearNote.value.id,
 			limit: 11,
 		});
 
 		const users = renotes.map(x => x.user);
-
 		if (users.length < 1) return;
 
 		os.popup(MkUsersTooltip, {
 			showing,
 			users,
-			count: appearNote.renoteCount,
+			count: appearNote.value.renoteCount,
 			targetElement: renoteButton.value,
 		}, {}, 'closed');
 	});
@@ -335,8 +336,8 @@ if (!props.mock) {
 let isFavorited = ref(false);
 onMounted(async () => {
 	if ($i) {
-		const response = await os.api('notes/state', {
-			noteId: appearNote.id,
+		const response = await misskeyApi('notes/state', {
+			noteId: appearNote.value.id,
 		});
 		if (response) {
 			isFavorited.value = response.isFavorited;
@@ -349,7 +350,7 @@ onMounted(async () => {
 type Visibility = 'public' | 'home' | 'followers' | 'specified';
 
 const hasRenotedBefore = ref(false);
-os.api('notes/renotes', {
+misskeyApi('notes/renotes', {
 	noteId: props.note.id,
 	userId: $i?.id,
 	limit: 1,
@@ -385,9 +386,9 @@ function renote(viaKeyboard = false) {
 					os.popup(MkRippleEffect, { x, y }, {}, 'end');
 				}
 
-				os.api('notes/create', {
-					renoteId: appearNote.id,
-					channelId: appearNote.channelId,
+				misskeyApi('notes/create', {
+					renoteId: appearNote.value.id,
+					channelId: appearNote.value.channelId,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -398,7 +399,7 @@ function renote(viaKeyboard = false) {
 			action: () => {
 				os.post({
 					renote: appearNote,
-					channel: appearNote.channel,
+					channel: appearNote.value.channel,
 				});
 			},
 		}, null]);
@@ -425,9 +426,9 @@ function renote(viaKeyboard = false) {
 					visibility = smallerVisibility(visibility, 'home');
 				}
 
-				os.api('notes/create', {
-					visibility: "public",
-					renoteId: appearNote.id,
+				misskeyApi('notes/create', {
+					visibility: 'public',
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -435,7 +436,7 @@ function renote(viaKeyboard = false) {
 		}]);
 	}
 
-	if (["public", "home"].includes(props.note.visibility)) {
+	if (['public', 'home'].includes(props.note.visibility)) {
 		items = items.concat([{
 			text: `${i18n.ts.renote} (${i18n.ts._visibility.home})`,
 			icon: 'ti ti-home',
@@ -451,15 +452,15 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'home');
 				}
 
-				os.api('notes/create', {
-					visibility: "home",
-					renoteId: appearNote.id,
+				misskeyApi('notes/create', {
+					visibility: 'home',
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -483,16 +484,16 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'specified');
 				}
 
-				os.api('notes/create', {
-					visibility: "specified",
+				misskeyApi('notes/create', {
+					visibility: 'specified',
 					visibleUserIds: props.note.visibleUserIds,
-					renoteId: appearNote.id,
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -514,15 +515,15 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'followers');
 				}
 
-				os.api('notes/create', {
-					visibility: "followers",
-					renoteId: appearNote.id,
+				misskeyApi('notes/create', {
+					visibility: 'followers',
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -546,26 +547,25 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'specified');
 				}
 
-				os.api('notes/create',
-					props.note.visibility === "specified"
+				misskeyApi('notes/create',
+					props.note.visibility === 'specified'
 						? {
-							visibility: "specified",
+							visibility: 'specified',
 							visibleUserIds: props.note.visibleUserIds,
 							localOnly: true,
-							renoteId: appearNote.id,
-							}
-						:	{
-							renoteId: props.note.id,
+							renoteId: appearNote.value.id,
+						}
+						: {
 							visibility: props.note.visibility,
 							localOnly: true,
-							},
-				).then(() => {
+							renoteId: appearNote.value.id,
+						}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
 			},
@@ -592,8 +592,8 @@ function renote(viaKeyboard = false) {
 
 async function getIsFavorited(): Promise<boolean> {
 	if ($i) {
-		const response = await os.api('notes/state', {
-			noteId: appearNote.id,
+		const response = await misskeyApi('notes/state', {
+			noteId: appearNote.value.id,
 		});
 		if (response) {
 			return response.isFavorited;
@@ -601,6 +601,7 @@ async function getIsFavorited(): Promise<boolean> {
 	} else {
 		return false;
 	}
+	return true;
 }
 
 async function addFavorited(): Promise<boolean> {
@@ -609,14 +610,14 @@ async function addFavorited(): Promise<boolean> {
 	if(state == false || isFavorited.value == false) {
 		pleaseLogin();
 		const { canceled } = await os.confirm({
-			type: "question",
-			text: "お気に入りに登録しますか？"
+			type: 'question',
+			text: 'お気に入りに登録しますか？'
 		})
 		if (canceled) {
 			return false;
 		}
 		os.apiWithDialog('notes/favorites/create',{
-			noteId: appearNote.id,
+			noteId: appearNote.value.id,
 		}).then(()=> {
 			isFavorited.value = true;
 		});
@@ -630,14 +631,14 @@ async function removeFavorited(): Promise<boolean> {
 	if(state == true || isFavorited.value == true) {
 		pleaseLogin();
 		const { canceled } = await os.confirm({
-			type: "question",
-			text: "お気に入りを解除しますか？"
+			type: 'question',
+			text: 'お気に入りを解除しますか？'
 		})
 		if (canceled) {
 			return false;
 		}
 		os.apiWithDialog('notes/favorites/delete',{
-			noteId: appearNote.id,
+			noteId: appearNote.value.id,
 		}).then(()=> {
 			isFavorited.value = false;
 		});
@@ -651,8 +652,8 @@ function reply(viaKeyboard = false): void {
 		return;
 	}
 	os.post({
-		reply: appearNote,
-		channel: appearNote.channel,
+		reply: appearNote.value,
+		channel: appearNote.value.channel,
 		animation: !viaKeyboard,
 	}, () => {
 		focus();
@@ -662,15 +663,15 @@ function reply(viaKeyboard = false): void {
 function react(viaKeyboard = false): void {
 	pleaseLogin();
 	showMovedDialog();
-	if (appearNote.reactionAcceptance === 'likeOnly') {
+	if (appearNote.value.reactionAcceptance === 'likeOnly') {
 		sound.play('reaction');
 
 		if (props.mock) {
 			return;
 		}
 
-		os.api('notes/reactions/create', {
-			noteId: appearNote.id,
+		misskeyApi('notes/reactions/create', {
+			noteId: appearNote.value.id,
 			reaction: '❤️',
 		});
 		const el = reactButton.value as HTMLElement | null | undefined;
@@ -690,11 +691,11 @@ function react(viaKeyboard = false): void {
 				return;
 			}
 
-			os.api('notes/reactions/create', {
-				noteId: appearNote.id,
+			misskeyApi('notes/reactions/create', {
+				noteId: appearNote.value.id,
 				reaction: reaction,
 			});
-			if (appearNote.text && appearNote.text.length > 100 && (Date.now() - new Date(appearNote.createdAt).getTime() < 1000 * 3)) {
+			if (appearNote.value.text && appearNote.value.text.length > 100 && (Date.now() - new Date(appearNote.value.createdAt).getTime() < 1000 * 3)) {
 				claimAchievement('reactWithoutRead');
 			}
 		}, () => {
@@ -712,7 +713,7 @@ function undoReact(note): void {
 		return;
 	}
 
-	os.api('notes/reactions/delete', {
+	misskeyApi('notes/reactions/delete', {
 		noteId: note.id,
 	});
 }
@@ -737,7 +738,7 @@ function onContextmenu(ev: MouseEvent): void {
 		ev.preventDefault();
 		react();
 	} else {
-		const { menu, cleanup } = getNoteMenu({ note: note, translating, translation, menuButton, isDeleted, currentClip: currentClip?.value });
+		const { menu, cleanup } = getNoteMenu({ note: note.value, translating, translation, menuButton, isDeleted, currentClip: currentClip?.value });
 		os.contextMenu(menu, ev).then(focus).finally(cleanup);
 	}
 }
@@ -754,7 +755,7 @@ function menu(viaKeyboard = false): void {
 		return;
 	}
 
-	const { menu, cleanup } = getNoteMenu({ note: note, translating, translation, menuButton, isDeleted, currentClip: currentClip?.value });
+	const { menu, cleanup } = getNoteMenu({ note: note.value, translating, translation, menuButton, isDeleted, currentClip: currentClip?.value });
 	os.popupMenu(menu, menuButton.value, {
 		viaKeyboard,
 	}).then(focus).finally(cleanup);
@@ -765,7 +766,7 @@ async function clip() {
 		return;
 	}
 
-	os.popupMenu(await getNoteClipMenu({ note: note, isDeleted, currentClip: currentClip?.value }), clipButton.value).then(focus);
+	os.popupMenu(await getNoteClipMenu({ note: note.value, isDeleted, currentClip: currentClip?.value }), clipButton.value).then(focus);
 }
 
 function showRenoteMenu(viaKeyboard = false): void {
@@ -779,8 +780,8 @@ function showRenoteMenu(viaKeyboard = false): void {
 			icon: 'ti ti-trash',
 			danger: true,
 			action: () => {
-				os.api('notes/delete', {
-					noteId: note.id,
+				misskeyApi('notes/delete', {
+					noteId: note.value.id,
 				});
 				isDeleted.value = true;
 			},
@@ -790,17 +791,17 @@ function showRenoteMenu(viaKeyboard = false): void {
 	if (isMyRenote) {
 		pleaseLogin();
 		os.popupMenu([
-			getCopyNoteLinkMenu(note, i18n.ts.copyLinkRenote),
-			null,
+			getCopyNoteLinkMenu(note.value, i18n.ts.copyLinkRenote),
+			{ type: 'divider' },
 			getUnrenote(),
 		], renoteTime.value, {
 			viaKeyboard: viaKeyboard,
 		});
 	} else {
 		os.popupMenu([
-			getCopyNoteLinkMenu(note, i18n.ts.copyLinkRenote),
-			null,
-			getAbuseNoteMenu(note, i18n.ts.reportAbuseRenote),
+			getCopyNoteLinkMenu(note.value, i18n.ts.copyLinkRenote),
+			{ type: 'divider' },
+			getAbuseNoteMenu(note.value, i18n.ts.reportAbuseRenote),
 			$i.isModerator || $i.isAdmin ? getUnrenote() : undefined,
 		], renoteTime.value, {
 			viaKeyboard: viaKeyboard,
@@ -825,8 +826,8 @@ function focusAfter() {
 }
 
 function readPromo() {
-	os.api('promo/read', {
-		noteId: appearNote.id,
+	misskeyApi('promo/read', {
+		noteId: appearNote.value.id,
 	});
 	isDeleted.value = true;
 }

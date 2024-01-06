@@ -60,7 +60,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, watch } from 'vue';
+import { defineAsyncComponent, watch, ref, computed } from 'vue';
 import Sortable from 'vuedraggable';
 import MkRadios from '@/components/MkRadios.vue';
 import FromSlot from '@/components/form/slot.vue';
@@ -72,23 +72,21 @@ import { defaultStore } from '@/store.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { deepClone } from '@/scripts/clone.js';
-
-let reactions = $ref(deepClone(defaultStore.state.reactions));
-
-const reactionPickerSize = $computed(defaultStore.makeGetterSetter('reactionPickerSize'));
-const reactionPickerWidth = $computed(defaultStore.makeGetterSetter('reactionPickerWidth'));
-const reactionPickerHeight = $computed(defaultStore.makeGetterSetter('reactionPickerHeight'));
-const reactionPickerUseDrawerForMobile = $computed(defaultStore.makeGetterSetter('reactionPickerUseDrawerForMobile'));
+const reactions = ref(deepClone(defaultStore.state.reactions));
+const reactionPickerSize = computed(defaultStore.makeGetterSetter('reactionPickerSize'));
+const reactionPickerWidth = computed(defaultStore.makeGetterSetter('reactionPickerWidth'));
+const reactionPickerHeight = computed(defaultStore.makeGetterSetter('reactionPickerHeight'));
+const reactionPickerUseDrawerForMobile = computed(defaultStore.makeGetterSetter('reactionPickerUseDrawerForMobile'));
 
 function save() {
-	defaultStore.set('reactions', reactions);
+	defaultStore.set('reactions', reactions.value);
 }
 
 function remove(reaction, ev: MouseEvent) {
 	os.popupMenu([{
 		text: i18n.ts.remove,
 		action: () => {
-			reactions = reactions.filter(x => x !== reaction);
+			reactions.value = reactions.value.filter(x => x !== reaction);
 		},
 	}], ev.currentTarget ?? ev.target);
 }
@@ -106,30 +104,27 @@ async function setDefault() {
 		text: i18n.ts.resetAreYouSure,
 	});
 	if (canceled) return;
-
-	reactions = deepClone(defaultStore.def.reactions.default);
+	reactions.value = deepClone(defaultStore.def.reactions.default);
 }
 
 function chooseEmoji(ev: MouseEvent) {
 	os.pickEmoji(ev.currentTarget ?? ev.target, {
 		showPinned: false,
 	}).then(emoji => {
-		if (!reactions.includes(emoji)) {
-			reactions.push(emoji);
+		if (!reactions.value.includes(emoji)) {
+			reactions.value.push(emoji);
 		}
 	});
 }
 
-watch($$(reactions), () => {
+watch(reactions, () => {
 	save();
 }, {
 	deep: true,
 });
 
-const headerActions = $computed(() => []);
-
-const headerTabs = $computed(() => []);
-
+const headerActions = computed(() => []);
+const headerTabs = computed(() => []);
 definePageMetadata({
 	title: i18n.ts.reaction,
 	icon: 'ti ti-mood-happy',
@@ -145,13 +140,11 @@ definePageMetadata({
 	padding: 12px;
 	font-size: 1.1em;
 }
-
 .reactionsItem {
 	display: inline-block;
 	padding: 8px;
 	cursor: move;
 }
-
 .reactionsAdd {
 	display: inline-block;
 	padding: 8px;

@@ -2,8 +2,9 @@ import { Note } from 'misskey-js/built/entities.js';
 import { getTextLastNumeric, getTextWithoutEndingNumeric } from './get-note-last-numeric.js';
 import { pleaseLogin } from './please-login.js';
 import { i18n } from '@/i18n.js';
-import { api, confirm, popupMenu, post } from '@/os.js';
+import { confirm, popupMenu, post } from '@/os.js';
 import { defaultStore } from '@/store.js';
+import { misskeyApi } from './misskey-api.js';
 
 // #region shrimpia
 export function stealMenu(note: Note, el: HTMLElement) {
@@ -38,7 +39,7 @@ export function stealMenu(note: Note, el: HTMLElement) {
 			const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
 				? note.localOnly
 				: defaultStore.state.defaultNumberQuoteLocalOnly;
-			api('notes/create', {
+			misskeyApi('notes/create', {
 				text: baseText + nextNumeric,
 				visibility: visibility as never,
 				localOnly,
@@ -73,7 +74,7 @@ export function stealMenu(note: Note, el: HTMLElement) {
 			const localOnly = defaultStore.state.defaultNumberQuoteVisibility === 'inherits'
 				? note.localOnly
 				: defaultStore.state.defaultNumberQuoteLocalOnly;
-			api('notes/create', {
+			misskeyApi('notes/create', {
 				text: note.text,
 				visibility: visibility as never,
 				localOnly,

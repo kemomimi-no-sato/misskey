@@ -22,6 +22,7 @@ import * as Misskey from 'misskey-js';
 import XDetails from '@/components/MkReactionsViewer.details.vue';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import * as os from '@/os.js';
+import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
 import { useTooltip } from '@/scripts/use-tooltip.js';
 import { $i } from '@/account.js';
 import MkReactionEffect from '@/components/MkReactionEffect.vue';
@@ -69,11 +70,11 @@ async function toggleReaction() {
 			return;
 		}
 
-		os.api('notes/reactions/delete', {
+		misskeyApi('notes/reactions/delete', {
 			noteId: props.note.id,
 		}).then(() => {
 			if (oldReaction !== props.reaction) {
-				os.api('notes/reactions/create', {
+				misskeyApi('notes/reactions/create', {
 					noteId: props.note.id,
 					reaction: props.reaction,
 				});
@@ -87,7 +88,7 @@ async function toggleReaction() {
 			return;
 		}
 
-		os.api('notes/reactions/create', {
+		misskeyApi('notes/reactions/create', {
 			noteId: props.note.id,
 			reaction: props.reaction,
 		});
@@ -117,7 +118,7 @@ onMounted(() => {
 
 if (!mock) {
 	useTooltip(buttonEl, async (showing) => {
-		const reactions = await os.apiGet('notes/reactions', {
+		const reactions = await misskeyApiGet('notes/reactions', {
 			noteId: props.note.id,
 			type: props.reaction,
 			limit: 10,
@@ -139,12 +140,14 @@ if (!mock) {
 
 <style lang="scss" module>
 .root {
-	display: inline-block;
+	display: inline-flex;
 	height: 42px;
 	margin: 2px;
 	padding: 0 6px;
 	font-size: 1.5em;
 	border-radius: 6px;
+	align-items: center;
+	justify-content: center;
 
 	&.canToggle {
 		background: var(--buttonBg);
@@ -205,7 +208,7 @@ if (!mock) {
 	&.reacted, &.reacted:hover {
 		background: var(--accentedBg);
 		color: var(--accent);
-		box-shadow: 0 0 0px 1px var(--accent) inset;
+		box-shadow: 0 0 0 1px var(--accent) inset;
 
 		> .count {
 			color: var(--accent);
@@ -218,7 +221,8 @@ if (!mock) {
 }
 
 .limitWidth {
-	max-width: 150px;
+	max-width: 70px;
+	object-fit: contain;
 }
 
 .count {
