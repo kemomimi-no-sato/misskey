@@ -69,10 +69,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ComputedRef, onMounted, provide } from 'vue';
+import { ComputedRef, onMounted, provide, ref, computed } from 'vue';
+import * as Misskey from 'misskey-js';
 import XCommon from './_common_/common.vue';
-import { host, instanceName } from '@/config.js';
+import { instanceName } from '@/config.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { instance } from '@/instance.js';
 import XSigninDialog from '@/components/MkSigninDialog.vue';
 import XSignupDialog from '@/components/MkSignupDialog.vue';
@@ -84,13 +86,13 @@ import MkVisitorDashboard from '@/components/MkVisitorDashboard.vue';
 
 const DESKTOP_THRESHOLD = 1100;
 
-let pageMetadata = $ref<null | ComputedRef<PageMetadata>>();
+const pageMetadata = ref<null | ComputedRef<PageMetadata>>();
 
 provide('router', mainRouter);
 provideMetadataReceiver((info) => {
-	pageMetadata = info;
-	if (pageMetadata.value) {
-		document.title = `${pageMetadata.value.title} | ${instanceName}`;
+	pageMetadata.value = info;
+	if (pageMetadata.value.value) {
+		document.title = `${pageMetadata.value.value.title} | ${instanceName}`;
 	}
 });
 
@@ -99,14 +101,14 @@ const announcements = {
 	limit: 10,
 };
 
-const isTimelineAvailable = $ref(instance.policies?.ltlAvailable || instance.policies?.gtlAvailable);
+const isTimelineAvailable = ref(instance.policies?.ltlAvailable || instance.policies?.gtlAvailable);
 
-let showMenu = $ref(false);
-let isDesktop = $ref(window.innerWidth >= DESKTOP_THRESHOLD);
-let narrow = $ref(window.innerWidth < 1280);
-let meta = $ref();
+const showMenu = ref(false);
+const isDesktop = ref(window.innerWidth >= DESKTOP_THRESHOLD);
+const narrow = ref(window.innerWidth < 1280);
+const meta = ref<Misskey.entities.MetaResponse>();
 
-const keymap = $computed(() => {
+const keymap = computed(() => {
 	return {
 		'd': () => {
 			if (ColdDeviceStorage.get('syncDeviceDarkMode')) return;
@@ -118,10 +120,10 @@ const keymap = $computed(() => {
 	};
 });
 
-const root = $computed(() => mainRouter.currentRoute.value.name === 'index');
+const root = computed(() => mainRouter.currentRoute.value.name === 'index');
 
-os.api('meta', { detail: true }).then(res => {
-	meta = res;
+misskeyApi('meta', { detail: true }).then(res => {
+	meta.value = res;
 });
 
 function signin() {
@@ -137,15 +139,15 @@ function signup() {
 }
 
 onMounted(() => {
-	if (!isDesktop) {
+	if (!isDesktop.value) {
 		window.addEventListener('resize', () => {
-			if (window.innerWidth >= DESKTOP_THRESHOLD) isDesktop = true;
+			if (window.innerWidth >= DESKTOP_THRESHOLD) isDesktop.value = true;
 		}, { passive: true });
 	}
 });
 
 defineExpose({
-	showMenu: $$(showMenu),
+	showMenu: showMenu,
 });
 </script>
 
