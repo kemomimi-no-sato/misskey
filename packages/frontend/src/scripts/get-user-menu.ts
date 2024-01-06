@@ -191,13 +191,13 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 		action: () => {
 			editMemo();
 		},
-	}, null, ...(defaultStore.state.nicknameEnabled ? [{
+	}, ...(defaultStore.state.nicknameEnabled ? [{
 		icon: 'ti ti-edit',
 		text: 'ニックネームを編集',
 		action: () => {
 			editNickname(user);
 		},
-	}] : []), null, {
+	}] : []), { type: 'divider' }, {
 		type: 'parent',
 		icon: 'ti ti-list',
 		text: i18n.ts.addToList,
