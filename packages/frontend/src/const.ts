@@ -75,6 +75,7 @@ export const ROLE_POLICIES = [
 	'gtlAvailable',
 	'ltlAvailable',
 	'canPublicNote',
+	'canRemoteNote',
 	'canInvite',
 	'inviteLimit',
 	'inviteLimitCycle',
@@ -96,6 +97,8 @@ export const ROLE_POLICIES = [
 	'userEachUserListsLimit',
 	'rateLimitFactor',
 	'avatarDecorationLimit',
+	'canCheckReports',
+	'canCheckFiles',
 ] as const;
 
 // なんか動かない

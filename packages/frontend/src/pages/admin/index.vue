@@ -38,6 +38,7 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import { lookupUser, lookupUserByEmail } from '@/scripts/lookup-user.js';
 import { useRouter } from '@/router.js';
 import { PageMetadata, definePageMetadata, provideMetadataReceiver } from '@/scripts/page-metadata.js';
+import { $i } from '@/account.js';
 
 const isEmpty = (x: string | null) => x == null || x === '';
 
@@ -83,7 +84,7 @@ const menuDef = computed(() => [{
 		icon: 'ti ti-search',
 		text: i18n.ts.lookup,
 		action: lookup,
-	}, ...(instance.disableRegistration ? [{
+	}, ...(instance.disableRegistration || $i.policies.canInvite ? [{
 		type: 'button',
 		icon: 'ti ti-user-plus',
 		text: i18n.ts.createInviteCode,
@@ -101,12 +102,12 @@ const menuDef = computed(() => [{
 		text: i18n.ts.users,
 		to: '/admin/users',
 		active: currentPage.value?.route.name === 'users',
-	}, {
+	}, ...($i?.isAdmin || ($i?.isModerator && $i.policies.canInvite) ? [{
 		icon: 'ti ti-user-plus',
 		text: i18n.ts.invite,
 		to: '/admin/invites',
 		active: currentPage.value?.route.name === 'invites',
-	}, {
+	}] : []), {
 		icon: 'ti ti-badges',
 		text: i18n.ts.roles,
 		to: '/admin/roles',
@@ -131,12 +132,12 @@ const menuDef = computed(() => [{
 		text: i18n.ts.jobQueue,
 		to: '/admin/queue',
 		active: currentPage.value?.route.name === 'queue',
-	}, {
+	}, ...($i?.isAdmin || ($i?.isModerator && $i.policies.canCheckFiles) ? [{
 		icon: 'ti ti-cloud',
 		text: i18n.ts.files,
 		to: '/admin/files',
 		active: currentPage.value?.route.name === 'files',
-	}, {
+	}] : []), {
 		icon: 'ti ti-speakerphone',
 		text: i18n.ts.announcements,
 		to: '/admin/announcements',
@@ -146,12 +147,12 @@ const menuDef = computed(() => [{
 		text: i18n.ts.ads,
 		to: '/admin/ads',
 		active: currentPage.value?.route.name === 'ads',
-	}, {
+	}, ...($i?.isAdmin || ($i?.isModerator && $i.policies.canCheckReports) ? [{
 		icon: 'ti ti-exclamation-circle',
 		text: i18n.ts.abuseReports,
 		to: '/admin/abuses',
 		active: currentPage.value?.route.name === 'abuses',
-	}, {
+	}] : []), {
 		icon: 'ti ti-list-search',
 		text: i18n.ts.moderationLogs,
 		to: '/admin/modlog',

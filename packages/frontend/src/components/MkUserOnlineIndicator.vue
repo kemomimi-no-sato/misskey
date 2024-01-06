@@ -5,6 +5,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div
+	v-if="!defaultStore.state.disableOnlineStatus"
 	v-tooltip="text"
 	:class="[$style.root, {
 		[$style.status_online]: user.onlineStatus === 'online',
@@ -19,6 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed } from 'vue';
 import * as Misskey from 'misskey-js';
 import { i18n } from '@/i18n.js';
+import { defaultStore } from '@/store.js';
 
 const props = defineProps<{
 	user: Misskey.entities.User;

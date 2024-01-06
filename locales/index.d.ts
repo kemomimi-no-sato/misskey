@@ -124,12 +124,7 @@ export interface Locale {
     "add": string;
     "reaction": string;
     "reactions": string;
-    "emojiPicker": string;
-    "pinnedEmojisForReactionSettingDescription": string;
-    "pinnedEmojisSettingDescription": string;
-    "emojiPickerDisplay": string;
-    "overwriteFromPinnedEmojisForReaction": string;
-    "overwriteFromPinnedEmojis": string;
+    "reactionSetting": string;
     "reactionSettingDescription2": string;
     "rememberNoteVisibility": string;
     "attachCancel": string;
@@ -1699,6 +1694,7 @@ export interface Locale {
             "gtlAvailable": string;
             "ltlAvailable": string;
             "canPublicNote": string;
+            "canRemoteNote": string;
             "canInvite": string;
             "inviteLimit": string;
             "inviteLimitCycle": string;
@@ -1721,6 +1717,11 @@ export interface Locale {
             "canSearchNotes": string;
             "canUseTranslator": string;
             "avatarDecorationLimit": string;
+        };
+        "_moderator_options": {
+            "canCheckReports": string;
+            "canCheckFiles": string;
+            "canHideInviteButtons": string;
         };
         "_condition": {
             "isLocal": string;

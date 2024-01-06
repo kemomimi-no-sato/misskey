@@ -127,7 +127,6 @@ import { deepClone } from '@/scripts/clone.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement } from '@/scripts/achievements.js';
-import { emojiPicker } from '@/scripts/emoji-picker.js';
 import { mfmFunctionPicker } from '@/scripts/mfm-function-picker.js';
 
 const $i = signinRequired();
@@ -867,17 +866,7 @@ function insertMention() {
 
 async function insertEmoji(ev: MouseEvent) {
 	textAreaReadOnly.value = true;
-
-	emojiPicker.show(
-		ev.currentTarget ?? ev.target,
-		emoji => {
-			insertTextAtCursor(textareaEl.value, emoji);
-		},
-		() => {
-			textAreaReadOnly.value = false;
-			nextTick(() => focus());
-		},
-	);
+	os.openEmojiPicker(ev.currentTarget ?? ev.target, {}, textareaEl);
 }
 
 async function insertMfmFunction(ev: MouseEvent) {

@@ -144,9 +144,9 @@ const defaultDarkTheme = ref<string | null>(null);
 const serverErrorImageUrl = ref<string | null>(null);
 const infoImageUrl = ref<string | null>(null);
 const notFoundImageUrl = ref<string | null>(null);
-const splashImageUrl: ref<string | null>(null);;
-const signupText: ref<string | null>(null);
-const loginText: ref<string | null>(null);
+const splashImageUrl = ref<string | null>(null);
+const signupText = ref<string | null>(null);
+const loginText = ref<string | null>(null);
 const manifestJsonOverride = ref<string>('{}');
 
 async function init() {
@@ -162,9 +162,9 @@ async function init() {
 	serverErrorImageUrl.value = meta.serverErrorImageUrl;
 	infoImageUrl.value = meta.infoImageUrl;
 	notFoundImageUrl.value = meta.notFoundImageUrl;
-	splashImageUrl = meta.splashImageUrl;
-	signupText = meta.signupText;
-	loginText = meta.loginText;
+	splashImageUrl.value = meta.splashImageUrl;
+	signupText.value = meta.signupText;
+	loginText.value = meta.loginText;
 	manifestJsonOverride.value = meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t');
 }
 

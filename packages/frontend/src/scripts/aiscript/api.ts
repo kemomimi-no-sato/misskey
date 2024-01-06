@@ -10,7 +10,6 @@ import { $i } from '@/account.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { customEmojis } from '@/custom-emojis.js';
 import { url, lang } from '@/config.js';
-import { nyaize } from '@/scripts/nyaize.js';
 
 export function aiScriptReadline(q: string): Promise<string> {
 	return new Promise(ok => {
@@ -84,10 +83,6 @@ export function createAiScriptEnv(opts) {
 		}),
 		'Mk:url': values.FN_NATIVE(() => {
 			return values.STR(window.location.href);
-		}),
-		'Mk:nyaize': values.FN_NATIVE(([text]) => {
-			utils.assertString(text);
-			return values.STR(nyaize(text.value));
 		}),
 	};
 }

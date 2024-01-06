@@ -119,10 +119,6 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: ['👍', '❤️', '😆', '🤔', '😮', '🎉', '💢', '😥', '😇', '🍮'],
 	},
-	pinnedEmojis: {
-		where: 'account',
-		default: [],
-	},
 	reactionAcceptance: {
 		where: 'account',
 		default: 'nonSensitiveOnly' as 'likeOnly' | 'likeOnlyForRemote' | 'nonSensitiveOnly' | 'nonSensitiveOnlyForLocalLikeOnlyForRemote' | null,
@@ -279,19 +275,19 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: 'remote' as 'none' | 'remote' | 'always',
 	},
-	emojiPickerScale: {
+	reactionPickerSize: {
 		where: 'device',
 		default: 1,
 	},
-	emojiPickerWidth: {
+	reactionPickerWidth: {
 		where: 'device',
 		default: 1,
 	},
-	emojiPickerHeight: {
+	reactionPickerHeight: {
 		where: 'device',
 		default: 2,
 	},
-	emojiPickerUseDrawerForMobile: {
+	reactionPickerUseDrawerForMobile: {
 		where: 'device',
 		default: true,
 	},
@@ -435,6 +431,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: false,
 	},
+	disableOnlineStatus:{
+		where: 'account',
+		default: false,
+	},
 	disableStreamingTimeline: {
 		where: 'device',
 		default: false,
@@ -456,7 +456,11 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
-
+	enableRoleBgColor: {
+		where: 'deviceAccount',
+		default: true,
+	},
+	
 	sound_masterVolume: {
 		where: 'device',
 		default: 0.3,

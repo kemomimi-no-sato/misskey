@@ -615,6 +615,10 @@ export const packedMeDetailedOnlySchema = {
 					type: 'boolean',
 					nullable: false, optional: false,
 				},
+				canRemoteNote: {
+					type: 'boolean',
+					nullable: false, optional: false,
+				},
 				canInvite: {
 					type: 'boolean',
 					nullable: false, optional: false,
@@ -697,6 +701,14 @@ export const packedMeDetailedOnlySchema = {
 				},
 				avatarDecorationLimit: {
 					type: 'number',
+					nullable: false, optional: false,
+				},
+				canCheckReports: {
+					type: 'boolean',
+					nullable: false, optional: false,
+				},
+				canCheckFiles: {
+					type: 'boolean',
 					nullable: false, optional: false,
 				},
 			},

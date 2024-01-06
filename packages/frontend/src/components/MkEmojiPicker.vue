@@ -36,7 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</section>
 
 		<div v-if="tab === 'index'" class="group index">
-			<section v-if="showPinned && pinned.length > 0">
+			<section v-if="showPinned">
 				<div class="body">
 					<button
 						v-for="emoji in pinned"
@@ -121,7 +121,7 @@ import { $i } from '@/account.js';
 
 const props = withDefaults(defineProps<{
 	showPinned?: boolean;
-  pinnedEmojis?: string[];
+	asReactionPicker?: boolean;
 	maxHeight?: number;
 	asDrawer?: boolean;
 	asWindow?: boolean;
@@ -138,16 +138,17 @@ const searchEl = shallowRef<HTMLInputElement>();
 const emojisEl = shallowRef<HTMLDivElement>();
 
 const {
-	emojiPickerScale,
-	emojiPickerWidth,
-	emojiPickerHeight,
+	reactions: pinned,
+	reactionPickerSize,
+	reactionPickerWidth,
+	reactionPickerHeight,
+	disableShowingAnimatedImages,
 	recentlyUsedEmojis,
 } = defaultStore.reactiveState;
 
-const pinned = computed(() => props.pinnedEmojis);
-const size = computed(() => emojiPickerScale.value);
-const width = computed(() => emojiPickerWidth.value);
-const height = computed(() => emojiPickerHeight.value);
+const size = computed(() => props.asReactionPicker ? reactionPickerSize.value : 1);
+const width = computed(() => props.asReactionPicker ? reactionPickerWidth.value : 3);
+const height = computed(() => props.asReactionPicker ? reactionPickerHeight.value : 2);
 const q = ref<string>('');
 const searchResultCustom = ref<Misskey.entities.EmojiSimple[]>([]);
 const searchResultUnicode = ref<UnicodeEmojiDef[]>([]);

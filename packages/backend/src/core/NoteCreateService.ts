@@ -320,6 +320,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 			data.localOnly = true;
 		}
 
+		if ((await this.roleService.getUserPolicies(user.id)).canRemoteNote === false) {
+			data.localOnly = true;
+		}
+
 		if (data.text) {
 //			console.log("Text is present");  // Add debug statement
 

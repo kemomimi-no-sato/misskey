@@ -132,6 +132,7 @@ export const packedRoleSchema = {
 						ltlAvailable: rolePolicyValue,
 						webhookLimit: rolePolicyValue,
 						canPublicNote: rolePolicyValue,
+						canRemoteNote: rolePolicyValue,
 						userListLimit: rolePolicyValue,
 						wordMuteLimit: rolePolicyValue,
 						alwaysMarkNsfw: rolePolicyValue,
@@ -146,6 +147,8 @@ export const packedRoleSchema = {
 						canManageAvatarDecorations: rolePolicyValue,
 						canUseTranslator: rolePolicyValue,
 						avatarDecorationLimit: rolePolicyValue,
+						canCheckReports: rolePolicyValue,
+						canCheckFiles: rolePolicyValue,
 					},
 				},
 				usersCount: {

@@ -101,9 +101,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 								{{ "isRoot?" }}
 								<template #caption>{{ "isRootの切替ができます。余程のことが無い限りは外さないでください！" }}</template>
 							</MkSwitch>
+							<MkSwitch v-model="suspended" @update:modelValue="toggleSuspend">{{ i18n.ts.suspend }}
+								<template #caption>{{ "凍結は削除リクエストが発生します。うまく解凍されない場合があります。余程のことが無い限りは押さないでください！" }}</template>
+							</MkSwitch>
 						</MkFolder>
-						<MkSwitch v-model="suspended" @update:modelValue="toggleSuspend">{{ i18n.ts.suspend }}</MkSwitch>
-
 						<div>
 							<MkButton v-if="user.host == null" inline style="margin-right: 8px;" @click="resetPassword"><i class="ti ti-key"></i> {{ i18n.ts.resetPassword }}</MkButton>
 						</div>

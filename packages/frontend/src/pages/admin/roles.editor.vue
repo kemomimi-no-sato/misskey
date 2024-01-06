@@ -164,6 +164,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.canRemoteNote, 'canRemoteNote'])">
+				<template #label>{{ i18n.ts._role._options.canRemoteNote }}</template>
+				<template #suffix>
+					<span v-if="role.policies.canRemoteNote.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.canRemoteNote.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canRemoteNote)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.canRemoteNote.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.canRemoteNote.value" :disabled="role.policies.canRemoteNote.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.canRemoteNote.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.canInvite, 'canInvite'])">
 				<template #label>{{ i18n.ts._role._options.canInvite }}</template>
 				<template #suffix>
@@ -557,6 +577,49 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</MkFolder>
 		</div>
 	</FormSlot>
+	<FormSlot v-if="rolePermission === 'moderator'">
+		<template #label><i class="ti ti-shield"></i> {{ "モデレーターポリシー" }}</template>
+		<div class="_gaps_s">
+			<MkFolder v-if="matchQuery([i18n.ts._role._moderator_options.canCheckReports, 'canCheckReports'])">
+				<template #label>{{ i18n.ts._role._moderator_options.canCheckReports }}</template>
+				<template #suffix>
+					<span v-if="role.policies.canCheckReports.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.canCheckReports.value }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canCheckReports)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.canCheckReports.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.canCheckReports.value" :disabled="role.policies.canCheckReports.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.canCheckReports.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+			<MkFolder v-if="matchQuery([i18n.ts._role._moderator_options.canCheckFiles, 'canCheckFiles'])">
+				<template #label>{{ i18n.ts._role._moderator_options.canCheckFiles }}</template>
+				<template #suffix>
+					<span v-if="role.policies.canCheckFiles.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.canCheckFiles.value }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.canCheckFiles)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.canCheckFiles.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.canCheckFiles.value" :disabled="role.policies.canCheckFiles.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.canCheckFiles.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+		</div>
+	</FormSlot>
 </div>
 </template>
 
@@ -574,8 +637,12 @@ import MkRange from '@/components/MkRange.vue';
 import FormSlot from '@/components/form/slot.vue';
 import { i18n } from '@/i18n.js';
 import { ROLE_POLICIES } from '@/const.js';
+import { $i } from '@/account.js';
 import { instance } from '@/instance.js';
 import { deepClone } from '@/scripts/clone.js';
+import { defaultStore } from '@/store.js';
+
+const enableRoleBgColor = computed(defaultStore.makeGetterSetter('enableRoleBgColor'));
 
 const emit = defineEmits<{
 	(ev: 'update:modelValue', v: any): void;

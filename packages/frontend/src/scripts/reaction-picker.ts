@@ -26,19 +26,19 @@ class ReactionPicker {
 			manualShowing: this.manualShowing,
 		}, {
 			done: reaction => {
-				if (this.onChosen) this.onChosen(reaction);
+				this.onChosen!(reaction);
 			},
 			close: () => {
 				this.manualShowing.value = false;
 			},
 			closed: () => {
 				this.src.value = null;
-				if (this.onClosed) this.onClosed();
+				this.onClosed!();
 			},
 		});
 	}
 
-	public show(src: HTMLElement, onChosen?: ReactionPicker['onChosen'], onClosed?: ReactionPicker['onClosed']) {
+	public show(src: HTMLElement, onChosen: ReactionPicker['onChosen'], onClosed: ReactionPicker['onClosed']) {
 		this.src.value = src;
 		this.manualShowing.value = true;
 		this.onChosen = onChosen;

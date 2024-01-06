@@ -27,11 +27,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<span class="username"><MkAcct :user="user" :detail="true"/></span>
 								<!--
 								<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--badge);"><i class="ti ti-shield"></i></span>
+								-->
 								<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="ti ti-lock"></i></span>
 								<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="ti ti-robot"></i></span>
-								-->
 								<div v-if="user.roles.length > 0" class="roles">
-									<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor}">
+									<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor }">
 										{{ role.name }}
 									</span>
 								</div>
@@ -57,7 +57,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="ti ti-robot"></i></span>
 							-->
 							<div v-if="user.roles.length > 0" class="roles">
-								<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor}">
+								<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor }">
 									{{ role.name }}
 								</span>
 							</div>
@@ -174,6 +174,7 @@ import { getScrollPosition } from '@/scripts/scroll.js';
 import { getUserMenu } from '@/scripts/get-user-menu.js';
 import number from '@/filters/number.js';
 import { userPage } from '@/filters/user.js';
+import { defaultStore } from '@/store.js';
 import * as os from '@/os.js';
 import { useRouter } from '@/router.js';
 import { i18n } from '@/i18n.js';
@@ -226,6 +227,8 @@ const editModerationNote = ref(false);
 watch(moderationNote, async () => {
 	await misskeyApi('admin/update-user-note', { userId: props.user.id, text: moderationNote.value });
 });
+
+const enableRoleBgColor = computed(defaultStore.makeGetterSetter('enableRoleBgColor'));
 
 const style = computed(() => {
 	if (props.user.bannerUrl == null) return {};
@@ -706,6 +709,7 @@ onUnmounted(() => {
 	color: var(--color, var(--divider));
 	border-color: var(--color, var(--divider));
 	background-color: var(--role-bg-color);
+	margin-right: 5px;
 }
 
 .Root {

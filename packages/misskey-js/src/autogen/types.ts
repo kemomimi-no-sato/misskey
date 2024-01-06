@@ -3671,6 +3671,8 @@ export type components = {
         userEachUserListsLimit: number;
         rateLimitFactor: number;
         avatarDecorationLimit: number;
+				canCheckReports: boolean;
+				canCheckFiles: boolean;
       };
       email?: string | null;
       emailVerified?: boolean | null;

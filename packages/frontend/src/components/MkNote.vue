@@ -338,7 +338,7 @@ let isFavorited = ref(false);
 onMounted(async () => {
 	if ($i) {
 		const response = await misskeyApi('notes/state', {
-			noteId: appearNote.id,
+			noteId: appearNote.value.id,
 		});
 		if (response) {
 			isFavorited.value = response.isFavorited;
@@ -351,7 +351,7 @@ onMounted(async () => {
 type Visibility = 'public' | 'home' | 'followers' | 'specified';
 
 const hasRenotedBefore = ref(false);
-os.api('notes/renotes', {
+misskeyApi('notes/renotes', {
 	noteId: props.note.id,
 	userId: $i?.id,
 	limit: 1,
@@ -388,8 +388,8 @@ function renote(viaKeyboard = false) {
 				}
 
 				misskeyApi('notes/create', {
-					renoteId: appearNote.id,
-					channelId: appearNote.channelId,
+					renoteId: appearNote.value.id,
+					channelId: appearNote.value.channelId,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -400,7 +400,7 @@ function renote(viaKeyboard = false) {
 			action: () => {
 				os.post({
 					renote: appearNote,
-					channel: appearNote.channel,
+					channel: appearNote.value.channel,
 				});
 			},
 		}, null]);
@@ -428,8 +428,8 @@ function renote(viaKeyboard = false) {
 				}
 
 				misskeyApi('notes/create', {
-					visibility: "public",
-					renoteId: appearNote.id,
+					visibility: 'public',
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -437,7 +437,7 @@ function renote(viaKeyboard = false) {
 		}]);
 	}
 
-	if (["public", "home"].includes(props.note.visibility)) {
+	if (['public', 'home'].includes(props.note.visibility)) {
 		items = items.concat([{
 			text: `${i18n.ts.renote} (${i18n.ts._visibility.home})`,
 			icon: 'ti ti-home',
@@ -453,15 +453,15 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'home');
 				}
 
 				misskeyApi('notes/create', {
-					visibility: "home",
-					renoteId: appearNote.id,
+					visibility: 'home',
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -485,16 +485,16 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'specified');
 				}
 
 				misskeyApi('notes/create', {
-					visibility: "specified",
+					visibility: 'specified',
 					visibleUserIds: props.note.visibleUserIds,
-					renoteId: appearNote.id,
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -516,15 +516,15 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'followers');
 				}
 
 				misskeyApi('notes/create', {
-					visibility: "followers",
-					renoteId: appearNote.id,
+					visibility: 'followers',
+					renoteId: appearNote.value.id,
 				}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
@@ -548,26 +548,25 @@ function renote(viaKeyboard = false) {
 				const configuredVisibility = defaultStore.state.rememberNoteVisibility ? defaultStore.state.visibility : defaultStore.state.defaultNoteVisibility;
 				const localOnly = defaultStore.state.rememberNoteVisibility ? defaultStore.state.localOnly : defaultStore.state.defaultNoteLocalOnly;
 
-				let visibility = appearNote.visibility;
+				let visibility = appearNote.value.visibility;
 				visibility = smallerVisibility(visibility, configuredVisibility);
-				if (appearNote.channel?.isSensitive) {
+				if (appearNote.value.channel?.isSensitive) {
 					visibility = smallerVisibility(visibility, 'specified');
 				}
 
 				misskeyApi('notes/create',
-					props.note.visibility === "specified"
+					props.note.visibility === 'specified'
 						? {
-							visibility: "specified",
+							visibility: 'specified',
 							visibleUserIds: props.note.visibleUserIds,
 							localOnly: true,
-							renoteId: appearNote.id,
-							}
-						:	{
-							renoteId: props.note.id,
+							renoteId: appearNote.value.id,
+						}
+						: {
 							visibility: props.note.visibility,
 							localOnly: true,
-							},
-				).then(() => {
+							renoteId: appearNote.value.id,
+						}).then(() => {
 					os.toast(i18n.ts.renoted);
 				});
 			},
@@ -594,8 +593,8 @@ function renote(viaKeyboard = false) {
 
 async function getIsFavorited(): Promise<boolean> {
 	if ($i) {
-		const response = await os.api('notes/state', {
-			noteId: appearNote.id,
+		const response = await misskeyApi('notes/state', {
+			noteId: appearNote.value.id,
 		});
 		if (response) {
 			return response.isFavorited;
@@ -612,14 +611,14 @@ async function addFavorited(): Promise<boolean> {
 	if(state == false || isFavorited.value == false) {
 		pleaseLogin();
 		const { canceled } = await os.confirm({
-			type: "question",
-			text: "お気に入りに登録しますか？"
+			type: 'question',
+			text: 'お気に入りに登録しますか？'
 		})
 		if (canceled) {
 			return false;
 		}
 		os.apiWithDialog('notes/favorites/create',{
-			noteId: appearNote.id,
+			noteId: appearNote.value.id,
 		}).then(()=> {
 			isFavorited.value = true;
 		});
@@ -633,14 +632,14 @@ async function removeFavorited(): Promise<boolean> {
 	if(state == true || isFavorited.value == true) {
 		pleaseLogin();
 		const { canceled } = await os.confirm({
-			type: "question",
-			text: "お気に入りを解除しますか？"
+			type: 'question',
+			text: 'お気に入りを解除しますか？'
 		})
 		if (canceled) {
 			return false;
 		}
 		os.apiWithDialog('notes/favorites/delete',{
-			noteId: appearNote.id,
+			noteId: appearNote.value.id,
 		}).then(()=> {
 			isFavorited.value = false;
 		});
@@ -836,7 +835,7 @@ function readPromo() {
 
 function showReactions(): void {
 	os.popup(defineAsyncComponent(() => import('@/components/MkReactedUsersDialog.vue')), {
-		noteId: appearNote.id,
+		noteId: appearNote.value.id,
 	}, {}, 'closed');
 }
 
@@ -845,6 +844,7 @@ function emitUpdReaction(emoji: string, delta: number) {
 		emit('removeReaction', emoji);
 	} else if (delta > 0) {
 		emit('reaction', emoji);
+	}
 }
 </script>
 
