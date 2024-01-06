@@ -1,7 +1,7 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
- * SPDX-License-Identifier: AGPL-3.0-only
- */
+* SPDX-FileCopyrightText: syuilo and other misskey contributors
+* SPDX-License-Identifier: AGPL-3.0-only
+*/
 
 import { toUnicode } from 'punycode';
 import { defineAsyncComponent, ref, watch } from 'vue';
@@ -191,13 +191,13 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 		action: () => {
 			editMemo();
 		},
-	}, null, ...(defaultStore.state.nicknameEnabled ? [{
+	}, ...(defaultStore.state.nicknameEnabled ? [{
 		icon: 'ti ti-edit',
 		text: 'ニックネームを編集',
 		action: () => {
 			editNickname(user);
 		},
-	}] : []), null, {
+	}] : []), { type: 'divider' }, {
 		type: 'parent',
 		icon: 'ti ti-list',
 		text: i18n.ts.addToList,
