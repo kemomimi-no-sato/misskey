@@ -215,15 +215,15 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: true,
 	},
+	enableQuickAddMfmFunction: {
+		where: 'device',
+		default: false,
+	},
 	loadRawImages: {
 		where: 'device',
 		default: false,
 	},
 	imageNewTab: {
-		where: 'device',
-		default: false,
-	},
-	enableDataSaverMode: {
 		where: 'device',
 		default: false,
 	},
@@ -443,7 +443,24 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: true,
 	},
-
+	dataSaver: {
+		where: 'device',
+		default: {
+			media: false,
+			avatar: false,
+			urlPreview: false,
+			code: false,
+		} as Record<string, boolean>,
+	},
+	enableSeasonalScreenEffect: {
+		where: 'device',
+		default: false,
+	},
+	enableRoleBgColor: {
+		where: 'deviceAccount',
+		default: true,
+	},
+	
 	sound_masterVolume: {
 		where: 'device',
 		default: 0.3,

@@ -54,13 +54,28 @@ https://github.com/sindresorhus/file-type/blob/main/core.js
 https://developer.mozilla.org/en-US/docs/Web/Media/Formats/Containers
 */
 
-export const notificationTypes = ['note', 'follow', 'mention', 'reply', 'renote', 'quote', 'reaction', 'pollEnded', 'receiveFollowRequest', 'followRequestAccepted', 'achievementEarned', 'app'] as const;
+export const notificationTypes = [
+	'note',
+	'follow',
+	'mention',
+	'reply',
+	'renote',
+	'quote',
+	'reaction',
+	'pollEnded',
+	'receiveFollowRequest',
+	'followRequestAccepted',
+	'roleAssigned',
+	'achievementEarned',
+	'app',
+] as const;
 export const obsoleteNotificationTypes = ['pollVote', 'groupInvited'] as const;
 
 export const ROLE_POLICIES = [
 	'gtlAvailable',
 	'ltlAvailable',
 	'canPublicNote',
+	'canRemoteNote',
 	'canInvite',
 	'inviteLimit',
 	'inviteLimitCycle',
@@ -81,6 +96,9 @@ export const ROLE_POLICIES = [
 	'userListLimit',
 	'userEachUserListsLimit',
 	'rateLimitFactor',
+	'avatarDecorationLimit',
+	'canCheckReports',
+	'canCheckFiles',
 ] as const;
 
 // なんか動かない
