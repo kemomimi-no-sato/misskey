@@ -187,6 +187,7 @@ import { isFollowingVisibleForMe, isFollowersVisibleForMe } from '@/scripts/isFf
 
 function calcAge(birthdate: string): number {
 	const date = new Date(birthdate);
+	const now = new Date();
 
 	let yearDiff = now.getFullYear() - date.getFullYear();
 	const monthDiff = now.getMonth() - date.getMonth();
