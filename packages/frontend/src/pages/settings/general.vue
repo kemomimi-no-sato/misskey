@@ -308,8 +308,8 @@ const separateFavoriteButton = computed(defaultStore.makeGetterSetter('separateF
 const disableOnlineStatus = computed(defaultStore.makeGetterSetter('disableOnlineStatus'));
 const disableStreamingTimeline = computed(defaultStore.makeGetterSetter('disableStreamingTimeline'));
 const useGroupedNotifications = computed(defaultStore.makeGetterSetter('useGroupedNotifications'));
-
 const enableSeasonalScreenEffect = computed(defaultStore.makeGetterSetter('enableSeasonalScreenEffect'));
+
 watch(lang, () => {
 	miLocalStorage.removeItem('locale');
 	miLocalStorage.removeItem('localeVersion');
