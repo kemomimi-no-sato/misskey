@@ -285,7 +285,7 @@ function createFetcher() {
 		info.value = _info;
 		ips.value = _ips;
 		moderator.value = info.value.isModerator;
-		root.value = info.value.root;
+		root.value = info.value.isRoot;
 		silenced.value = info.value.isSilenced;
 		suspended.value = info.value.isSuspended;
 		moderationNote.value = info.value.moderationNote;
@@ -338,8 +338,16 @@ async function toggleSuspend(v) {
 }
 
 async function toggleRoot(v) {
-	await misskeyApi(v ? 'admin/root/add' : 'admin/root/remove', { userId: user.id });
-	await refreshUser();
+	const confirm = await os.confirm({
+		type: 'warning',
+		text: v ? 'isRoot(最高管理者)にしますか？' : 'isRoot(最高管理者)を解除しますか？',
+	});
+	if (confirm.canceled) {
+		root.value = !v;
+	} else {
+		await misskeyApi(v ? 'admin/root/add' : 'admin/root/remove', { userId: user.value.id });
+		refreshUser();
+	}
 }
 
 async function unsetUserAvatar() {
