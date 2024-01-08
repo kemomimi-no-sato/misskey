@@ -866,6 +866,7 @@ function insertMention() {
 
 async function insertEmoji(ev: MouseEvent) {
 	os.openEmojiPicker(ev.currentTarget ?? ev.target, {}, textareaEl);
+	nextTick(() => focus());
 }
 
 async function insertMfmFunction(ev: MouseEvent) {
