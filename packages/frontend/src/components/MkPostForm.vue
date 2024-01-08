@@ -865,7 +865,6 @@ function insertMention() {
 }
 
 async function insertEmoji(ev: MouseEvent) {
-	textAreaReadOnly.value = true;
 	os.openEmojiPicker(ev.currentTarget ?? ev.target, {}, textareaEl);
 }
 
