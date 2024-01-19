@@ -94,7 +94,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 				<FormSection>
 					<div class="_gaps">
-						<MkFolder v-if="user.host == null && $i?.isAdmin && (root || !user.isAdmin)" >
+						<MkFolder v-if="$i?.isAdmin && (root || !user.isAdmin)" >
 							<template #icon><i class="ti ti-alert-triangle"></i></template>
 							<template #label>{{ "Warning!" }}</template>
 							<MkSwitch v-if="user.host == null && $i?.isAdmin && (root || !user.isAdmin)" v-model="root" class="_formBlock" @update:modelValue="toggleRoot">
