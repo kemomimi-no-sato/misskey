@@ -229,6 +229,29 @@ export class MiMeta {
 	@Column('boolean', {
 		default: false,
 	})
+	public enableMcaptcha: boolean;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public mcaptchaSitekey: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public mcaptchaSecretKey: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public mcaptchaInstanceUrl: string | null;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public enableRecaptcha: boolean;
 
 	@Column('varchar', {
@@ -502,7 +525,7 @@ export class MiMeta {
 		nullable: true,
 	})
 	public truemailInstance: string | null;
-	
+
 	@Column('varchar', {
 		length: 1024,
 		nullable: true,
