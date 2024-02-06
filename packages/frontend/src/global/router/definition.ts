@@ -68,9 +68,9 @@ const routes = [{
 		name: 'privacy',
 		component: page(() => import('@/pages/settings/privacy.vue')),
 	}, {
-		path: '/emoji-picker',
-		name: 'emojiPicker',
-		component: page(() => import('@/pages/settings/emoji-picker.vue')),
+		path: '/reactionpicker',
+		name: 'reactionPicker',
+		component: page(() => import('@/pages/settings/reaction.vue')),
 	}, {
 		path: '/drive',
 		name: 'drive',

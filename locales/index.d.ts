@@ -500,7 +500,13 @@ export interface Locale extends ILocale {
      * リアクション
      */
     "reactions": string;
+    /**
+     * ピッカーに表示するリアクション
+     */
     "reactionSetting": string;
+    /**
+     * ドラッグして並び替え、クリックして削除、＋を押して追加します。
+     */
     "reactionSettingDescription2": string;
     /**
      * 公開範囲を記憶する
@@ -568,10 +574,12 @@ export interface Locale extends ILocale {
     "unblockConfirm": string;
     /**
      * 凍結しますか？
+     *  連合先サーバーに対して削除リクエストが発生します。
      */
     "suspendConfirm": string;
     /**
      * 解凍しますか？
+     *  サーバーによっては解凍されない場合があります。
      */
     "unsuspendConfirm": string;
     /**
@@ -5711,8 +5719,17 @@ export interface Locale extends ILocale {
                 "flavor": string;
             };
             "_markedAsFox": {
+                /**
+                 * わらわはきつねじゃ
+                 */
                 "title": string;
+                /**
+                 * アカウントをFoxとして設定した
+                 */
                 "description": string;
+                /**
+                 * ロリでもババアでもないのじゃ！
+                 */
                 "flavor": string;
             };
             "_following1": {
@@ -6319,7 +6336,7 @@ export interface Locale extends ILocale {
              * パブリック投稿の許可
              */
             "canPublicNote": string;
-		         /**
+            /**
              * リモート投稿の許可
              */
             "canRemoteNote": string;
@@ -6413,8 +6430,17 @@ export interface Locale extends ILocale {
             "avatarDecorationLimit": string;
         };
         "_moderator_options": {
+            /**
+             * 通報確認の許可
+             */
             "canCheckReports": string;
+            /**
+             * ファイル確認の許可
+             */
             "canCheckFiles": string;
+            /**
+             * 招待ボタンの非表示
+             */
             "canHideInviteButtons": string;
         };
         "_condition": {
