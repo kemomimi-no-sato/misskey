@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -192,9 +192,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</MkSelect>
 					</div>
 					<div class="charts">
-						<div class="label">{{ i18n.t('recentNHours', { n: 90 }) }}</div>
+						<div class="label">{{ i18n.tsx.recentNHours({ n: 90 }) }}</div>
 						<MkChart class="chart" :src="chartSrc" span="hour" :limit="90" :args="{ user, withoutAll: true }" :detailed="true"></MkChart>
-						<div class="label">{{ i18n.t('recentNDays', { n: 90 }) }}</div>
+						<div class="label">{{ i18n.tsx.recentNDays({ n: 90 }) }}</div>
 						<MkChart class="chart" :src="chartSrc" span="day" :limit="90" :args="{ user, withoutAll: true }" :detailed="true"></MkChart>
 					</div>
 				</div>
@@ -319,7 +319,7 @@ async function resetPassword() {
 		});
 		os.alert({
 			type: 'success',
-			text: i18n.t('newPasswordIs', { password }),
+			text: i18n.tsx.newPasswordIs({ password }),
 		});
 	}
 }
@@ -415,7 +415,7 @@ async function deleteAccount() {
 	if (confirm.canceled) return;
 
 	const typed = await os.inputText({
-		text: i18n.t('typeToConfirm', { x: user.value?.username }),
+		text: i18n.tsx.typeToConfirm({ x: user.value?.username }),
 	});
 	if (typed.canceled) return;
 
@@ -543,10 +543,10 @@ const headerTabs = computed(() => [{
 	icon: 'ti ti-code',
 }]);
 
-definePageMetadata(computed(() => ({
+definePageMetadata(() => ({
 	title: user.value ? acct(user.value) : i18n.ts.userInfo,
 	icon: 'ti ti-user-exclamation',
-})));
+}));
 </script>
 
 <style lang="scss" scoped>

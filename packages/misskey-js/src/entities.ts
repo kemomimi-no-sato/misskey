@@ -1,8 +1,8 @@
 import { ModerationLogPayloads } from './consts.js';
-import { Announcement, EmojiDetailed, MeDetailed, MeDetailedOnly, Page, User, UserDetailed } from './autogen/models';
+import { Announcement, EmojiDetailed, MeDetailed, Page, User, UserDetailedNotMe } from './autogen/models.js';
 
-export * from './autogen/entities';
-export * from './autogen/models';
+export * from './autogen/entities.js';
+export * from './autogen/models.js';
 
 export type ID = string;
 export type DateString = string;
@@ -19,7 +19,7 @@ export type ModerationLog = {
 	id: ID;
 	createdAt: DateString;
 	userId: User['id'];
-	user: UserDetailed | null;
+	user: UserDetailedNotMe | null;
 } & ({
 	type: 'updateServerSettings';
 	info: ModerationLogPayloads['updateServerSettings'];
@@ -149,7 +149,7 @@ export type ServerStats = {
 	}
 };
 
-export type ServerStatsLog = string[];
+export type ServerStatsLog = ServerStats[];
 
 export type QueueStats = {
 	deliver: {
@@ -166,7 +166,7 @@ export type QueueStats = {
 	};
 };
 
-export type QueueStatsLog = string[];
+export type QueueStatsLog = QueueStats[];
 
 export type EmojiAdded = {
 	emoji: EmojiDetailed

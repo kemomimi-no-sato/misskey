@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -13,12 +13,12 @@ import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { defaultStore, userActions } from '@/store.js';
 import { $i, iAmModerator } from '@/account.js';
-import { mainRouter } from '@/router.js';
-import { Router } from '@/nirax.js';
+import { IRouter } from '@/nirax.js';
 import { antennasCache, rolesCache, userListsCache } from '@/cache.js';
 import { editNickname } from '@/scripts/edit-nickname.js';
+import { mainRouter } from '@/router/main.js';
 
-export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router = mainRouter) {
+export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter = mainRouter) {
 	const meId = $i ? $i.id : null;
 
 	const cleanups = [] as (() => void)[];
@@ -171,7 +171,14 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 		action: () => {
 			copyToClipboard(`${user.host ?? host}/@${user.username}.atom`);
 		},
-	}, {
+	}, ...(user.host != null && user.url != null ? [{
+		icon: 'ti ti-external-link',
+		text: i18n.ts.showOnRemote,
+		action: () => {
+			if (user.url == null) return;
+			window.open(user.url, '_blank', 'noopener');
+		},
+	}] : []), {
 		icon: 'ti ti-share',
 		text: i18n.ts.copyProfileUrl,
 		action: () => {
