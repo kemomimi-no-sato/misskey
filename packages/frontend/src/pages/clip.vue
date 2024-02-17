@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -145,7 +145,7 @@ const headerActions = computed(() => clip.value && isOwned.value ? [{
 	handler: async (): Promise<void> => {
 		const { canceled } = await os.confirm({
 			type: 'warning',
-			text: i18n.t('deleteAreYouSure', { x: clip.value.name }),
+			text: i18n.tsx.deleteAreYouSure({ x: clip.value.name }),
 		});
 		if (canceled) return;
 
@@ -157,10 +157,10 @@ const headerActions = computed(() => clip.value && isOwned.value ? [{
 	},
 }] : null);
 
-definePageMetadata(computed(() => clip.value ? {
-	title: clip.value.name,
+definePageMetadata(() => ({
+	title: clip.value ? clip.value.name : i18n.ts.clip,
 	icon: 'ti ti-paperclip',
-} : null));
+}));
 </script>
 
 <style lang="scss" module>

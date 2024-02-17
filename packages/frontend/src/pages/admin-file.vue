@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -104,7 +104,7 @@ fetch();
 async function del() {
 	const { canceled } = await os.confirm({
 		type: 'warning',
-		text: i18n.t('removeAreYouSure', { x: file.value.name }),
+		text: i18n.tsx.removeAreYouSure({ x: file.value.name }),
 	});
 	if (canceled) return;
 
@@ -140,10 +140,10 @@ const headerTabs = computed(() => [{
 	icon: 'ti ti-code',
 }]);
 
-definePageMetadata(computed(() => ({
-	title: file.value ? i18n.ts.file + ': ' + file.value.name : i18n.ts.file,
+definePageMetadata(() => ({
+	title: file.value ? `${i18n.ts.file}: ${file.value.name}` : i18n.ts.file,
 	icon: 'ti ti-file',
-})));
+}));
 </script>
 
 <style lang="scss" scoped>

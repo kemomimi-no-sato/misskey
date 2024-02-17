@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -141,7 +141,7 @@ async function unregisterKey(key) {
 	const confirm = await os.confirm({
 		type: 'question',
 		title: i18n.ts._2fa.removeKey,
-		text: i18n.t('_2fa.removeKeyConfirm', { name: key.name }),
+		text: i18n.tsx._2fa.removeKeyConfirm({ name: key.name }),
 	});
 	if (confirm.canceled) return;
 

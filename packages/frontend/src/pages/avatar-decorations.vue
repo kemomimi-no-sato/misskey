@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -60,7 +60,7 @@ function add() {
 function del(avatarDecoration) {
 	os.confirm({
 		type: 'warning',
-		text: i18n.t('deleteAreYouSure', { x: avatarDecoration.name }),
+		text: i18n.tsx.deleteAreYouSure({ x: avatarDecoration.name }),
 	}).then(({ canceled }) => {
 		if (canceled) return;
 		avatarDecorations.value = avatarDecorations.value.filter(x => x !== avatarDecoration);
@@ -94,8 +94,8 @@ const headerActions = computed(() => [{
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.avatarDecorations,
 	icon: 'ti ti-sparkles',
-});
+}));
 </script>

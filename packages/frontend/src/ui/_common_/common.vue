@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -83,7 +83,7 @@ function onNotification(notification: Misskey.entities.Notification, isClient = 
 		}, 6000);
 	}
 
-	sound.play('notification');
+	sound.playMisskeySfx('notification');
 }
 
 if ($i) {

@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -33,7 +33,7 @@ import MkRange from '@/components/MkRange.vue';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { playFile, soundsTypes, getSoundDuration } from '@/scripts/sound.js';
+import { playMisskeySfxFile, soundsTypes, getSoundDuration } from '@/scripts/sound.js';
 import { selectFile } from '@/scripts/select-file.js';
 
 const props = defineProps<{
@@ -119,7 +119,7 @@ function listen() {
 		return;
 	}
 
-	playFile(type.value === '_driveFile_' ? {
+	playMisskeySfxFile(type.value === '_driveFile_' ? {
 		type: '_driveFile_',
 		fileId: fileId.value as string,
 		fileUrl: fileUrl.value as string,

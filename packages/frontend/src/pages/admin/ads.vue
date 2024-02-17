@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -160,7 +160,7 @@ function add() {
 function remove(ad) {
 	os.confirm({
 		type: 'warning',
-		text: i18n.t('removeAreYouSure', { x: ad.url }),
+		text: i18n.tsx.removeAreYouSure({ x: ad.url }),
 	}).then(({ canceled }) => {
 		if (canceled) return;
 		ads.value = ads.value.filter(x => x !== ad);
@@ -255,10 +255,10 @@ const headerActions = computed(() => [{
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.ads,
 	icon: 'ti ti-ad',
-});
+}));
 </script>
 
 <style lang="scss" module>

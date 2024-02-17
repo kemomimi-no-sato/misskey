@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -72,13 +72,13 @@ import MkPagination from '@/components/MkPagination.vue';
 import MkGalleryPostPreview from '@/components/MkGalleryPostPreview.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import { url } from '@/config.js';
-import { useRouter } from '@/router.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { defaultStore } from '@/store.js';
 import { $i } from '@/account.js';
 import { isSupportShare } from '@/scripts/navigator.js';
 import copyToClipboard from '@/scripts/copy-to-clipboard.js';
+import { useRouter } from '@/router/supplier.js';
 
 const router = useRouter();
 
@@ -163,10 +163,12 @@ const headerActions = computed(() => [{
 
 const headerTabs = computed(() => []);
 
-definePageMetadata(computed(() => post.value ? {
-	title: post.value.title,
-	avatar: post.value.user,
-} : null));
+definePageMetadata(() => ({
+	title: post.value ? post.value.title : i18n.ts.gallery,
+	...post.value ? {
+		avatar: post.value.user,
+	} : {},
+}));
 </script>
 
 <style lang="scss" scoped>
