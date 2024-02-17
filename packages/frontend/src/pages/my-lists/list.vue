@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -25,7 +25,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 			<MkFolder defaultOpen>
 				<template #label>{{ i18n.ts.members }}</template>
-				<template #caption>{{ i18n.t('nUsers', { n: `${list.userIds.length}/${$i.policies['userEachUserListsLimit']}` }) }}</template>
+				<template #caption>{{ i18n.tsx.nUsers({ n: `${list.userIds.length}/${$i.policies['userEachUserListsLimit']}` }) }}</template>
 
 				<div class="_gaps_s">
 					<MkButton rounded primary style="margin: 0 auto;" @click="addUser()">{{ i18n.ts.addUser }}</MkButton>
@@ -58,7 +58,6 @@ import * as Misskey from 'misskey-js';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
-import { mainRouter } from '@/router.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { i18n } from '@/i18n.js';
 import { userPage } from '@/filters/user.js';
@@ -70,6 +69,7 @@ import { userListsCache } from '@/cache.js';
 import { signinRequired } from '@/account.js';
 import { defaultStore } from '@/store.js';
 import MkPagination from '@/components/MkPagination.vue';
+import { mainRouter } from '@/router/main.js';
 
 const $i = signinRequired();
 
@@ -155,7 +155,7 @@ async function deleteList() {
 	if (!list.value) return;
 	const { canceled } = await os.confirm({
 		type: 'warning',
-		text: i18n.t('removeAreYouSure', { x: list.value.name }),
+		text: i18n.tsx.removeAreYouSure({ x: list.value.name }),
 	});
 	if (canceled) return;
 
@@ -186,10 +186,10 @@ const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata(computed(() => list.value ? {
-	title: list.value.name,
+definePageMetadata(() => ({
+	title: list.value ? list.value.name : i18n.ts.lists,
 	icon: 'ti ti-list',
-} : null));
+}));
 </script>
 
 <style lang="scss" module>

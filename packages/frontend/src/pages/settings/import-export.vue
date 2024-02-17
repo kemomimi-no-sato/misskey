@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -19,6 +19,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<template #label>{{ i18n.ts.export }}</template>
 			<template #icon><i class="ti ti-download"></i></template>
 			<MkButton primary :class="$style.button" inline @click="exportFavorites()"><i class="ti ti-download"></i> {{ i18n.ts.export }}</MkButton>
+		</MkFolder>
+	</FormSection>
+	<FormSection>
+		<template #label><i class="ti ti-star"></i> {{ i18n.ts._exportOrImport.clips }}</template>
+		<MkFolder>
+			<template #label>{{ i18n.ts.export }}</template>
+			<template #icon><i class="ti ti-download"></i></template>
+			<MkButton primary :class="$style.button" inline @click="exportClips()"><i class="ti ti-download"></i> {{ i18n.ts.export }}</MkButton>
 		</MkFolder>
 	</FormSection>
 	<FormSection>
@@ -157,6 +165,10 @@ const exportFavorites = () => {
 	misskeyApi('i/export-favorites', {}).then(onExportSuccess).catch(onError);
 };
 
+const exportClips = () => {
+	misskeyApi('i/export-clips', {}).then(onExportSuccess).catch(onError);
+};
+
 const exportFollowing = () => {
 	misskeyApi('i/export-following', {
 		excludeMuting: excludeMutingUsers.value,
@@ -213,10 +225,10 @@ const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.importAndExport,
 	icon: 'ti ti-package',
-});
+}));
 </script>
 
 <style module>

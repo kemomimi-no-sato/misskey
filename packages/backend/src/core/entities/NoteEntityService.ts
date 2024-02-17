@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -110,7 +110,7 @@ export class NoteEntityService implements OnModuleInit {
 				hide = false;
 			} else {
 				// フォロワーかどうか
-				const isFollowing = await this.followingsRepository.exist({
+				const isFollowing = await this.followingsRepository.exists({
 					where: {
 						followeeId: packedNote.userId,
 						followerId: meId,
@@ -166,7 +166,7 @@ export class NoteEntityService implements OnModuleInit {
 
 		return {
 			multiple: poll.multiple,
-			expiresAt: poll.expiresAt,
+			expiresAt: poll.expiresAt?.toISOString() ?? null,
 			choices,
 		};
 	}
@@ -326,9 +326,7 @@ export class NoteEntityService implements OnModuleInit {
 			id: note.id,
 			createdAt: this.idService.parse(note.id).date.toISOString(),
 			userId: note.userId,
-			user: this.userEntityService.pack(note.user ?? note.userId, me, {
-				detail: false,
-			}),
+			user: this.userEntityService.pack(note.user ?? note.userId, me),
 			text: text,
 			cw: note.cw,
 			visibility: note.visibility,

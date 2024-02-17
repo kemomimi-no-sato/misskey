@@ -1,26 +1,15 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 process.env.NODE_ENV = 'test';
 
 import * as assert from 'assert';
-import { signup, api, post, startServer } from '../utils.js';
-import type { INestApplicationContext } from '@nestjs/common';
+import { api, post, signup } from '../utils.js';
 import type * as misskey from 'misskey-js';
 
 describe('API visibility', () => {
-	let app: INestApplicationContext;
-
-	beforeAll(async () => {
-		app = await startServer();
-	}, 1000 * 60 * 2);
-
-	afterAll(async () => {
-		await app.close();
-	});
-
 	describe('Note visibility', () => {
 		//#region vars
 		/** ヒロイン */
