@@ -152,9 +152,16 @@ const {
 	recentlyUsedEmojis,
 } = defaultStore.reactiveState;
 
-const size = computed(() => props.asReactionPicker ? reactionPickerSize.value : 1);
-const width = computed(() => props.asReactionPicker ? reactionPickerWidth.value : 3);
-const height = computed(() => props.asReactionPicker ? reactionPickerHeight.value : 2);
+const recentlyUsedEmojisDef = computed(() => {
+	return recentlyUsedEmojis.value.map(getDef);
+});
+const pinnedEmojisDef = computed(() => {
+	return pinned.value?.map(getDef);
+});
+
+const size = computed(() => reactionPickerSize.value);
+const width = computed(() => reactionPickerWidth.value);
+const height = computed(() => reactionPickerHeight.value);
 const q = ref<string>('');
 const searchResultCustom = ref<Misskey.entities.EmojiSimple[]>([]);
 const searchResultUnicode = ref<UnicodeEmojiDef[]>([]);
