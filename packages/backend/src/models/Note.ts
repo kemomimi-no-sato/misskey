@@ -11,6 +11,7 @@ import { MiChannel } from './Channel.js';
 import type { MiDriveFile } from './DriveFile.js';
 
 @Entity('note')
+@Index('idx_note_text_cw_pgroonga', ['text', 'cw'], { using: 'pgroonga' })
 export class MiNote {
 	@PrimaryColumn(id())
 	public id: string;
