@@ -116,7 +116,7 @@ function save() {
 		prohibitedWords: prohibitedWords.value.split('\n'),
 		hiddenTags: hiddenTags.value.split('\n'),
 	}).then(() => {
-		fetchInstance();
+		fetchInstance(true);
 	});
 }
 

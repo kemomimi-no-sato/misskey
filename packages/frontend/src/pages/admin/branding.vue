@@ -201,6 +201,7 @@ function save() {
 		feedbackUrl: feedbackUrl.value === '' ? null : feedbackUrl.value,
 		manifestJsonOverride: manifestJsonOverride.value === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride.value)),
 	}).then(() => {
+		fetchInstance(true);
 	});
 }
 
