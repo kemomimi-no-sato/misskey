@@ -82,7 +82,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<MkMediaList :mediaList="appearNote.files"/>
 					</div>
 					<MkPoll v-if="appearNote.poll" :noteId="appearNote.id" :poll="appearNote.poll" :class="$style.poll"/>
-					<MkUrlPreview v-for="url in urls" :key="url" :url="url" :compact="true" :detail="false" :class="$style.urlPreview"/>
+					<div v-if="isEnabledUrlPreview">
+						<MkUrlPreview v-for="url in urls" :key="url" :url="url" :compact="true" :detail="false" :class="$style.urlPreview"/>
+					</div>
 					<div v-if="appearNote.renote" :class="$style.quote"><MkNoteSimple :note="appearNote.renote" :class="$style.quoteNote"/></div>
 					<button v-if="isLong && collapsed" :class="$style.collapsed" class="_button" @click="collapsed = false">
 						<span :class="$style.collapsedLabel">{{ i18n.ts.showMore }}</span>
@@ -93,17 +95,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 				<MkA v-if="appearNote.channel && !inChannel" :class="$style.channel" :to="`/channels/${appearNote.channel.id}`"><i class="ti ti-device-tv"></i> {{ appearNote.channel.name }}</MkA>
 			</div>
-			<MkReactionsViewer :note="appearNote" :maxNumber="16" @mockUpdateMyReaction="emitUpdReaction">
+			<MkReactionsViewer v-if="appearNote.reactionAcceptance !== 'likeOnly'" :note="appearNote" :maxNumber="16" @mockUpdateMyReaction="emitUpdReaction">
 				<template #more>
-					<button class="_button" :class="$style.reactionDetailsButton" @click="showReactions">
-						{{ i18n.ts.more }}
-					</button>
+					<MkA :to="`/notes/${appearNote.id}/reactions`" :class="[$style.reactionOmitted]">{{ i18n.ts.more }}</MkA>
 				</template>
 			</MkReactionsViewer>
 			<footer :class="$style.footer">
 				<button :class="$style.footerButton" class="_button" @click="reply()">
 					<i class="ti ti-arrow-back-up"></i>
-					<p v-if="appearNote.repliesCount > 0" :class="$style.footerButtonCount">{{ appearNote.repliesCount }}</p>
+					<p v-if="appearNote.repliesCount > 0" :class="$style.footerButtonCount">{{ number(appearNote.repliesCount) }}</p>
 				</button>
 				<button
 					v-if="canRenote"
@@ -113,7 +113,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					@click.stop="renote(false, $event)"
 				>
 					<i class="ti ti-repeat"></i>
-					<p v-if="appearNote.renoteCount > 0" :class="$style.footerButtonCount">{{ appearNote.renoteCount }}</p>
+					<p v-if="appearNote.renoteCount > 0" :class="$style.footerButtonCount">{{ number(appearNote.renoteCount) }}</p>
 				</button>
 				<button v-else :class="$style.footerButton" class="_button" disabled>
 					<i class="ti ti-ban"></i>
@@ -121,20 +121,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-if="appearNote.text && defaultStore.state.enableNumericButton" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
-				<button v-if="appearNote.myReaction == null" ref="reactButton" :class="$style.footerButton" class="_button" @mousedown="react()">
-					<i v-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
+				<button ref="reactButton" :class="$style.footerButton" class="_button" @click="toggleReact()">
+					<i v-if="appearNote.reactionAcceptance === 'likeOnly' && appearNote.myReaction != null" class="ti ti-heart-filled" style="color: var(--eventReactionHeart);"></i>
+					<i v-else-if="appearNote.myReaction != null" class="ti ti-mood-minus" style="color: var(--accent);"></i>
+					<i v-else-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
 					<i v-else class="ti ti-mood-plus"></i>
+					<p v-if="(appearNote.reactionAcceptance === 'likeOnly' || defaultStore.state.showReactionsCount) && appearNote.reactionCount > 0" :class="$style.footerButtonCount">{{ number(appearNote.reactionCount) }}</p>
 				</button>
-				<button v-if="appearNote.myReaction != null" ref="reactButton" :class="$style.footerButton" class="_button" @click="undoReact(appearNote)">
-					<i class="ti ti-mood-minus"></i>
+				<button v-if="defaultStore.state.separateFavoriteButton" ref="favoriteButton" :class="$style.footerButton" class="_button" @click="toggleFavorite()">
+					<i v-if="isFavorited == false" class="ti ti-bookmark-plus"></i>
+					<i v-else-if="isFavorited == true" class="ti ti-bookmark-minus" style="color: var(--accent);"></i>
 				</button>
-				<button v-if="isFavorited == false && defaultStore.state.separateFavoriteButton" ref="favoriteButton" :class="$style.footerButton" class="_button" @mousedown="addFavorited()">
-					<i class="ti ti-bookmark-plus"></i>
-				</button>
-				<button v-if="isFavorited == true && defaultStore.state.separateFavoriteButton" ref="favoriteButton" :class="$style.footerButton" class="_button" @mousedown="removeFavorited()">
-					<i class="ti ti-bookmark-minus"></i>
-				</button>
-				<button v-if="canRenote && defaultStore.state.seperateRenoteQuote" ref="quoteButton" :class="$style.footerButton" class="_button" @mousedown="quote()">
+				<button v-if="defaultStore.state.seperateRenoteQuote" ref="quoteButton" :class="$style.footerButton" class="_button" @click="quote()">
 					<i class="ti ti-quote"></i>
 				</button>
 				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown="clip()">
@@ -179,6 +177,7 @@ import MkNoteSub from '@/components/MkNoteSub.vue';
 import MkNoteHeader from '@/components/MkNoteHeader.vue';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkReactionsViewer from '@/components/MkReactionsViewer.vue';
+import MkReactionsViewerDetails from '@/components/MkReactionsViewer.details.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
 import MkCwButton from '@/components/MkCwButton.vue';
 import MkPoll from '@/components/MkPoll.vue';
@@ -189,9 +188,10 @@ import { pleaseLogin } from '@/scripts/please-login.js';
 import { focusPrev, focusNext } from '@/scripts/focus.js';
 import { checkWordMute } from '@/scripts/check-word-mute.js';
 import { userPage } from '@/filters/user.js';
+import number from '@/filters/number.js';
 import * as os from '@/os.js';
 import * as sound from '@/scripts/sound.js';
-import { misskeyApi } from '@/scripts/misskey-api.js';
+import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
 import { defaultStore, noteViewInterruptors } from '@/store.js';
 import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
@@ -208,6 +208,7 @@ import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import { shouldCollapsed } from '@/scripts/collapsed.js';
 import { stealMenu } from '@/scripts/steal-menu.js';
+import { isEnabledUrlPreview } from '@/instance.js';
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note;
@@ -252,6 +253,7 @@ if (noteViewInterruptors.length > 0) {
 
 const isRenote = (
 	note.value.renote != null &&
+	note.value.reply == null &&
 	note.value.text == null &&
 	note.value.cw == null &&
 	note.value.fileIds && note.value.fileIds.length === 0 &&
@@ -283,7 +285,7 @@ const renoteCollapsed = ref(
 	defaultStore.state.collapseRenotes && isRenote && (
 		($i && ($i.id === note.value.userId || $i.id === appearNote.value.userId)) || // `||` must be `||`! See https://github.com/misskey-dev/misskey/issues/13131
 		(appearNote.value.myReaction != null)
-	)
+	),
 );
 
 /* Overload FunctionにLintが対応していないのでコメントアウト
@@ -352,6 +354,28 @@ if (!props.mock) {
 			targetElement: renoteButton.value,
 		}, {}, 'closed');
 	});
+
+	if (appearNote.value.reactionAcceptance === 'likeOnly') {
+		useTooltip(reactButton, async (showing) => {
+			const reactions = await misskeyApiGet('notes/reactions', {
+				noteId: appearNote.value.id,
+				limit: 10,
+				_cacheKey_: appearNote.value.reactionCount,
+			});
+
+			const users = reactions.map(x => x.user);
+
+			if (users.length < 1) return;
+
+			os.popup(MkReactionsViewerDetails, {
+				showing,
+				reaction: '❤️',
+				users,
+				count: appearNote.value.reactionCount,
+				targetElement: reactButton.value!,
+			}, {}, 'closed');
+		});
+	}
 }
 
 let isFavorited = ref(false);
@@ -625,46 +649,27 @@ async function getIsFavorited(): Promise<boolean> {
 	return true;
 }
 
-async function addFavorited(): Promise<boolean> {
+async function toggleFavorite(): Promise<boolean> {
 	const state = await getIsFavorited();
 	isFavorited.value = state;
-	if(state == false || isFavorited.value == false) {
-		pleaseLogin();
-		const { canceled } = await os.confirm({
-			type: 'question',
-			text: 'お気に入りに登録しますか？'
-		})
-		if (canceled) {
-			return false;
-		}
-		os.apiWithDialog('notes/favorites/create',{
-			noteId: appearNote.value.id,
-		}).then(()=> {
-			isFavorited.value = true;
-		});
-	}
-	return isFavorited.value = true;
-}
+	const action = state ? '解除' : '登録';
+	const apiEndpoint = state ? 'notes/favorites/delete' : 'notes/favorites/create';
+	const newState = !state;
 
-async function removeFavorited(): Promise<boolean> {
-	const state = await getIsFavorited();
-	isFavorited.value = state;
-	if(state == true || isFavorited.value == true) {
-		pleaseLogin();
-		const { canceled } = await os.confirm({
-			type: 'question',
-			text: 'お気に入りを解除しますか？'
-		})
-		if (canceled) {
-			return false;
-		}
-		os.apiWithDialog('notes/favorites/delete',{
-			noteId: appearNote.value.id,
-		}).then(()=> {
-			isFavorited.value = false;
-		});
+	pleaseLogin();
+	const { canceled } = await os.confirm({
+		type: 'question',
+		text: `お気に入りを${action}しますか？`
+	});
+	if (canceled) {
+		return isFavorited.value;
 	}
-	return isFavorited.value = false;
+
+	await os.apiWithDialog(apiEndpoint, {
+		noteId: appearNote.value.id,
+	});
+	isFavorited.value = newState;
+	return isFavorited.value;
 }
 
 function reply(viaKeyboard = false): void {
@@ -737,6 +742,14 @@ function undoReact(targetNote: Misskey.entities.Note): void {
 	misskeyApi('notes/reactions/delete', {
 		noteId: targetNote.id,
 	});
+}
+
+function toggleReact() {
+	if (appearNote.value.myReaction == null) {
+		react();
+	} else {
+		undoReact(appearNote.value);
+	}
 }
 
 function onContextmenu(ev: MouseEvent): void {
@@ -1317,13 +1330,8 @@ function emitUpdReaction(emoji: string, delta: number) {
 
 .reactionDetailsButton {
 	display: inline-block;
-	height: 32px;
-	margin: 2px;
-	padding: 0 6px;
+	margin-left: 8px;
 	opacity: .8;
-
-	&:hover {
-		background: var(--X5);
-	}
+	font-size: 95%;
 }
 </style>

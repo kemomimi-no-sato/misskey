@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { VNode, h, SetupContext } from 'vue';
+import { VNode, h, SetupContext, provide } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import MkUrl from '@/components/global/MkUrl.vue';
@@ -17,7 +17,7 @@ import MkCode from '@/components/MkCode.vue';
 import MkCodeInline from '@/components/MkCodeInline.vue';
 import MkGoogle from '@/components/MkGoogle.vue';
 import MkSparkle from '@/components/MkSparkle.vue';
-import MkA from '@/components/global/MkA.vue';
+import MkA, { MkABehavior } from '@/components/global/MkA.vue';
 import { host } from '@/config.js';
 import { defaultStore } from '@/store.js';
 import { safeParseFloat } from '@/scripts/safe-parse.js';
@@ -42,6 +42,7 @@ type MfmProps = {
 	parsedNodes?: mfm.MfmNode[] | null;
 	enableEmojiMenu?: boolean;
 	enableEmojiMenuReaction?: boolean;
+	linkNavigationBehavior?: MkABehavior;
 };
 
 type MfmEvents = {
@@ -50,6 +51,8 @@ type MfmEvents = {
 
 // eslint-disable-next-line import/no-default-export
 export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEvents>['emit'] }) {
+	provide('linkNavigationBehavior', props.linkNavigationBehavior);
+
 	const isNote = props.isNote ?? true;
 
 	// eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

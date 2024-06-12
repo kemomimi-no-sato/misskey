@@ -106,7 +106,7 @@ const bitmapTmp = ref<CanvasImageSource | undefined>();
 const hide = computed(() => !loaded.value || props.forceBlurhash);
 
 function waitForDecode() {
-	if (props.src != null && props.src !== '') {
+	if (props.src) {
 		nextTick()
 			.then(() => img.value?.decode())
 			.then(() => {
