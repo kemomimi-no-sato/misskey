@@ -35,6 +35,7 @@ import { MiGalleryLike } from '@/models/GalleryLike.js';
 import { MiGalleryPost } from '@/models/GalleryPost.js';
 import { MiHashtag } from '@/models/Hashtag.js';
 import { MiInstance } from '@/models/Instance.js';
+import { MiMessagingMessage } from '@/models/MessagingMessage.js';
 import { MiMeta } from '@/models/Meta.js';
 import { MiModerationLog } from '@/models/ModerationLog.js';
 import { MiMuting } from '@/models/Muting.js';
@@ -58,6 +59,9 @@ import { MiSignin } from '@/models/Signin.js';
 import { MiSwSubscription } from '@/models/SwSubscription.js';
 import { MiUsedUsername } from '@/models/UsedUsername.js';
 import { MiUser } from '@/models/User.js';
+import { MiUserGroup } from '@/models/UserGroup.js';
+import { MiUserGroupInvitation } from '@/models/UserGroupInvitation.js';
+import { MiUserGroupJoining } from '@/models/UserGroupJoining.js';
 import { MiUserIp } from '@/models/UserIp.js';
 import { MiUserKeypair } from '@/models/UserKeypair.js';
 import { MiUserList } from '@/models/UserList.js';
@@ -168,6 +172,7 @@ export const entities = [
 	MiSwSubscription,
 	MiAbuseUserReport,
 	MiRegistrationTicket,
+	MiMessagingMessage,
 	MiSignin,
 	MiModerationLog,
 	MiClip,
@@ -185,6 +190,9 @@ export const entities = [
 	MiPasswordResetRequest,
 	MiUserPending,
 	MiWebhook,
+	MiUserGroup,
+	MiUserGroupJoining,
+	MiUserGroupInvitation,
 	MiUserIp,
 	MiRetentionAggregation,
 	MiRole,

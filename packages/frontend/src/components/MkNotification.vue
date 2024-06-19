@@ -109,6 +109,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkButton :class="$style.followRequestCommandButton" rounded danger @click="rejectFollowRequest()"><i class="ti ti-x"/> {{ i18n.ts.reject }}</MkButton>
 				</div>
 			</template>
+			<template v-else-if="notification.type === 'groupInvited'">
+				<span :class="$style.text" style="opacity: 0.6;">{{ i18n.ts.groupInvited }}: <b>{{ notification.invitation.group.name }}</b></span>
+				<div v-if="full && !groupInviteDone">
+					<button class="_textButton" @click="acceptGroupInvitation()">{{ i18n.ts.accept }}</button> | <button class="_textButton" @click="rejectGroupInvitation()">{{ i18n.ts.reject }}</button>
+				</div>
+			</template>
 			<span v-else-if="notification.type === 'test'" :class="$style.text">{{ i18n.ts._notification.notificationWillBeDisplayedLikeThis }}</span>
 			<span v-else-if="notification.type === 'app'" :class="$style.text">
 				<Mfm :text="notification.body" :nowrap="false"/>
@@ -140,6 +146,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
+import * as os from '@/os.js';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import MkButton from '@/components/MkButton.vue';
 import { getNoteSummary } from '@/scripts/get-note-summary.js';
@@ -162,6 +169,7 @@ const props = withDefaults(defineProps<{
 });
 
 const followRequestDone = ref(false);
+const groupInviteDone = ref(false);
 
 const acceptFollowRequest = () => {
 	if (props.notification.user == null) return;
@@ -173,6 +181,15 @@ const rejectFollowRequest = () => {
 	if (props.notification.user == null) return;
 	followRequestDone.value = true;
 	misskeyApi('following/requests/reject', { userId: props.notification.user.id });
+};
+
+const acceptGroupInvitation = () => {
+	groupInviteDone.value = true;
+	os.apiWithDialog('users/groups/invitations/accept', { invitationId: props.notification.invitation.id });
+};
+const rejectGroupInvitation = () => {
+	groupInviteDone.value = true;
+	misskeyApi('users/groups/invitations/reject', { invitationId: props.notification.invitation.id });
 };
 
 function getActualReactedUsersCount(notification: Misskey.entities.Notification) {

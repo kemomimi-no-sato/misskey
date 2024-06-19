@@ -118,6 +118,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-else :class="$style.footerButton" class="_button" disabled>
 					<i class="ti ti-ban"></i>
 				</button>
+				<button v-if="defaultStore.state.seperateRenoteQuote && canRenote" ref="quoteButton" :class="$style.footerButton" class="_button" @click="quote()">
+					<i class="ti ti-quote"></i>
+				</button>
+				<button v-else ref="quoteButton" :class="$style.footerButton" class="_button" disabled>
+					<i class="ti ti-ban"></i>
+				</button>
 				<button v-if="appearNote.text && defaultStore.state.enableNumericButton" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
@@ -131,9 +137,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-if="defaultStore.state.separateFavoriteButton" ref="favoriteButton" :class="$style.footerButton" class="_button" @click="toggleFavorite()">
 					<i v-if="isFavorited == false" class="ti ti-bookmark-plus"></i>
 					<i v-else-if="isFavorited == true" class="ti ti-bookmark-minus" style="color: var(--accent);"></i>
-				</button>
-				<button v-if="defaultStore.state.seperateRenoteQuote" ref="quoteButton" :class="$style.footerButton" class="_button" @click="quote()">
-					<i class="ti ti-quote"></i>
 				</button>
 				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown="clip()">
 					<i class="ti ti-paperclip"></i>

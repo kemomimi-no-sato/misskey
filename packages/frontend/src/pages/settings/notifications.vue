@@ -30,6 +30,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div class="_gaps_m">
 			<FormLink @click="readAllNotifications">{{ i18n.ts.markAsReadAllNotifications }}</FormLink>
 			<FormLink @click="readAllUnreadNotes">{{ i18n.ts.markAsReadAllUnreadNotes }}</FormLink>
+			<FormLink @click="readAllMessagingMessages">{{ i18n.ts.markAsReadAllTalkMessages }}</FormLink>
 		</div>
 	</FormSection>
 	<FormSection>
@@ -86,6 +87,10 @@ async function readAllUnreadNotes() {
 
 async function readAllNotifications() {
 	await os.apiWithDialog('notifications/mark-all-as-read');
+}
+
+async function readAllMessagingMessages() {
+	await os.apiWithDialog('i/read-all-messaging-messages');
 }
 
 async function updateReceiveConfig(type, value) {

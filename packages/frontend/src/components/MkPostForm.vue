@@ -128,6 +128,7 @@ import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { mfmFunctionPicker } from '@/scripts/mfm-function-picker.js';
+import { throttle } from 'throttle-debounce';
 
 const $i = signinRequired();
 
@@ -159,6 +160,12 @@ const props = withDefaults(defineProps<{
 });
 
 provide('mock', props.mock);
+
+const typing = throttle(3000, () => {
+	if (props.channel) {
+		useStream().send('typingOnChannel', { channel: props.channel.id });
+	}
+});
 
 const emit = defineEmits<{
 	(ev: 'posted'): void;
@@ -569,10 +576,12 @@ function clear() {
 function onKeydown(ev: KeyboardEvent) {
 	if (ev.key === 'Enter' && (ev.ctrlKey || ev.metaKey) && canPost.value) post();
 	if (ev.key === 'Escape') emit('esc');
+	typing();
 }
 
 function onCompositionUpdate(ev: CompositionEvent) {
 	imeText.value = ev.data;
+	typing();
 }
 
 function onCompositionEnd(ev: CompositionEvent) {

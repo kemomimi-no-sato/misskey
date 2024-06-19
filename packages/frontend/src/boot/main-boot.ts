@@ -94,7 +94,7 @@ export async function mainBoot() {
 					}).render();
 				}
 			}
-		}	
+		}
 	} catch (error) {
 		// console.error(error);
 		console.error('Failed to initialise the seasonal screen effect canvas context:', error);
@@ -297,6 +297,15 @@ export async function mainBoot() {
 
 		main.on('readAllUnreadSpecifiedNotes', () => {
 			updateAccount({ hasUnreadSpecifiedNotes: false });
+		});
+
+		main.on('readAllMessagingMessages', () => {
+			updateAccount({ hasUnreadMessagingMessage: false });
+		});
+
+		main.on('unreadMessagingMessage', () => {
+			updateAccount({ hasUnreadMessagingMessage: true });
+			sound.playMisskeySfx('chatBg');
 		});
 
 		main.on('readAllAntennas', () => {

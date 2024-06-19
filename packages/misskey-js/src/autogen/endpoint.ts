@@ -62,6 +62,8 @@ import type {
 	AdminInviteCreateResponse,
 	AdminInviteListRequest,
 	AdminInviteListResponse,
+	AdminRootAddRequest,
+	AdminRootRemoveRequest,
 	AdminPromoCreateRequest,
 	AdminQueueDeliverDelayedResponse,
 	AdminQueueInboxDelayedResponse,
@@ -85,8 +87,6 @@ import type {
 	AdminSuspendUserRequest,
 	AdminUnsuspendUserRequest,
 	AdminUpdateMetaRequest,
-	AdminRootAdd,
-	AdminRootRemove,
 	AdminDeleteAccountRequest,
 	AdminUpdateUserNoteRequest,
 	AdminRolesCreateRequest,
@@ -351,6 +351,8 @@ import type {
 	IUpdateEmailResponse,
 	IUpdateRequest,
 	IUpdateResponse,
+	IUserGroupInvitesRequest,
+	IUserGroupInvitesResponse,
 	IMoveRequest,
 	IMoveResponse,
 	IWebhooksCreateRequest,
@@ -365,6 +367,14 @@ import type {
 	InviteListRequest,
 	InviteListResponse,
 	InviteLimitResponse,
+	MessagingHistoryRequest,
+	MessagingHistoryResponse,
+	MessagingMessagesRequest,
+	MessagingMessagesResponse,
+	MessagingMessagesCreateRequest,
+	MessagingMessagesCreateResponse,
+	MessagingMessagesDeleteRequest,
+	MessagingMessagesReadRequest,
 	MetaRequest,
 	MetaResponse,
 	EmojisResponse,
@@ -494,6 +504,22 @@ import type {
 	UsersGalleryPostsResponse,
 	UsersGetFrequentlyRepliedUsersRequest,
 	UsersGetFrequentlyRepliedUsersResponse,
+	UsersGroupsCreateRequest,
+	UsersGroupsCreateResponse,
+	UsersGroupsDeleteRequest,
+	UsersGroupsInvitationsAcceptRequest,
+	UsersGroupsInvitationsRejectRequest,
+	UsersGroupsInviteRequest,
+	UsersGroupsJoinedResponse,
+	UsersGroupsLeaveRequest,
+	UsersGroupsOwnedResponse,
+	UsersGroupsPullRequest,
+	UsersGroupsShowRequest,
+	UsersGroupsShowResponse,
+	UsersGroupsTransferRequest,
+	UsersGroupsTransferResponse,
+	UsersGroupsUpdateRequest,
+	UsersGroupsUpdateResponse,
 	UsersFeaturedNotesRequest,
 	UsersFeaturedNotesResponse,
 	UsersListsCreateRequest,
@@ -604,6 +630,8 @@ export type Endpoints = {
 	'admin/get-user-ips': { req: AdminGetUserIpsRequest; res: AdminGetUserIpsResponse };
 	'admin/invite/create': { req: AdminInviteCreateRequest; res: AdminInviteCreateResponse };
 	'admin/invite/list': { req: AdminInviteListRequest; res: AdminInviteListResponse };
+	'admin/root/add': { req: AdminRootAddRequest; res: EmptyResponse };
+	'admin/root/remove': { req: AdminRootRemoveRequest; res: EmptyResponse };
 	'admin/promo/create': { req: AdminPromoCreateRequest; res: EmptyResponse };
 	'admin/queue/clear': { req: EmptyRequest; res: EmptyResponse };
 	'admin/queue/deliver-delayed': { req: EmptyRequest; res: AdminQueueDeliverDelayedResponse };
@@ -622,8 +650,6 @@ export type Endpoints = {
 	'admin/show-users': { req: AdminShowUsersRequest; res: AdminShowUsersResponse };
 	'admin/suspend-user': { req: AdminSuspendUserRequest; res: EmptyResponse };
 	'admin/unsuspend-user': { req: AdminUnsuspendUserRequest; res: EmptyResponse };
-	'admin/root/add': { req: AdminRootAdd; res: EmptyResponse };
-	'admin/root/remove': { req: AdminRootRemove; res: EmptyResponse };
 	'admin/update-meta': { req: AdminUpdateMetaRequest; res: EmptyResponse };
 	'admin/delete-account': { req: AdminDeleteAccountRequest; res: EmptyResponse };
 	'admin/update-user-note': { req: AdminUpdateUserNoteRequest; res: EmptyResponse };
@@ -780,6 +806,7 @@ export type Endpoints = {
 	'i/page-likes': { req: IPageLikesRequest; res: IPageLikesResponse };
 	'i/pages': { req: IPagesRequest; res: IPagesResponse };
 	'i/pin': { req: IPinRequest; res: IPinResponse };
+	'i/read-all-messaging-messages': { req: EmptyRequest; res: EmptyResponse };
 	'i/read-all-unread-notes': { req: EmptyRequest; res: EmptyResponse };
 	'i/read-announcement': { req: IReadAnnouncementRequest; res: EmptyResponse };
 	'i/regenerate-token': { req: IRegenerateTokenRequest; res: EmptyResponse };
@@ -796,6 +823,7 @@ export type Endpoints = {
 	'i/unpin': { req: IUnpinRequest; res: IUnpinResponse };
 	'i/update-email': { req: IUpdateEmailRequest; res: IUpdateEmailResponse };
 	'i/update': { req: IUpdateRequest; res: IUpdateResponse };
+	'i/user-group-invites': { req: IUserGroupInvitesRequest; res: IUserGroupInvitesResponse };
 	'i/move': { req: IMoveRequest; res: IMoveResponse };
 	'i/webhooks/create': { req: IWebhooksCreateRequest; res: IWebhooksCreateResponse };
 	'i/webhooks/list': { req: EmptyRequest; res: IWebhooksListResponse };
@@ -806,6 +834,11 @@ export type Endpoints = {
 	'invite/delete': { req: InviteDeleteRequest; res: EmptyResponse };
 	'invite/list': { req: InviteListRequest; res: InviteListResponse };
 	'invite/limit': { req: EmptyRequest; res: InviteLimitResponse };
+	'messaging/history': { req: MessagingHistoryRequest; res: MessagingHistoryResponse };
+	'messaging/messages': { req: MessagingMessagesRequest; res: MessagingMessagesResponse };
+	'messaging/messages/create': { req: MessagingMessagesCreateRequest; res: MessagingMessagesCreateResponse };
+	'messaging/messages/delete': { req: MessagingMessagesDeleteRequest; res: EmptyResponse };
+	'messaging/messages/read': { req: MessagingMessagesReadRequest; res: EmptyResponse };
 	'meta': { req: MetaRequest; res: MetaResponse };
 	'emojis': { req: EmptyRequest; res: EmojisResponse };
 	'emoji': { req: EmojiRequest; res: EmojiResponse };
@@ -892,6 +925,18 @@ export type Endpoints = {
 	'users/following': { req: UsersFollowingRequest; res: UsersFollowingResponse };
 	'users/gallery/posts': { req: UsersGalleryPostsRequest; res: UsersGalleryPostsResponse };
 	'users/get-frequently-replied-users': { req: UsersGetFrequentlyRepliedUsersRequest; res: UsersGetFrequentlyRepliedUsersResponse };
+	'users/groups/create': { req: UsersGroupsCreateRequest; res: UsersGroupsCreateResponse };
+	'users/groups/delete': { req: UsersGroupsDeleteRequest; res: EmptyResponse };
+	'users/groups/invitations/accept': { req: UsersGroupsInvitationsAcceptRequest; res: EmptyResponse };
+	'users/groups/invitations/reject': { req: UsersGroupsInvitationsRejectRequest; res: EmptyResponse };
+	'users/groups/invite': { req: UsersGroupsInviteRequest; res: EmptyResponse };
+	'users/groups/joined': { req: EmptyRequest; res: UsersGroupsJoinedResponse };
+	'users/groups/leave': { req: UsersGroupsLeaveRequest; res: EmptyResponse };
+	'users/groups/owned': { req: EmptyRequest; res: UsersGroupsOwnedResponse };
+	'users/groups/pull': { req: UsersGroupsPullRequest; res: EmptyResponse };
+	'users/groups/show': { req: UsersGroupsShowRequest; res: UsersGroupsShowResponse };
+	'users/groups/transfer': { req: UsersGroupsTransferRequest; res: UsersGroupsTransferResponse };
+	'users/groups/update': { req: UsersGroupsUpdateRequest; res: UsersGroupsUpdateResponse };
 	'users/featured-notes': { req: UsersFeaturedNotesRequest; res: UsersFeaturedNotesResponse };
 	'users/lists/create': { req: UsersListsCreateRequest; res: UsersListsCreateResponse };
 	'users/lists/delete': { req: UsersListsDeleteRequest; res: EmptyResponse };

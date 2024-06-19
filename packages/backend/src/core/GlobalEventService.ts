@@ -14,12 +14,13 @@ import type { MiAntenna } from '@/models/Antenna.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiDriveFolder } from '@/models/DriveFolder.js';
 import type { MiUserList } from '@/models/UserList.js';
+import type { MiUserGroup } from '@/models/UserGroup.js';
 import type { MiAbuseUserReport } from '@/models/AbuseUserReport.js';
 import type { MiSignin } from '@/models/Signin.js';
 import type { MiPage } from '@/models/Page.js';
 import type { MiWebhook } from '@/models/Webhook.js';
 import type { MiMeta } from '@/models/Meta.js';
-import { MiAvatarDecoration, MiReversiGame, MiRole, MiRoleAssignment } from '@/models/_.js';
+import { MiAvatarDecoration, MiMessagingMessage, MiReversiGame, MiRole, MiRoleAssignment } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
@@ -75,6 +76,9 @@ export interface MainEventTypes {
 	readAllUnreadMentions: undefined;
 	unreadSpecifiedNote: MiNote['id'];
 	readAllUnreadSpecifiedNotes: undefined;
+	readAllMessagingMessages: undefined;
+	messagingMessage: Packed<'MessagingMessage'>;
+	unreadMessagingMessage: Packed<'MessagingMessage'>;
 	readAllAntennas: undefined;
 	unreadAntenna: MiAntenna;
 	readAllAnnouncements: undefined;
@@ -140,6 +144,10 @@ type NoteStreamEventTypes = {
 	};
 };
 
+export interface ChannelEventTypes {
+	typing: MiUser['id'];
+}
+
 export interface UserListEventTypes {
 	userAdded: Packed<'UserLite'>;
 	userRemoved: Packed<'UserLite'>;
@@ -151,6 +159,28 @@ export interface AntennaEventTypes {
 
 export interface RoleTimelineEventTypes {
 	note: Packed<'Note'>;
+}
+
+export interface MessagingEventTypes {
+	read: MiMessagingMessage['id'][];
+	typing: MiUser['id'];
+	message: Packed<'MessagingMessage'>;
+	deleted: MiMessagingMessage['id'];
+}
+
+export interface GroupMessagingEventTypes {
+	read: {
+		ids: MiMessagingMessage['id'][];
+		userId: MiUser['id'];
+	};
+	typing: MiUser['id'];
+	message: Packed<'MessagingMessage'>;
+	deleted: MiMessagingMessage['id'];
+}
+
+export interface MessagingIndexEventTypes {
+	read: MiMessagingMessage['id'][];
+	message: Packed<'MessagingMessage'>;
 }
 
 export interface AdminEventTypes {
@@ -266,6 +296,10 @@ export type GlobalEvents = {
 		name: `noteStream:${MiNote['id']}`;
 		payload: EventUnionFromDictionary<SerializedAll<NoteStreamEventTypes>>;
 	};
+	channel: {
+		name: `channelStream:${MiChannel['id']}`;
+		payload: EventUnionFromDictionary<SerializedAll<ChannelEventTypes>>;
+	};
 	userList: {
 		name: `userListStream:${MiUserList['id']}`;
 		payload: EventUnionFromDictionary<SerializedAll<UserListEventTypes>>;
@@ -277,6 +311,18 @@ export type GlobalEvents = {
 	antenna: {
 		name: `antennaStream:${MiAntenna['id']}`;
 		payload: EventUnionFromDictionary<SerializedAll<AntennaEventTypes>>;
+	};
+	messaging: {
+		name: `messagingStream:${MiUser['id']}-${MiUser['id']}`;
+		payload: EventUnionFromDictionary<SerializedAll<MessagingEventTypes>>;
+	};
+	groupMessaging: {
+		name: `messagingStream:${MiUserGroup['id']}`;
+		payload: EventUnionFromDictionary<SerializedAll<GroupMessagingEventTypes>>;
+	};
+	messagingIndex: {
+		name: `messagingIndexStream:${MiUser['id']}`;
+		payload: EventUnionFromDictionary<SerializedAll<MessagingIndexEventTypes>>;
 	};
 	admin: {
 		name: `adminStream:${MiUser['id']}`;
@@ -360,6 +406,11 @@ export class GlobalEventService {
 	}
 
 	@bindThis
+	public publishChannelStream<K extends keyof ChannelEventTypes>(channelId: MiChannel['id'], type: K, value?: ChannelEventTypes[K]): void {
+		this.publish(`channelStream:${channelId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
 	public publishUserListStream<K extends keyof UserListEventTypes>(listId: MiUserList['id'], type: K, value?: UserListEventTypes[K]): void {
 		this.publish(`userListStream:${listId}`, type, typeof value === 'undefined' ? null : value);
 	}
@@ -372,6 +423,21 @@ export class GlobalEventService {
 	@bindThis
 	public publishRoleTimelineStream<K extends keyof RoleTimelineEventTypes>(roleId: MiRole['id'], type: K, value?: RoleTimelineEventTypes[K]): void {
 		this.publish(`roleTimelineStream:${roleId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
+	public publishMessagingStream<K extends keyof MessagingEventTypes>(userId: MiUser['id'], otherpartyId: MiUser['id'], type: K, value?: MessagingEventTypes[K]): void {
+		this.publish(`messagingStream:${userId}-${otherpartyId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
+	public publishGroupMessagingStream<K extends keyof GroupMessagingEventTypes>(groupId: MiUserGroup['id'], type: K, value?: GroupMessagingEventTypes[K]): void {
+		this.publish(`messagingStream:${groupId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
+	public publishMessagingIndexStream<K extends keyof MessagingIndexEventTypes>(userId: MiUser['id'], type: K, value?: MessagingIndexEventTypes[K]): void {
+		this.publish(`messagingIndexStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
 	@bindThis

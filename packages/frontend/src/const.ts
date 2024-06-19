@@ -66,6 +66,7 @@ export const notificationTypes = [
 	'receiveFollowRequest',
 	'followRequestAccepted',
 	'roleAssigned',
+	'groupInvited',
 	'achievementEarned',
 	'app',
 ] as const;

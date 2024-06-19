@@ -57,6 +57,8 @@ const sounds = ref<Record<OperationType, Ref<SoundStore>>>({
 	antenna: defaultStore.reactiveState.sound_antenna,
 	channel: defaultStore.reactiveState.sound_channel,
 	reaction: defaultStore.reactiveState.sound_reaction,
+	chat: defaultStore.reactiveState.sound_chat,
+	chatBg: defaultStore.reactiveState.sound_chatBg,
 });
 
 function getSoundTypeName(f: SoundType): string {

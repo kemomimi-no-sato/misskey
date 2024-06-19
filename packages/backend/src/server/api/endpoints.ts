@@ -228,6 +228,7 @@ import * as ep___i_notificationsGrouped from './endpoints/i/notifications-groupe
 import * as ep___i_pageLikes from './endpoints/i/page-likes.js';
 import * as ep___i_pages from './endpoints/i/pages.js';
 import * as ep___i_pin from './endpoints/i/pin.js';
+import * as ep___i_readAllMessagingMessages from './endpoints/i/read-all-messaging-messages.js';
 import * as ep___i_readAllUnreadNotes from './endpoints/i/read-all-unread-notes.js';
 import * as ep___i_readAnnouncement from './endpoints/i/read-announcement.js';
 import * as ep___i_regenerateToken from './endpoints/i/regenerate-token.js';
@@ -244,6 +245,7 @@ import * as ep___i_signinHistory from './endpoints/i/signin-history.js';
 import * as ep___i_unpin from './endpoints/i/unpin.js';
 import * as ep___i_updateEmail from './endpoints/i/update-email.js';
 import * as ep___i_update from './endpoints/i/update.js';
+import * as ep___i_userGroupInvites from './endpoints/i/user-group-invites.js';
 import * as ep___i_move from './endpoints/i/move.js';
 import * as ep___i_webhooks_create from './endpoints/i/webhooks/create.js';
 import * as ep___i_webhooks_show from './endpoints/i/webhooks/show.js';
@@ -254,6 +256,11 @@ import * as ep___invite_create from './endpoints/invite/create.js';
 import * as ep___invite_delete from './endpoints/invite/delete.js';
 import * as ep___invite_list from './endpoints/invite/list.js';
 import * as ep___invite_limit from './endpoints/invite/limit.js';
+import * as ep___messaging_history from './endpoints/messaging/history.js';
+import * as ep___messaging_messages from './endpoints/messaging/messages.js';
+import * as ep___messaging_messages_create from './endpoints/messaging/messages/create.js';
+import * as ep___messaging_messages_delete from './endpoints/messaging/messages/delete.js';
+import * as ep___messaging_messages_read from './endpoints/messaging/messages/read.js';
 import * as ep___meta from './endpoints/meta.js';
 import * as ep___emojis from './endpoints/emojis.js';
 import * as ep___emoji from './endpoints/emoji.js';
@@ -340,6 +347,18 @@ import * as ep___users_followers from './endpoints/users/followers.js';
 import * as ep___users_following from './endpoints/users/following.js';
 import * as ep___users_gallery_posts from './endpoints/users/gallery/posts.js';
 import * as ep___users_getFrequentlyRepliedUsers from './endpoints/users/get-frequently-replied-users.js';
+import * as ep___users_groups_create from './endpoints/users/groups/create.js';
+import * as ep___users_groups_delete from './endpoints/users/groups/delete.js';
+import * as ep___users_groups_invitations_accept from './endpoints/users/groups/invitations/accept.js';
+import * as ep___users_groups_invitations_reject from './endpoints/users/groups/invitations/reject.js';
+import * as ep___users_groups_invite from './endpoints/users/groups/invite.js';
+import * as ep___users_groups_joined from './endpoints/users/groups/joined.js';
+import * as ep___users_groups_leave from './endpoints/users/groups/leave.js';
+import * as ep___users_groups_owned from './endpoints/users/groups/owned.js';
+import * as ep___users_groups_pull from './endpoints/users/groups/pull.js';
+import * as ep___users_groups_show from './endpoints/users/groups/show.js';
+import * as ep___users_groups_transfer from './endpoints/users/groups/transfer.js';
+import * as ep___users_groups_update from './endpoints/users/groups/update.js';
 import * as ep___users_featuredNotes from './endpoints/users/featured-notes.js';
 import * as ep___users_lists_create from './endpoints/users/lists/create.js';
 import * as ep___users_lists_delete from './endpoints/users/lists/delete.js';
@@ -601,6 +620,7 @@ const eps = [
 	['i/page-likes', ep___i_pageLikes],
 	['i/pages', ep___i_pages],
 	['i/pin', ep___i_pin],
+	['i/read-all-messaging-messages', ep___i_readAllMessagingMessages],
 	['i/read-all-unread-notes', ep___i_readAllUnreadNotes],
 	['i/read-announcement', ep___i_readAnnouncement],
 	['i/regenerate-token', ep___i_regenerateToken],
@@ -617,6 +637,7 @@ const eps = [
 	['i/unpin', ep___i_unpin],
 	['i/update-email', ep___i_updateEmail],
 	['i/update', ep___i_update],
+	['i/user-group-invites', ep___i_userGroupInvites],
 	['i/move', ep___i_move],
 	['i/webhooks/create', ep___i_webhooks_create],
 	['i/webhooks/list', ep___i_webhooks_list],
@@ -627,6 +648,11 @@ const eps = [
 	['invite/delete', ep___invite_delete],
 	['invite/list', ep___invite_list],
 	['invite/limit', ep___invite_limit],
+	['messaging/history', ep___messaging_history],
+	['messaging/messages', ep___messaging_messages],
+	['messaging/messages/create', ep___messaging_messages_create],
+	['messaging/messages/delete', ep___messaging_messages_delete],
+	['messaging/messages/read', ep___messaging_messages_read],
 	['meta', ep___meta],
 	['emojis', ep___emojis],
 	['emoji', ep___emoji],
@@ -713,6 +739,18 @@ const eps = [
 	['users/following', ep___users_following],
 	['users/gallery/posts', ep___users_gallery_posts],
 	['users/get-frequently-replied-users', ep___users_getFrequentlyRepliedUsers],
+	['users/groups/create', ep___users_groups_create],
+	['users/groups/delete', ep___users_groups_delete],
+	['users/groups/invitations/accept', ep___users_groups_invitations_accept],
+	['users/groups/invitations/reject', ep___users_groups_invitations_reject],
+	['users/groups/invite', ep___users_groups_invite],
+	['users/groups/joined', ep___users_groups_joined],
+	['users/groups/leave', ep___users_groups_leave],
+	['users/groups/owned', ep___users_groups_owned],
+	['users/groups/pull', ep___users_groups_pull],
+	['users/groups/show', ep___users_groups_show],
+	['users/groups/transfer', ep___users_groups_transfer],
+	['users/groups/update', ep___users_groups_update],
 	['users/featured-notes', ep___users_featuredNotes],
 	['users/lists/create', ep___users_lists_create],
 	['users/lists/delete', ep___users_lists_delete],

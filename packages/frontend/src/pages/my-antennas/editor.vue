@@ -22,6 +22,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #label>{{ i18n.ts.userList }}</template>
 				<option v-for="list in userLists" :key="list.id" :value="list.id">{{ list.name }}</option>
 			</MkSelect>
+			<MkSelect v-else-if="src === 'group'" v-model="userGroupId">
+				<template #label>{{ i18n.ts.userGroup }}</template>
+				<option v-for="group in userGroups" :key="group.id" :value="group.id">{{ group.name }}</option>
+			</MkSelect>
 			<MkTextarea v-else-if="src === 'users' || src === 'users_blacklist'" v-model="users">
 				<template #label>{{ i18n.ts.users }}</template>
 				<template #caption>{{ i18n.ts.antennaUsersDescription }} <button class="_textButton" @click="addUser">{{ i18n.ts.addUser }}</button></template>
@@ -82,10 +86,18 @@ const excludeBots = ref<boolean>(props.antenna.excludeBots);
 const withReplies = ref<boolean>(props.antenna.withReplies);
 const withFile = ref<boolean>(props.antenna.withFile);
 const userLists = ref<Misskey.entities.UserList[] | null>(null);
+const userGroupId = ref<string | null>(props.antenna.userGroupId);
+const userGroups = ref<Misskey.entities.UserGroup[] | null>(null);
 
 watch(() => src.value, async () => {
 	if (src.value === 'list' && userLists.value === null) {
 		userLists.value = await misskeyApi('users/lists/list');
+	}
+
+	if (src.value === 'group' && userGroups.value === null) {
+		const groups1 = await misskeyApi('users/groups/owned');
+		const groups2 = await misskeyApi('users/groups/joined');
+		userGroups.value = [...groups1, ...groups2];
 	}
 });
 
@@ -94,6 +106,7 @@ async function saveAntenna() {
 		name: name.value,
 		src: src.value,
 		userListId: userListId.value,
+		userGroupId: userGroupId.value,
 		excludeBots: excludeBots.value,
 		withReplies: withReplies.value,
 		withFile: withFile.value,

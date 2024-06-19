@@ -6,7 +6,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { PollsRepository, EmojisRepository } from '@/models/_.js';
+import type { MessagingMessagesRepository, PollsRepository, EmojisRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { MiRemoteUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
@@ -16,6 +16,7 @@ import { MetaService } from '@/core/MetaService.js';
 import { AppLockService } from '@/core/AppLockService.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { NoteCreateService } from '@/core/NoteCreateService.js';
+import { MessagingService } from '@/core/MessagingService.js';
 import type Logger from '@/logger.js';
 import { IdService } from '@/core/IdService.js';
 import { PollService } from '@/core/PollService.js';
@@ -53,6 +54,9 @@ export class ApNoteService {
 		@Inject(DI.emojisRepository)
 		private emojisRepository: EmojisRepository,
 
+		@Inject(DI.messagingMessagesRepository)
+		private messagingMessagesRepository: MessagingMessagesRepository,
+
 		private idService: IdService,
 		private apMfmService: ApMfmService,
 		private apResolverService: ApResolverService,
@@ -67,6 +71,7 @@ export class ApNoteService {
 		private apImageService: ApImageService,
 		private apQuestionService: ApQuestionService,
 		private metaService: MetaService,
+		private messagingService: MessagingService,
 		private appLockService: AppLockService,
 		private pollService: PollService,
 		private noteCreateService: NoteCreateService,
@@ -160,6 +165,8 @@ export class ApNoteService {
 			throw new IdentifiableError('85ab9bd7-3a41-4530-959d-f07073900109', 'actor has been suspended');
 		}
 
+		let isMessaging = note._misskey_talk && visibility === 'specified';
+
 		const apMentions = await this.apMentionService.extractApMentions(note.tag, resolver);
 		const apHashtags = extractApHashtags(note.tag);
 
@@ -228,10 +235,27 @@ export class ApNoteService {
 					return x;
 				})
 				.catch(async err => {
+					// トークだったらinReplyToのエラーは無視
+					const uri = getApId(note.inReplyTo);
+					if (uri.startsWith(this.config.url + '/')) {
+						const id = uri.split('/').pop();
+						const talk = await this.messagingMessagesRepository.findOneBy({ id });
+						if (talk) {
+							isMessaging = true;
+							return null;
+						}
+					}
 					this.logger.warn(`Error in inReplyTo ${note.inReplyTo} - ${err.statusCode ?? err}`);
 					throw err;
 				})
 			: null;
+
+		if (isMessaging) {
+			for (const recipient of visibleUsers) {
+				await this.messagingService.createMessage(actor, recipient, undefined, text ?? undefined, (files && files.length > 0) ? files[0] : null, object.id);
+				return null;
+			}
+		}
 
 		// 引用
 		let quote: MiNote | undefined | null = null;

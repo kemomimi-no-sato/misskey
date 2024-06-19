@@ -39,6 +39,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkSwitch v-model="emailNotification_receiveFollowRequest">
 				{{ i18n.ts._notification._types.receiveFollowRequest }}
 			</MkSwitch>
+			<MkSwitch v-model="emailNotification_groupInvited">
+				{{ i18n.ts._notification._types.groupInvited }}
+			</MkSwitch>
 		</div>
 	</FormSection>
 </div>
@@ -70,6 +73,8 @@ const onChangeReceiveAnnouncementEmail = (v) => {
 	});
 };
 
+const emailNotification_groupInvited = ref($i!.emailNotificationTypes.includes('groupInvited'));
+
 async function saveEmailAddress() {
 	const auth = await os.authenticateDialog();
 	if (auth.canceled) return;
@@ -95,11 +100,12 @@ const saveNotificationSettings = () => {
 			...[emailNotification_quote.value ? 'quote' : null],
 			...[emailNotification_follow.value ? 'follow' : null],
 			...[emailNotification_receiveFollowRequest.value ? 'receiveFollowRequest' : null],
+			...[emailNotification_groupInvited.value ? 'groupInvited' : null],
 		].filter(x => x != null),
 	});
 };
 
-watch([emailNotification_mention, emailNotification_reply, emailNotification_quote, emailNotification_follow, emailNotification_receiveFollowRequest], () => {
+watch([emailNotification_mention, emailNotification_reply, emailNotification_quote, emailNotification_follow, emailNotification_receiveFollowRequest, emailNotification_groupInvited], () => {
 	saveNotificationSettings();
 });
 

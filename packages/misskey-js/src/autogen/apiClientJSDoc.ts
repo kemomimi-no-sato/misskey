@@ -513,6 +513,30 @@ declare module '../api.js' {
     /**
      * No description provided.
      * 
+     * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+     * **Credential required**: *Yes*
+     */
+    request<E extends 'admin/root/add', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
+     * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+     * **Credential required**: *Yes*
+     */
+    request<E extends 'admin/root/remove', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
      * **Credential required**: *Yes* / **Permission**: *write:admin:promo*
      */
     request<E extends 'admin/promo/create', P extends Endpoints[E]['req']>(
@@ -2456,6 +2480,17 @@ declare module '../api.js' {
      * 
      * **Credential required**: *Yes* / **Permission**: *write:account*
      */
+    request<E extends 'i/read-all-messaging-messages', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:account*
+     */
     request<E extends 'i/read-all-unread-notes', P extends Endpoints[E]['req']>(
       endpoint: E,
       params: P,
@@ -2635,6 +2670,17 @@ declare module '../api.js' {
     /**
      * No description provided.
      * 
+     * **Credential required**: *Yes* / **Permission**: *read:user-groups*
+     */
+    request<E extends 'i/user-group-invites', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
      * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
      * **Credential required**: *Yes*
      */
@@ -2738,6 +2784,61 @@ declare module '../api.js' {
      * **Credential required**: *Yes* / **Permission**: *read:invite-codes*
      */
     request<E extends 'invite/limit', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *read:messaging*
+     */
+    request<E extends 'messaging/history', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *read:messaging*
+     */
+    request<E extends 'messaging/messages', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:messaging*
+     */
+    request<E extends 'messaging/messages/create', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:messaging*
+     */
+    request<E extends 'messaging/messages/delete', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * No description provided.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:messaging*
+     */
+    request<E extends 'messaging/messages/read', P extends Endpoints[E]['req']>(
       endpoint: E,
       params: P,
       credential?: string | null,
@@ -3689,6 +3790,138 @@ declare module '../api.js' {
      * **Credential required**: *No*
      */
     request<E extends 'users/get-frequently-replied-users', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Create a new group.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/create', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Delete an existing group.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/delete', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Join a group the authenticated user has been invited to.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/invitations/accept', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Delete an existing group invitation for the authenticated user without joining the group.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/invitations/reject', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Invite a user to an existing group.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/invite', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * List the groups that the authenticated user is a member of.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *read:user-groups*
+     */
+    request<E extends 'users/groups/joined', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Leave a group. The owner of a group can not leave. They must transfer ownership or delete the group instead.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/leave', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * List the groups that the authenticated user is the owner of.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *read:user-groups*
+     */
+    request<E extends 'users/groups/owned', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Removes a specified user from a group. The owner can not be removed.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/pull', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Show the properties of a group.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *read:user-groups*
+     */
+    request<E extends 'users/groups/show', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Transfer ownership of a group from the authenticated user to another user.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/transfer', P extends Endpoints[E]['req']>(
+      endpoint: E,
+      params: P,
+      credential?: string | null,
+    ): Promise<SwitchCaseResponseType<E, P>>;
+
+    /**
+     * Update the properties of a group.
+     * 
+     * **Credential required**: *Yes* / **Permission**: *write:user-groups*
+     */
+    request<E extends 'users/groups/update', P extends Endpoints[E]['req']>(
       endpoint: E,
       params: P,
       credential?: string | null,

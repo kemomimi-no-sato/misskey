@@ -12,7 +12,7 @@ import { GlobalEventService } from '@/core/GlobalEventService.js';
 import * as Acct from '@/misc/acct.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { DI } from '@/di-symbols.js';
-import type { AntennasRepository, UserListMembershipsRepository } from '@/models/_.js';
+import type { AntennasRepository, UserGroupJoiningsRepository, UserListMembershipsRepository } from '@/models/_.js';
 import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
@@ -36,6 +36,9 @@ export class AntennaService implements OnApplicationShutdown {
 
 		@Inject(DI.userListMembershipsRepository)
 		private userListMembershipsRepository: UserListMembershipsRepository,
+
+		@Inject(DI.userGroupJoiningsRepository)
+		private userGroupJoiningsRepository: UserGroupJoiningsRepository,
 
 		private utilityService: UtilityService,
 		private globalEventService: GlobalEventService,
@@ -128,6 +131,14 @@ export class AntennaService implements OnApplicationShutdown {
 			})).map(x => x.userId);
 
 			if (!listUsers.includes(note.userId)) return false;
+		} else if (antenna.src === 'group') {
+			const joining = await this.userGroupJoiningsRepository.findOneByOrFail({ id: antenna.userGroupJoiningId! });
+
+			const groupUsers = (await this.userGroupJoiningsRepository.findBy({
+				userGroupId: joining.userGroupId,
+			})).map(x => x.userId);
+
+			if (!groupUsers.includes(note.userId)) return false;
 		} else if (antenna.src === 'users') {
 			const accts = antenna.users.map(x => {
 				const { username, host } = Acct.parse(x);

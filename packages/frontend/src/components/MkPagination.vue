@@ -160,6 +160,7 @@ watch([() => props.pagination.reversed, scrollableElement], () => {
 	if (scrollObserver.value) scrollObserver.value.disconnect();
 
 	scrollObserver.value = new IntersectionObserver(entries => {
+		// エントリがインタセクションに入っているかどうかでバックを判定
 		backed.value = entries[0].isIntersecting;
 	}, {
 		root: scrollableElement.value,

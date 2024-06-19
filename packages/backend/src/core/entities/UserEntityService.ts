@@ -7,7 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import _Ajv from 'ajv';
 import { ModuleRef } from '@nestjs/core';
-import { In } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { Packed } from '@/misc/json-schema.js';
@@ -35,6 +35,8 @@ import type {
 	RenoteMutingsRepository,
 	UserMemoRepository,
 	UserNotePiningsRepository,
+	MessagingMessagesRepository,
+	UserGroupJoiningsRepository,
 	UserProfilesRepository,
 	UserSecurityKeysRepository,
 	UsersRepository,
@@ -134,6 +136,12 @@ export class UserEntityService implements OnModuleInit {
 
 		@Inject(DI.userMemosRepository)
 		private userMemosRepository: UserMemoRepository,
+
+		@Inject(DI.messagingMessagesRepository)
+		private messagingMessagesRepository: MessagingMessagesRepository,
+
+		@Inject(DI.userGroupJoiningsRepository)
+		private userGroupJoiningsRepository: UserGroupJoiningsRepository,
 	) {
 	}
 
@@ -307,6 +315,36 @@ export class UserEntityService implements OnModuleInit {
 				];
 			}),
 		);
+	}
+
+	@bindThis
+	public async getHasUnreadMessagingMessage(userId: MiUser['id']): Promise<boolean> {
+		const mute = await this.mutingsRepository.findBy({
+			muterId: userId,
+		});
+
+		const joinings = await this.userGroupJoiningsRepository.findBy({ userId: userId });
+
+		const groupQs = Promise.all(joinings.map(j => this.messagingMessagesRepository.createQueryBuilder('message')
+			.where('message.groupId = :groupId', { groupId: j.userGroupId })
+			.andWhere('message.userId != :userId', { userId: userId })
+			.andWhere('NOT (:userId = ANY(message.reads))', { userId: userId })
+			.andWhere('message.createdAt > :joinedAt', { joinedAt: j.createdAt }) // 自分が加入する前の会話については、未読扱いしない
+			.getOne().then(x => x != null)));
+
+		const [withUser, withGroups] = await Promise.all([
+			this.messagingMessagesRepository.count({
+				where: {
+					recipientId: userId,
+					isRead: false,
+					...(mute.length > 0 ? { userId: Not(In(mute.map(x => x.muteeId))) } : {}),
+				},
+				take: 1,
+			}).then(count => count > 0),
+			groupQs,
+		]);
+
+		return withUser || withGroups.some(x => x);
 	}
 
 	@bindThis
@@ -647,6 +685,7 @@ export class UserEntityService implements OnModuleInit {
 		me?: { id: MiUser['id'] } | null | undefined,
 		options?: {
 			schema?: S,
+			detail?: boolean,
 			includeSecrets?: boolean,
 		},
 	): Promise<Packed<S>[]> {

@@ -17,6 +17,7 @@ import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { MiPoll } from '@/models/Poll.js';
+import type { MiMessagingMessage } from '@/models/MessagingMessage.js';
 import type { MiPollVote } from '@/models/PollVote.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import { MfmService } from '@/core/MfmService.js';
@@ -31,7 +32,7 @@ import { IdService } from '@/core/IdService.js';
 import { JsonLdService } from './JsonLdService.js';
 import { ApMfmService } from './ApMfmService.js';
 import { CONTEXT } from './misc/contexts.js';
-import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate } from './type.js';
+import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate, IRead } from './type.js';
 
 @Injectable()
 export class ApRendererService {
@@ -313,7 +314,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public async renderNote(note: MiNote, dive = true): Promise<IPost> {
+	public async renderNote(note: MiNote, dive = true, isTalk = false): Promise<IPost> {
 		const getPromisedFiles = async (ids: string[]): Promise<MiDriveFile[]> => {
 			if (ids.length === 0) return [];
 			const items = await this.driveFilesRepository.findBy({ id: In(ids) });
@@ -423,6 +424,10 @@ export class ApRendererService {
 			})),
 		} as const : {};
 
+		const asTalk = isTalk ? {
+			_misskey_talk: true,
+		} as const : {};
+
 		return {
 			id: `${this.config.url}/notes/${note.id}`,
 			type: 'Note',
@@ -446,6 +451,7 @@ export class ApRendererService {
 			sensitive: note.cw != null || files.some(file => file.isSensitive),
 			tag,
 			...asPoll,
+			...asTalk,
 		};
 	}
 
@@ -541,6 +547,15 @@ export class ApRendererService {
 					totalItems: poll.votes[i],
 				},
 			})),
+		};
+	}
+
+	@bindThis
+	public renderRead(user: { id: MiUser['id'] }, message: MiMessagingMessage): IRead {
+		return {
+			type: 'Read',
+			actor: `${this.config.url}/users/${user.id}`,
+			object: message.uri!,
 		};
 	}
 
@@ -669,7 +684,7 @@ export class ApRendererService {
 	 * @param orderedItems attached objects (optional)
 	 */
 	@bindThis
-	public renderOrderedCollection(id: string, totalItems: number, first?: string, last?: string, orderedItems?: IObject[]) {
+	public renderOrderedCollection(id: string | null, totalItems: number, first?: string, last?: string, orderedItems?: IObject[]) {
 		const page: any = {
 			id,
 			type: 'OrderedCollection',

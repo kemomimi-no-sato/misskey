@@ -132,6 +132,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	menu: {
 		where: 'deviceAccount',
 		default: [
+			'messaging',
 			'notifications',
 			'favorites',
 			'drive',
@@ -531,6 +532,14 @@ export const defaultStore = markRaw(new Storage('base', {
 	sound_reaction: {
 		where: 'device',
 		default: { type: 'syuilo/bubble2', volume: 1 } as SoundStore,
+	},
+	sound_chat: {
+		where: 'device',
+		default: { type: 'syuilo/pope1', volume: 1 } as SoundStore,
+	},
+	sound_chatBg: {
+		where: 'device',
+		default: { type: 'syuilo/pope2', volume: 1 } as SoundStore,
 	},
 }));
 
