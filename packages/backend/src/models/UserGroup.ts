@@ -8,11 +8,6 @@ export class MiUserGroup {
 	public id: string;
 
 	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the UserGroup.',
-	})
-	public createdAt: Date;
-
 	@Column('varchar', {
 		length: 256,
 	})
