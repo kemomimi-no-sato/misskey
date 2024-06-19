@@ -6,6 +6,7 @@ import type { Packed } from '@/misc/json-schema.js';
 import type { } from '@/models/Blocking.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiUserGroup } from '@/models/UserGroup.js';
+import { IdService } from '@/core/IdService.js';
 import { bindThis } from '@/decorators.js';
 import { UserEntityService } from './UserEntityService.js';
 
@@ -19,6 +20,8 @@ export class UserGroupEntityService {
 		private userGroupJoiningsRepository: UserGroupJoiningsRepository,
 
 		private userEntityService: UserEntityService,
+
+		private idService: IdService,
 	) {
 	}
 
@@ -34,7 +37,7 @@ export class UserGroupEntityService {
 
 		return {
 			id: userGroup.id,
-			createdAt: userGroup.createdAt.toISOString(),
+			createdAt: this.idService.parse(userGroup.id).date.toISOString(),
 			name: userGroup.name,
 			ownerId: userGroup.userId,
 			userIds: users.map(x => x.userId),
