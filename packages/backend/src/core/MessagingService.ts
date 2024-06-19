@@ -48,10 +48,9 @@ export class MessagingService {
 	}
 
 	@bindThis
-	public async createMessage(user: { id: MiUser['id']; host: MiUser['host']; }, recipientUser: MiUser | undefined | null, recipientGroup: MiUserGroup | undefined | null, text: string | null | undefined, file: MiDriveFile | null, uri?: string) {
+	public async createMessage(user: { id: MiUser['id']; host: MiUser['host']; }, recipientUser: MiUser | null, recipientGroup: MiUserGroup | null, text: string | null | undefined, file: MiDriveFile | null, uri?: string) {
 		const message = {
-			id: this.idService.gen(),
-			createdAt: new Date(),
+			id: this.idService.gen(Date.now()),
 			fileId: file ? file.id : null,
 			recipientId: recipientUser ? recipientUser.id : null,
 			groupId: recipientGroup ? recipientGroup.id : null,
@@ -122,7 +121,6 @@ export class MessagingService {
 		if (recipientUser && this.userEntityService.isLocalUser(user) && this.userEntityService.isRemoteUser(recipientUser)) {
 			const note = {
 				id: message.id,
-				createdAt: message.createdAt,
 				fileIds: message.fileId ? [message.fileId] : [],
 				text: message.text,
 				userId: message.userId,
@@ -133,7 +131,7 @@ export class MessagingService {
 					username: u.username,
 					host: u.host,
 				}))),
-			} as unknown as MiNote;
+			} as MiNote;
 
 			const activity = this.apRendererService.addContext(this.apRendererService.renderCreate(await this.apRendererService.renderNote(note, false, true), note));
 

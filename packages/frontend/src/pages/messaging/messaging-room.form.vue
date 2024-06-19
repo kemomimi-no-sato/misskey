@@ -51,15 +51,15 @@ const props = defineProps<{
 	}>();
 let textEl = ref<HTMLTextAreaElement | null>(null); // 修正箇所
 let fileEl = ref<HTMLInputElement | null>(null);
-let text = ref<string>('');
-let file = ref<Misskey.entities.DriveFile | null>(null);
+const text = ref<string>('');
+const file = ref<Misskey.entities.DriveFile | null>(null);
 let sending = ref(false);
 const typing = throttle(3000, () => {
 	useStream().send('typingOnMessaging', props.user ? { partner: props.user.id } : { group: props.group?.id });
 });
 let draftKey = computed(() => props.user ? 'user:' + props.user.id : 'group:' + props.group?.id);
 let canSend = computed(() => (text.value !== null && text.value !== '') || file.value != null);
-watch([text, file], saveDraft);
+watch([text.value, file.value], saveDraft);
 
 async function onPaste(ev: ClipboardEvent) {
 	if (!ev.clipboardData) return;
