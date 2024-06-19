@@ -23,28 +23,6 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 
 	const cleanups = [] as (() => void)[];
 
-	async function inviteGroup() {
-		const groups = await misskeyApi('users/groups/owned');
-		if (groups.length === 0) {
-			os.alert({
-				type: 'error',
-				text: i18n.ts.youHaveNoGroups,
-			});
-			return;
-		}
-		const { canceled, result: groupId } = await os.select({
-			title: i18n.ts.group,
-			items: groups.map(group => ({
-				value: group.id, text: group.name,
-			})),
-		});
-		if (canceled) return;
-		os.apiWithDialog('users/groups/invite', {
-			groupId: groupId,
-			userId: user.id,
-		});
-	}
-
 	async function toggleMute() {
 		if (user.isMuted) {
 			os.apiWithDialog('mute/delete', {
@@ -226,12 +204,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 		action: () => {
 			editNickname(user);
 		},
-	}] : []), { type: 'divider' }, meId !== user.id ? {
-		type: 'link',
-		icon: 'ti ti-messages',
-		text: i18n.ts.startMessaging,
-		to: '/my/messaging/' + Misskey.acct.toString(user),
-	} : undefined, null, {
+	}] : []), { type: 'divider' }, {
 		type: 'parent',
 		icon: 'ti ti-list',
 		text: i18n.ts.addToList,
@@ -264,11 +237,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 				};
 			});
 		},
-	}, meId !== user.id ? {
-		icon: 'ti ti-users',
-		text: i18n.ts.inviteToGroup,
-		action: inviteGroup,
-	} : undefined, {
+	}, {
 		type: 'parent',
 		icon: 'ti ti-antenna',
 		text: i18n.ts.addToAntenna,
