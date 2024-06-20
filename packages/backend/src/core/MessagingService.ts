@@ -48,7 +48,7 @@ export class MessagingService {
 	}
 
 	@bindThis
-	public async createMessage(user: { id: MiUser['id']; host: MiUser['host']; }, recipientUser: MiUser | null, recipientGroup: MiUserGroup | null, text: string | null | undefined, file: MiDriveFile | null, uri?: string) {
+	public async createMessage(user: { id: MiUser['id']; host: MiUser['host']; }, recipientUser: MiUser | null, recipientGroup: MiUserGroup | null | undefined, text: string | null | undefined, file: MiDriveFile | null | undefined, uri?: string) {
 		const message = {
 			id: this.idService.gen(Date.now()),
 			fileId: file ? file.id : null,
@@ -279,7 +279,7 @@ export class MessagingService {
 				.where('message.groupId = :groupId', { groupId: groupId })
 				.andWhere('message.userId != :userId', { userId: userId })
 				.andWhere('NOT (:userId = ANY(message.reads))', { userId: userId })
-				.andWhere('message.createdAt > :joinedAt', { joinedAt: joining.createdAt }) // 自分が加入する前の会話については、未読扱いしない
+				.andWhere('message.createdAt > :joinedAt', { joinedAt: this.idService.parse(joining.id) }) // 自分が加入する前の会話については、未読扱いしない
 				.getOne().then(x => x != null);
 
 			if (!unreadExist) {
