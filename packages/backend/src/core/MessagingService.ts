@@ -125,6 +125,8 @@ export class MessagingService {
 				text: message.text,
 				userId: message.userId,
 				visibility: 'specified',
+				emojis: [{}],
+				tags: [{}],
 				mentions: [recipientUser].map(u => u.id),
 				mentionedRemoteUsers: JSON.stringify([recipientUser].map(u => ({
 					uri: u.uri,
