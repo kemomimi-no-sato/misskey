@@ -108,7 +108,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			const invitation = await this.userGroupInvitationsRepository.insert({
 				id: this.idService.gen(),
-				createdAt: new Date(),
 				userId: user.id,
 				userGroupId: userGroup.id,
 			} as MiUserGroupInvitation).then(x => this.userGroupInvitationsRepository.findOneByOrFail(x.identifiers[0]));

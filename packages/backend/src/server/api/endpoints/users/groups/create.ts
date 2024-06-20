@@ -53,7 +53,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		super(meta, paramDef, async (ps, me) => {
 			const userGroup = await this.userGroupsRepository.insert({
 				id: this.idService.gen(),
-				createdAt: new Date(),
 				userId: me.id,
 				name: ps.name,
 			} as MiUserGroup).then(x => this.userGroupsRepository.findOneByOrFail(x.identifiers[0]));
@@ -61,7 +60,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			// Push the owner
 			await this.userGroupJoiningsRepository.insert({
 				id: this.idService.gen(),
-				createdAt: new Date(),
 				userId: me.id,
 				userGroupId: userGroup.id,
 			} as MiUserGroupJoining);
