@@ -312,7 +312,11 @@ function onRead(x: any) {
 function onDeleted(id) {
 	const msg = pagingComponent.value.items.find(m => m.id === id);
 	if (msg) {
-		pagingComponent.value.items = pagingComponent.items.filter(m => m.id !== msg.id);
+		pagingComponent.value.items = pagingComponent.value.items.filter(m => m.id !== msg.id);
+		// ページをリロードする
+		pagingComponent.value.reload().then(() => {
+			thisScrollToBottom();
+		});
 	}
 }
 
