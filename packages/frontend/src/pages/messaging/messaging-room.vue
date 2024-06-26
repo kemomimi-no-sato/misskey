@@ -310,11 +310,12 @@ function onRead(x: any) {
 }
 
 function onDeleted(id) {
-	const msg = pagingComponent.value.items.find(m => m.id === id);
-	if (msg) {
-		pagingComponent.value.items = pagingComponent.value.items.filter(m => m.id !== msg.id);
-		// ページをリロードする
-		pagingComponent.value.reload().then(() => {
+	const _isBottom = isBottomVisible(rootEl.value, 64);
+	pagingComponent.value.removeItem(id); // removeItem メソッドを使用して項目を削除
+
+	if (_isBottom) {
+		// Scroll to bottom
+		nextTick(() => {
 			thisScrollToBottom();
 		});
 	}
