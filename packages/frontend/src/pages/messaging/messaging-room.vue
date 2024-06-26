@@ -109,8 +109,8 @@ watch(
 	async (newGroup) => {
 		console.debug('Watch triggered, new group =', newGroup);
 		if (!newGroup) {
-      onlineUserCount.value = 0; // グループが存在しない場合はオンラインユーザー数を0に設定
-      groupUsers.value = []; // ここもrefに対して操作
+			onlineUserCount.value = 0; // グループが存在しない場合はオンラインユーザー数を0に設定
+			groupUsers.value = []; // ここもrefに対して操作
 			console.debug('Group is null, setting onlineUserCount to 0 and clearing groupUsers.');
 			return;
 		}
@@ -127,8 +127,8 @@ watch(
 		);
 
 		console.debug('Fetched users =', fetchedUsers);
-		
-    groupUsers.value = fetchedUsers; // ここもrefに対して操作
+
+		groupUsers.value = fetchedUsers; // ここもrefに対して操作
 		onlineUserCount.value = fetchedUsers.filter((fetchedUser) => fetchedUser.onlineStatus === 'online').length;
 		console.log(`Online user count updated: ${onlineUserCount.value}`);
 	},
