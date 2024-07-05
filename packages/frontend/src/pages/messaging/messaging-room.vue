@@ -75,18 +75,20 @@ const props = defineProps<{
 		userAcct?: string;
 		groupId?: string;
 	}>();
-let rootEl = shallowRef<HTMLDivElement | undefined>();
-let formEl = shallowRef<InstanceType<typeof XForm>>();
-let pagingComponent = shallowRef<InstanceType<typeof XPagination>>();
-let fetching = ref(true);
-let user: Misskey.entities.UserDetailed | null = null;
-let typers: Misskey.entities.User[] = [];
-let connection: Misskey.ChannelConnection<Misskey.Channels['messaging']> | null = null;
-let showIndicator = ref(false);
+
+const rootEl = shallowRef<HTMLDivElement>();
+const formEl = shallowRef<InstanceType<typeof XForm>>();
+const pagingComponent = shallowRef<InstanceType<typeof XPagination>>();
+
+const fetching = ref(true);
+const user = ref<Misskey.entities.UserDetailed | null>(null);
+const group = ref<Misskey.entities.UserGroup | null>(null);
+const typers = ref<Misskey.entities.User[]>([]);
+const connection = ref<Misskey.ChannelConnection<Misskey.Channels['messaging']> | null>(null);
+const showIndicator = ref(false);
 
 let onlineUserCount = ref(0);
 const groupUsers = ref<unknown[]>([]); // 初期化を追加
-let group = ref<Misskey.entities.UserGroup | null>(null); // group を ref で初期化
 
 console.log('group =', group.value);
 
@@ -132,7 +134,7 @@ watch(
 		onlineUserCount.value = fetchedUsers.filter((fetchedUser) => fetchedUser.onlineStatus === 'online').length;
 		console.log(`Online user count updated: ${onlineUserCount.value}`);
 	},
-	{ immediate: true } // 初期化時にも実行されるように設定
+	{ immediate: true }, // 初期化時にも実行されるように設定
 );
 
 onMounted(() => {
@@ -144,7 +146,7 @@ const {
 } = defaultStore.reactiveState;
 let pagination: Paging | null = null;
 watch([() => props.userAcct, () => props.groupId], () => {
-	if (connection) connection.dispose();
+	if (connection.value) connection.value.dispose();
 	fetch();
 });
 
@@ -152,45 +154,47 @@ async function fetch() {
 	fetching.value = true;
 	if (props.userAcct) {
 		const acct = Misskey.acct.parse(props.userAcct);
-		user = await misskeyApi('users/show', { username: acct.username, host: acct.host || undefined });
-		group = null;
+		user.value = await misskeyApi('users/show', { username: acct.username, host: acct.host || undefined });
+		group.value = null;
 
 		pagination = {
 			endpoint: 'messaging/messages',
 			limit: 100,
 			params: {
-				userId: user.id,
+				userId: user.value.id,
 			},
 			reversed: true,
 			pageEl: rootEl.value,
 		};
-		connection = useStream().useChannel('messaging', {
-			otherparty: user.id,
+		connection.value = useStream().useChannel('messaging', {
+			otherparty: user.value.id,
 		});
 	} else {
-		user = null;
-		group = await misskeyApi('users/groups/show', { groupId: props.groupId });
+		user.value = null;
+		group.value = await misskeyApi('users/groups/show', { groupId: props.groupId });
 		pagination = {
 			endpoint: 'messaging/messages',
 			limit: 100,
 			params: {
-				groupId: group.id,
+				groupId: group.value.id,
 			},
 			reversed: true,
 			pageEl: rootEl.value,
 		};
-		connection = useStream().useChannel('messaging', {
-			group: group.id,
+		connection.value = useStream().useChannel('messaging', {
+			group: group.value.id,
 		});
 	}
 
-	connection.on('message', onMessage);
-	connection.on('read', onRead);
-	connection.on('deleted', onDeleted);
-	connection.on('typers', _typers => {
-		typers = _typers.filter(u => u.id !== $i?.id);
+	connection.value.on('message', onMessage);
+	connection.value.on('read', onRead);
+	connection.value.on('deleted', onDeleted);
+	connection.value.on('typers', _typers => {
+		typers.value = _typers.filter(u => u.id !== $i?.id);
 	});
+
 	document.addEventListener('visibilitychange', onVisibilitychange);
+
 	nextTick(() => {
 		pagingComponent.value?.reload().then(() => {
 			thisScrollToBottom();
@@ -252,12 +256,14 @@ function onDrop(ev: DragEvent): void {
 function onMessage(message) {
 	sound.playMisskeySfx('chat');
 	const _isBottom = isBottomVisible(rootEl.value, 64);
+
 	pagingComponent.value.prepend(message);
 	if (message.userId !== $i?.id && !document.hidden) {
-		connection?.send('read', {
+		connection.value?.send('read', {
 			id: message.id,
 		});
 	}
+
 	if (_isBottom) {
 		// Scroll to bottom
 		nextTick(() => {
@@ -277,7 +283,7 @@ function onRead(x: any) {
 
 	const itemsMap = pagingComponent.value.items;
 
-	if (user) {
+	if (user.value) {
 		if (!Array.isArray(x)) x = [x];
 		for (const id of x) {
 			if (itemsMap.has(id)) {
@@ -290,7 +296,7 @@ function onRead(x: any) {
 				}
 			}
 		}
-	} else if (group) {
+	} else if (group.value) {
 		if (x && Array.isArray(x.ids)) {
 			for (const id of x.ids) {
 				if (itemsMap.has(id)) {
@@ -344,7 +350,7 @@ function onVisibilitychange() {
 	if (document.hidden) return;
 	for (const message of pagingComponent.value.items) {
 		if (message.userId !== $i?.id && !message.isRead) {
-			connection?.send('read', {
+			connection.value?.send('read', {
 				id: message.id,
 			});
 		}
@@ -355,15 +361,15 @@ onMounted(() => {
 	fetch();
 });
 onBeforeUnmount(() => {
-	connection?.dispose();
+	connection.value?.dispose();
 	document.removeEventListener('visibilitychange', onVisibilitychange);
 	if (scrollRemove) scrollRemove();
 });
-definePageMetadata(computed(() => !fetching ? user ? {
+definePageMetadata(computed(() => !fetching.value ? user.value ? {
 	userName: user,
 	avatar: user,
 } : {
-	title: group?.name,
+	title: group.value?.name,
 	icon: 'ti ti-users',
 } : null));
 </script>

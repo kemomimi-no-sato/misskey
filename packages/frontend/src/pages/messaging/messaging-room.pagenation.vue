@@ -157,15 +157,6 @@ const BACKGROUND_PAUSE_WAIT_SEC = 10;
 // https://qiita.com/mkataigi/items/0154aefd2223ce23398e
 const scrollObserver = ref<IntersectionObserver>();
 
-const bottomElement = ref<HTMLElement | null>(null);
-
-watch(items, async () => {
-	await nextTick();
-	if (!backed.value && bottomElement.value) {
-		bottomElement.value.scrollIntoView({ behavior: 'smooth' });
-	}
-}, { deep: true });
-
 watch([() => props.pagination.reversed, scrollableElement], () => {
 	if (scrollObserver.value) scrollObserver.value.disconnect();
 
