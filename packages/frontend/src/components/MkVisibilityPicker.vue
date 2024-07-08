@@ -45,6 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { nextTick, shallowRef, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkModal from '@/components/MkModal.vue';
+import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
 
 const modal = shallowRef<InstanceType<typeof MkModal>>();
@@ -53,7 +54,6 @@ const props = withDefaults(defineProps<{
 	currentVisibility: typeof Misskey.noteVisibilities[number];
 	isSilenced: boolean;
 	localOnly: boolean;
-	isPrivateAccount: boolean;
 	src?: HTMLElement;
 	isReplyVisibilitySpecified?: boolean;
 }>(), {
@@ -65,6 +65,8 @@ const emit = defineEmits<{
 }>();
 
 const v = ref(props.currentVisibility);
+
+const isPrivateAccount = ref($i.isLocked && !$i.policies.permissionToPostPublicly);
 
 function choose(visibility: typeof Misskey.noteVisibilities[number]): void {
 	v.value = visibility;
