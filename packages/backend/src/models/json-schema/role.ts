@@ -180,6 +180,10 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		permissionToPostPublicly: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		mentionLimit: {
 			type: 'integer',
 			optional: false, nullable: false,
@@ -271,7 +275,7 @@ export const packedRolePoliciesSchema = {
 		canRemoteNote: {
 			type: 'boolean',
 			optional: false, nullable: false,
-		}
+		},
 	},
 } as const;
 

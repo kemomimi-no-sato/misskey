@@ -322,6 +322,8 @@ if ($i.isSilenced && visibility.value === 'public') {
 	visibility.value = 'home';
 }
 
+if ($i.isPrivateAccount && (visibility.value === 'public' || visibility.value === 'home'))
+
 if (props.channel) {
 	visibility.value = 'public';
 	localOnly.value = true; // TODO: チャンネルが連合するようになった折には消す
@@ -472,6 +474,7 @@ function setVisibility() {
 	os.popup(defineAsyncComponent(() => import('@/components/MkVisibilityPicker.vue')), {
 		currentVisibility: visibility.value,
 		isSilenced: $i.isSilenced,
+		isPrivateAccount: $i.isPrivateAccount,
 		localOnly: localOnly.value,
 		src: visibilityButton.value,
 		...(props.reply ? { isReplyVisibilitySpecified: props.reply.visibility === 'specified' } : {}),

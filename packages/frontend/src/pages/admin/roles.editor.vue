@@ -184,6 +184,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 			</MkFolder>
 
+			<MkFolder v-if="matchQuery([i18n.ts._role._options.permissionToPostPublicly, 'permissionToPostPublicly'])">
+				<template #label>{{ i18n.ts._role._options.permissionToPostPublicly }}</template>
+				<template #suffix>
+					<span v-if="role.policies.permissionToPostPublicly.useDefault" :class="$style.useDefaultLabel">{{ i18n.ts._role.useBaseValue }}</span>
+					<span v-else>{{ role.policies.permissionToPostPublicly.value ? i18n.ts.yes : i18n.ts.no }}</span>
+					<span :class="$style.priorityIndicator"><i :class="getPriorityIcon(role.policies.permissionToPostPublicly)"></i></span>
+				</template>
+				<div class="_gaps">
+					<MkSwitch v-model="role.policies.permissionToPostPublicly.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts._role.useBaseValue }}</template>
+					</MkSwitch>
+					<MkSwitch v-model="role.policies.permissionToPostPublicly.value" :disabled="role.policies.permissionToPostPublicly.useDefault" :readonly="readonly">
+						<template #label>{{ i18n.ts.enable }}</template>
+					</MkSwitch>
+					<MkRange v-model="role.policies.permissionToPostPublicly.priority" :min="0" :max="2" :step="1" easing :textConverter="(v) => v === 0 ? i18n.ts._role._priority.low : v === 1 ? i18n.ts._role._priority.middle : v === 2 ? i18n.ts._role._priority.high : ''">
+						<template #label>{{ i18n.ts._role.priority }}</template>
+					</MkRange>
+				</div>
+			</MkFolder>
+
 			<MkFolder v-if="matchQuery([i18n.ts._role._options.mentionMax, 'mentionLimit'])">
 				<template #label>{{ i18n.ts._role._options.mentionMax }}</template>
 				<template #suffix>
@@ -656,7 +676,6 @@ import MkRange from '@/components/MkRange.vue';
 import FormSlot from '@/components/form/slot.vue';
 import { i18n } from '@/i18n.js';
 import { ROLE_POLICIES } from '@/const.js';
-import { $i } from '@/account.js';
 import { instance } from '@/instance.js';
 import { deepClone } from '@/scripts/clone.js';
 import { defaultStore } from '@/store.js';

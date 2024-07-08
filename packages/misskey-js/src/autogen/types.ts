@@ -3829,6 +3829,7 @@ export type components = {
       bannerBlurhash: string | null;
       isLocked: boolean;
       isSilenced: boolean;
+      isPrivateAccount: boolean;
       /** @example false */
       isSuspended: boolean;
       /** @example Hi masters, I am Ai! */
@@ -4906,6 +4907,7 @@ export type components = {
       gtlAvailable: boolean;
       ltlAvailable: boolean;
       canPublicNote: boolean;
+      permissionToPostPublicly: boolean;
       mentionLimit: number;
       canInvite: boolean;
       inviteLimit: number;

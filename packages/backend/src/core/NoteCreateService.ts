@@ -259,9 +259,14 @@ export class NoteCreateService implements OnApplicationShutdown {
 			const sensitiveWords = meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
-			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
+			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {	//publicが許可されていない場合は、homeにする
 				data.visibility = 'home';
 			}
+		}
+
+		//permissionToPostPubliclyがfalseの場合、data.visibilityをfollowersにする
+		if ((await this.roleService.getUserPolicies(user.id)).permissionToPostPublicly === false && (data.visibility === 'public' || data.visibility === 'home')) {
+			data.visibility = 'followers';
 		}
 
 		const hasProhibitedWords = await this.checkProhibitedWordsContain({
@@ -333,6 +338,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			data.localOnly = true;
 		}
 
+		//ロールにてリモート投稿が許可されていない場合
 		if ((await this.roleService.getUserPolicies(user.id)).canRemoteNote === false) {
 			data.localOnly = true;
 		}
