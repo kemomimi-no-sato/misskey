@@ -1,10 +1,10 @@
 import { Note } from 'misskey-js/built/entities.js';
 import { getTextLastNumeric, getTextWithoutEndingNumeric } from './get-note-last-numeric.js';
 import { pleaseLogin } from './please-login.js';
+import { misskeyApi } from './misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { confirm, popupMenu, post } from '@/os.js';
 import { defaultStore } from '@/store.js';
-import { misskeyApi } from './misskey-api.js';
 
 // #region shrimpia
 export function stealMenu(note: Note, el: HTMLElement) {
@@ -17,19 +17,19 @@ export function stealMenu(note: Note, el: HTMLElement) {
 		action: async () => {
 			if (!note.text) return;
 			if (!defaultStore.state.numberQuoteConfirmed) {
-				const {canceled} = await confirm({
+				const { canceled } = await confirm({
 					type: 'warning',
 					text: 'このノートを数字引用します。本文をコピーして投稿するため、相手に迷惑がかからないことを確認する必要があります。\n本当に投稿しますか？',
-				})
+				});
 				if (canceled) return;
 			}
 			defaultStore.set('numberQuoteConfirmed', true);
 			if (note.visibility === 'followers' || note.visibility === 'specified') {
-				const {canceled} = await confirm({
+				const { canceled } = await confirm({
 					type: 'warning',
 					text: `このノートは公開範囲を「${i18n.ts._visibility[note.visibility]}」に設定しているため、数字引用すべきではないかもしれません。それでも続行しますか？`,
-				})
-				if (canceled) return
+				});
+				if (canceled) return;
 			}
 			let baseText = getTextWithoutEndingNumeric(note.text);
 			if (baseText.endsWith('</center>')) baseText += '\n';
@@ -45,7 +45,6 @@ export function stealMenu(note: Note, el: HTMLElement) {
 				localOnly,
 			}).then(() => {
 				if (nextNumericOnesPlace !== 4) return;
-				playFile('shrimpia/4', 0.5);
 			});
 		},
 	}, {
@@ -54,7 +53,7 @@ export function stealMenu(note: Note, el: HTMLElement) {
 		action: async () => {
 			if (!note.text) return;
 			if (!defaultStore.state.stealConfirmed) {
-				const {canceled} = await confirm({
+				const { canceled } = await confirm({
 					type: 'warning',
 					text: 'このノートをパクります。本文をコピーして投稿するため、相手に迷惑がかからないことを確認する必要があります。\n本当に投稿しますか？',
 				});

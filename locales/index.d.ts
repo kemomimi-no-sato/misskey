@@ -6619,6 +6619,10 @@ export interface Locale extends ILocale {
              */
             "permissionToPostPublicly": string;
             /**
+             * パクるメニューの表示を許可
+             */
+            "canStealNote": string;
+            /**
              * ノート内の最大メンション数
              */
             "mentionMax": string;

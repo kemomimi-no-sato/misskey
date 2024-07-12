@@ -124,7 +124,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-else ref="quoteButton" :class="$style.footerButton" class="_button" disabled>
 					<i class="ti ti-ban"></i>
 				</button>
-				<button v-if="appearNote.text && defaultStore.state.enableNumericButton" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown="stealMenu(appearNote, stealButton)">
+				<button v-if="appearNote.text && defaultStore.state.enableNumericButton && $i.policies.canStealNote" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
 				<button ref="reactButton" :class="$style.footerButton" class="_button" @click="toggleReact()">
