@@ -31,7 +31,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<span v-if="user.isLocked" :title="i18n.ts.isLocked"><i class="ti ti-lock"></i></span>
 								<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="ti ti-robot"></i></span>
 								<div v-if="user.roles.length > 0" class="roles">
-									<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor }">
+									<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="role.isBgColor ? { '--color': role.color, '--role-bg-color': role.bgColor } : { '--color': role.color }">
 										{{ role.name }}
 									</span>
 								</div>
@@ -57,7 +57,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<span v-if="user.isBot" :title="i18n.ts.isBot"><i class="ti ti-robot"></i></span>
 							-->
 							<div v-if="user.roles.length > 0" class="roles">
-								<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="{ '--color': role.color, '--role-bg-color': role.bgColor }">
+								<span v-for="role in user.roles" :key="role.id" v-tooltip="role.description" class="role" :style="role.isBgColor ? { '--color': role.color, '--role-bg-color': role.bgColor } : { '--color': role.color }">
 									{{ role.name }}
 								</span>
 							</div>

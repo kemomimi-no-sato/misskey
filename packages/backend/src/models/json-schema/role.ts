@@ -302,6 +302,11 @@ export const packedRoleLiteSchema = {
 			optional: false, nullable: true,
 			example: '#000000',
 		},
+		bgColor: {
+			type: 'string',
+			optional: false, nullable: true,
+			example: '#000000',
+		},
 		iconUrl: {
 			type: 'string',
 			optional: false, nullable: true,
@@ -324,6 +329,11 @@ export const packedRoleLiteSchema = {
 			type: 'integer',
 			optional: false, nullable: false,
 			example: 0,
+		},
+		isBgColor: {
+			type: 'boolean',
+			optional: false, nullable: false,
+			example: false,
 		},
 	},
 } as const;

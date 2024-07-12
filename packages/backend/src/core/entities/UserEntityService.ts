@@ -598,6 +598,7 @@ export class UserEntityService implements OnModuleInit {
 					isModerator: role.isModerator,
 					isAdministrator: role.isAdministrator,
 					displayOrder: role.displayOrder,
+					isBgColor: role.isBgColor,
 				}))),
 				memo: memo,
 				moderationNote: iAmModerator ? (profile!.moderationNote ?? '') : undefined,

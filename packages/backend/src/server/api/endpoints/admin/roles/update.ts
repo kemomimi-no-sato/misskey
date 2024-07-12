@@ -43,6 +43,7 @@ export const paramDef = {
 		isAdministrator: { type: 'boolean' },
 		isExplorable: { type: 'boolean' },
 		asBadge: { type: 'boolean' },
+		isBgColor: { type: 'boolean' },
 		canEditMembersByModerator: { type: 'boolean' },
 		displayOrder: { type: 'number' },
 		policies: {
@@ -62,6 +63,7 @@ export const paramDef = {
 		'isModerator',
 		'isAdministrator',
 		'asBadge',
+		'isBgColor',
 		'canEditMembersByModerator',
 		'displayOrder',
 		'policies',
@@ -95,6 +97,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				isAdministrator: ps.isAdministrator,
 				isExplorable: ps.isExplorable,
 				asBadge: ps.asBadge,
+				isBgColor: ps.isBgColor,
 				canEditMembersByModerator: ps.canEditMembersByModerator,
 				displayOrder: ps.displayOrder,
 				policies: ps.policies,

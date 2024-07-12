@@ -841,6 +841,8 @@ describe('Note', () => {
 						value: 0,
 					},
 				} as any,
+				bgColor: null,
+				isBgColor: false,
 			}, root);
 
 			assert.strictEqual(res.status, 200);

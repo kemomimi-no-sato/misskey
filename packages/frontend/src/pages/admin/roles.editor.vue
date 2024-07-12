@@ -21,7 +21,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #label>{{ i18n.ts.color }}</template>
 	</MkColorInput>
 
-	<MkColorInput v-model="role.bgColor">
+	<MkSwitch v-model="role.isBgColor" :readonly="readonly">
+		<template #label>{{ "背景色を表示" }}</template>
+		<template #caption>{{ "背景色を表示します。" }}</template>
+	</MkSwitch>
+
+	<MkColorInput v-if="role.isBgColor" v-model="role.bgColor">
 		<template #label>{{ "背景色" }}</template>
 	</MkColorInput>
 
@@ -759,6 +764,7 @@ const save = throttle(100, () => {
 		isModerator: role.value.isModerator,
 		isPublic: role.value.isPublic,
 		isExplorable: role.value.isExplorable,
+		isBgColor: role.value.isBgColor,
 		asBadge: role.value.asBadge,
 		canEditMembersByModerator: role.value.canEditMembersByModerator,
 		policies: role.value.policies,

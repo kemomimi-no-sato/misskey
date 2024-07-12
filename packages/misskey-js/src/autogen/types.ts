@@ -3829,7 +3829,6 @@ export type components = {
       bannerBlurhash: string | null;
       isLocked: boolean;
       isSilenced: boolean;
-      isPrivateAccount: boolean;
       /** @example false */
       isSuspended: boolean;
       /** @example Hi masters, I am Ai! */
@@ -4908,6 +4907,7 @@ export type components = {
       ltlAvailable: boolean;
       canPublicNote: boolean;
       permissionToPostPublicly: boolean;
+      canStealNote: boolean;
       mentionLimit: number;
       canInvite: boolean;
       inviteLimit: number;
@@ -9465,6 +9465,7 @@ export type operations = {
           name: string;
           description: string;
           color: string | null;
+          bgColor: string | null;
           iconUrl: string | null;
           /** @enum {string} */
           target: 'manual' | 'conditional';
@@ -9474,6 +9475,8 @@ export type operations = {
           isAdministrator: boolean;
           /** @default false */
           isExplorable?: boolean;
+          /** @default false */
+          isBgColor: boolean;
           asBadge: boolean;
           canEditMembersByModerator: boolean;
           displayOrder: number;
@@ -9697,6 +9700,7 @@ export type operations = {
           isAdministrator: boolean;
           isExplorable?: boolean;
           asBadge: boolean;
+          isBgColor?: boolean;
           canEditMembersByModerator: boolean;
           displayOrder: number;
           policies: Record<string, never>;
