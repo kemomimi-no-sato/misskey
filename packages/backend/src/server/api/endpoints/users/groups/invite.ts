@@ -114,9 +114,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			// 通知を作成
 			this.notificationService.createNotification(user.id, 'groupInvited', {
-				notifierId: me.id,
 				userGroupInvitationId: invitation.id,
-			});
+			}, me.id);
 		});
 	}
 }
