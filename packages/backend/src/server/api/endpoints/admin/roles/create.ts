@@ -48,7 +48,6 @@ export const paramDef = {
 		'name',
 		'description',
 		'color',
-		'bgColor',
 		'iconUrl',
 		'target',
 		'condFormula',

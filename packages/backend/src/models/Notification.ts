@@ -78,6 +78,7 @@ export type MiNotification = {
 	id: string;
 	createdAt: string;
 	notifierId: MiUser['id'];
+	userGroupInvitationId: MiUserGroupInvitation['id'];
 } | {
 	type: 'achievementEarned';
 	id: string;
