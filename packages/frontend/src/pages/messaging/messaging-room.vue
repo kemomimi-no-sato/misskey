@@ -159,7 +159,7 @@ async function fetch() {
 
 		pagination = {
 			endpoint: 'messaging/messages',
-			limit: 100,
+			limit: 160,
 			params: {
 				userId: user.value.id,
 			},
@@ -174,7 +174,7 @@ async function fetch() {
 		group.value = await misskeyApi('users/groups/show', { groupId: props.groupId });
 		pagination = {
 			endpoint: 'messaging/messages',
-			limit: 100,
+			limit: 160,
 			params: {
 				groupId: group.value.id,
 			},
