@@ -27,7 +27,7 @@ export const meta = {
 export const paramDef = {
 	type: 'object',
 	properties: {
-		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
+		limit: { type: 'integer', minimum: 1, maximum: 200, default: 10 },
 		group: { type: 'boolean', default: false },
 	},
 	required: [],
