@@ -7,10 +7,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <MkStickyContainer>
 	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
 	<MkHorizontalSwipe v-model:tab="tab" :tabs="headerTabs">
-		<div v-if="tab === 'featured'" key="featured">
-			<XFeatured/>
-		</div>
-		<div v-else-if="tab === 'users'" key="users">
+		<div v-if="tab === 'users'" key="users">
 			<XUsers/>
 		</div>
 		<div v-else-if="tab === 'roles'" key="roles">
@@ -22,7 +19,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, watch, ref, shallowRef } from 'vue';
-import XFeatured from './explore.featured.vue';
 import XUsers from './explore.users.vue';
 import XRoles from './explore.roles.vue';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
@@ -34,7 +30,7 @@ const props = withDefaults(defineProps<{
 	tag?: string;
 	initialTab?: string;
 }>(), {
-	initialTab: 'featured',
+	initialTab: 'users',
 });
 
 const tab = ref(props.initialTab);
@@ -47,10 +43,6 @@ watch(() => props.tag, () => {
 const headerActions = computed(() => []);
 
 const headerTabs = computed(() => [{
-	key: 'featured',
-	icon: 'ti ti-bolt',
-	title: i18n.ts.featured,
-}, {
 	key: 'users',
 	icon: 'ti ti-users',
 	title: i18n.ts.users,
