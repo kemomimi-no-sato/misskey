@@ -87,11 +87,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #caption>{{ i18n.ts._profile.metadataDescription }}</template>
 	</FormSlot>
 
-	<MkFolder>
-		<template #label>{{ i18n.ts.advancedSettings }}</template>
-
-
-	</MkFolder>
 	<MkInput v-model="profile.followedMessage" :max="200" manualSave :mfmPreview="false">
 		<template #label>{{ i18n.ts._profile.followedMessage }}<span class="_beta">{{ i18n.ts.beta }}</span></template>
 		<template #caption>
