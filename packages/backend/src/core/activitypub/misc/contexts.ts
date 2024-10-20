@@ -555,6 +555,7 @@ const extension_context_definition = {
 	'_misskey_votes': 'misskey:_misskey_votes',
 	'_misskey_summary': 'misskey:_misskey_summary',
 	'_misskey_talk': 'misskey:_misskey_talk',
+	'_misskey_followedMessage': 'misskey:_misskey_followedMessage',
 	'isCat': 'misskey:isCat',
 	// vcard
 	vcard: 'http://www.w3.org/2006/vcard/ns#',

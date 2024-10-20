@@ -4,12 +4,13 @@
  */
 
 import { utils, values } from '@syuilo/aiscript';
+import * as Misskey from 'misskey-js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { $i } from '@/account.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { customEmojis } from '@/custom-emojis.js';
-import { url, lang } from '@/config.js';
+import { url, lang } from '@@/js/config.js';
 
 export function aiScriptReadline(q: string): Promise<string> {
 	return new Promise(ok => {

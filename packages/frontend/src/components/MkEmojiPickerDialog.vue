@@ -8,11 +8,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 	ref="modal"
 	v-slot="{ type, maxHeight }"
 	:zPriority="'middle'"
-	:preferType="asReactionPicker && defaultStore.state.reactionPickerUseDrawerForMobile === false ? 'popup' : 'auto'"
+	:preferType="defaultStore.state.emojiPickerStyle"
+	:hasInteractionWithOtherFocusTrappedEls="true"
 	:transparentBg="true"
 	:manualShowing="manualShowing"
 	:src="src"
 	@click="modal?.close()"
+	@esc="modal?.close()"
 	@opening="opening"
 	@close="emit('close')"
 	@closed="emit('closed')"
@@ -27,6 +29,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		:asDrawer="type === 'drawer'"
 		:max-height="maxHeight"
 		@chosen="chosen"
+		@esc="modal?.close()"
 	/>
 </MkModal>
 </template>

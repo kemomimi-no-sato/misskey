@@ -126,11 +126,14 @@ export class AntennaService implements OnApplicationShutdown {
 		if (antenna.src === 'home') {
 			// TODO
 		} else if (antenna.src === 'list') {
-			const listUsers = (await this.userListMembershipsRepository.findBy({
-				userListId: antenna.userListId!,
-			})).map(x => x.userId);
-
-			if (!listUsers.includes(note.userId)) return false;
+			if (antenna.userListId == null) return false;
+			const exists = await this.userListMembershipsRepository.exists({
+				where: {
+					userListId: antenna.userListId,
+					userId: note.userId,
+				},
+			});
+			if (!exists) return false;
 		} else if (antenna.src === 'group') {
 			const joining = await this.userGroupJoiningsRepository.findOneByOrFail({ id: antenna.userGroupJoiningId! });
 
