@@ -2105,6 +2105,14 @@ export interface Locale extends ILocale {
      */
     "native": string;
     /**
+     * グループがありません
+     */
+    "youHaveNoGroups": string;
+    /**
+     * 既存のグループに招待してもらうか、新しくグループを作成してください。
+     */
+    "joinOrCreateGroup": string;
+    /**
      * メニューのスタイル
      */
     "menuStyle": string;
@@ -2120,14 +2128,6 @@ export interface Locale extends ILocale {
      * ポップアップ
      */
     "popup": string;
-    /**
-     * グループがありません
-     */
-    "youHaveNoGroups": string;
-    /**
-     * 既存のグループに招待してもらうか、新しくグループを作成してください。
-     */
-    "joinOrCreateGroup": string;
     /**
      * ノートのアクションをホバー時のみ表示する
      */
@@ -6951,6 +6951,20 @@ export interface Locale extends ILocale {
              * アイコンデコレーションの最大取付個数
              */
             "avatarDecorationLimit": string;
+        };
+        "_moderator_options": {
+            /**
+             * 通報確認の許可
+             */
+            "canCheckReports": string;
+            /**
+             * ファイル確認の許可
+             */
+            "canCheckFiles": string;
+            /**
+             * 招待ボタンの非表示
+             */
+            "canHideInviteButtons": string;
             /**
              * アンテナのインポートを許可
              */
@@ -6971,20 +6985,6 @@ export interface Locale extends ILocale {
              * リストのインポートを許可
              */
             "canImportUserLists": string;
-        };
-        "_moderator_options": {
-            /**
-             * 通報確認の許可
-             */
-            "canCheckReports": string;
-            /**
-             * ファイル確認の許可
-             */
-            "canCheckFiles": string;
-            /**
-             * 招待ボタンの非表示
-             */
-            "canHideInviteButtons": string;
         };
         "_condition": {
             /**

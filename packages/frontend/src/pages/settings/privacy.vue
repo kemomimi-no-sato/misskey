@@ -5,9 +5,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <template>
 <div class="_gaps_m">
-	<MkSwitch v-model="allowFollow" @update:modelValue="save()">{{ "フォローを許可する" }}<template #caption>{{ "オフにすると、管理人以外からのアカウントからのフォローを拒否します。" }}</template></MkSwitch>
-	<MkSwitch v-if="allowFollow" v-model="isLocked" @update:modelValue="save()">{{ i18n.ts.makeFollowManuallyApprove }}<template #caption>{{ i18n.ts.lockedAccountInfo }}</template></MkSwitch>
-	<MkSwitch v-if="!allowFollow || isLocked" v-model="autoAcceptFollowed" @update:modelValue="save()">{{ i18n.ts.autoAcceptFollowed }}</MkSwitch>
+	<!--<MkSwitch v-model="allowFollow" @update:modelValue="save()">{{ "フォローを許可する" }}<template #caption>{{ "オフにすると、管理人以外からのアカウントからのフォローを拒否します。" }}</template></MkSwitch>-->
+	<MkSwitch v-model="isLocked" @update:modelValue="save()">{{ i18n.ts.makeFollowManuallyApprove }}<template #caption>{{ i18n.ts.lockedAccountInfo }}</template></MkSwitch>
+	<MkSwitch v-if="isLocked" v-model="autoAcceptFollowed" @update:modelValue="save()">{{ i18n.ts.autoAcceptFollowed }}</MkSwitch>
 
 	<MkSwitch v-model="publicReactions" @update:modelValue="save()">
 		{{ i18n.ts.makeReactionsPublic }}

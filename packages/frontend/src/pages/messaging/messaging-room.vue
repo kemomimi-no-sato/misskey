@@ -61,7 +61,7 @@ import XForm from './messaging-room.form.vue';
 import XPageHeader from './messaging-room.header.vue';
 import XPagination, { Paging } from './messaging-room.pagenation.vue';
 import MkDateSeparatedList from '@/components/MkDateSeparatedList.vue';
-import { isBottomVisible, onScrollBottom, scrollToBottom } from '@/scripts/scroll';
+import { isBottomVisible, onScrollBottom, scrollToBottom } from '@@/js/scroll.js';
 import * as os from '@/os';
 import { useStream } from '@/stream';
 import * as sound from '@/scripts/sound';

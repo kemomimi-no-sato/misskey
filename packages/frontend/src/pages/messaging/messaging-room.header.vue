@@ -30,7 +30,7 @@
 <script lang="ts" setup>
 import { computed, shallowRef, onMounted, onUnmounted, ref, inject, defineAsyncComponent, Ref, watch } from 'vue';
 import tinycolor from 'tinycolor2';
-import { scrollToTop } from '@/scripts/scroll';
+import { scrollToTop } from '@@/js/scroll.js';
 import { globalEvents } from '@/events';
 import { injectReactiveMetadata } from '@/scripts/page-metadata';
 import { $i, openAccountMenu as openAccountMenu_ } from '@/account';
