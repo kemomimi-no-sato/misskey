@@ -467,7 +467,7 @@ function smallerVisibility(a: Visibility | string, b: Visibility | string): Visi
 	return 'public';
 }
 
-function renote(viaKeyboard = false) {
+function renote() {
 	pleaseLogin(undefined, pleaseLoginContext.value);
 	showMovedDialog();
 
@@ -685,9 +685,7 @@ function renote(viaKeyboard = false) {
 		});
 	}
 
-	os.popupMenu(items, renoteButton.value, {
-		viaKeyboard,
-	});
+	os.popupMenu(items, renoteButton.value);
 }
 
 async function getIsFavorited(): Promise<boolean> {

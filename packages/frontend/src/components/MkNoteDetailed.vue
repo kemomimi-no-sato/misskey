@@ -670,9 +670,7 @@ function renote() {
 		});
 	}
 
-	os.popupMenu(items, renoteButton.value, {
-		viaKeyboard,
-	});
+	os.popupMenu(items, renoteButton.value);
 }
 
 function quote(): void {
