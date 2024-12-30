@@ -512,6 +512,22 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: {} as Record<string, string>, // from Shrimpia(Ebisskey)
 	},
+	stealConfirmed: {
+		where: 'account',
+		default: false, // from Shrimpia(Ebisskey)
+	},
+	stealEnabled: {
+		where: 'account',
+		default: false, // from Shrimpia(Ebisskey)
+	},
+	defaultNumberQuoteVisibility: {
+		where: 'account',
+		default: 'inherits', // from Shrimpia(Ebisskey)
+	},
+	defaultNumberQuoteLocalOnly: {
+		where: 'account',
+		default: false, // from Shrimpia(Ebisskey)
+	},
 }));
 
 // TODO: 他のタブと永続化されたstateを同期

@@ -62,6 +62,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<option value="large">{{ i18n.ts.large }}</option>
 				</MkRadios>
 				<MkSwitch v-model="limitWidthOfReaction">{{ i18n.ts.limitWidthOfReaction }}</MkSwitch>
+				<MkSwitch v-model="stealEnabled">{{ 'パクる機能を有効にする' }} <span class="_beta">独自機能</span></MkSwitch>
 			</div>
 
 			<MkSelect v-model="instanceTicker">
@@ -320,6 +321,7 @@ const useNativeUIForVideoAudioPlayer = computed(defaultStore.makeGetterSetter('u
 const alwaysConfirmFollow = computed(defaultStore.makeGetterSetter('alwaysConfirmFollow'));
 const confirmWhenRevealingSensitiveMedia = computed(defaultStore.makeGetterSetter('confirmWhenRevealingSensitiveMedia'));
 const contextMenu = computed(defaultStore.makeGetterSetter('contextMenu'));
+const stealEnabled = computed(defaultStore.makeGetterSetter('stealEnabled'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);

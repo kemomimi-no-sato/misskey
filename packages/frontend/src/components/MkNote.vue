@@ -125,6 +125,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-else :class="$style.footerButton" class="_button" disabled>
 					<i class="ti ti-ban"></i>
 				</button>
+				<button v-if="stealButtonVisible" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown.prevent="stealMenu(appearNote, stealButton)">
+					<i class="ti ti-swipe"></i>
+				</button>
 				<button ref="reactButton" :class="$style.footerButton" class="_button" @click="toggleReact()">
 					<i v-if="appearNote.reactionAcceptance === 'likeOnly' && appearNote.myReaction != null" class="ti ti-heart-filled" style="color: var(--MI_THEME-love);"></i>
 					<i v-else-if="appearNote.myReaction != null" class="ti ti-minus" style="color: var(--MI_THEME-accent);"></i>
@@ -210,6 +213,7 @@ import { isEnabledUrlPreview } from '@/instance.js';
 import { type Keymap } from '@/scripts/hotkey.js';
 import { focusPrev, focusNext } from '@/scripts/focus.js';
 import { getAppearNote } from '@/scripts/get-appear-note.js';
+import { stealMenu } from '@/scripts/steal-menu';
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note;
@@ -259,6 +263,7 @@ const rootEl = shallowRef<HTMLElement>();
 const menuButton = shallowRef<HTMLElement>();
 const renoteButton = shallowRef<HTMLElement>();
 const renoteTime = shallowRef<HTMLElement>();
+const stealButton = shallowRef<HTMLElement>(); // from shrimpia
 const reactButton = shallowRef<HTMLElement>();
 const clipButton = shallowRef<HTMLElement>();
 const appearNote = computed(() => getAppearNote(note.value));
@@ -282,6 +287,7 @@ const renoteCollapsed = ref(
 		(appearNote.value.myReaction != null)
 	),
 );
+const stealButtonVisible = appearNote.value.text && defaultStore.state.stealEnabled; // from Shrimpia
 
 const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
 	type: 'lookup',
