@@ -57,6 +57,7 @@ export const ProfilePageCat = {
 		user: {
 			...userDetailed(),
 			isCat: true,
+			isFox: false,
 		},
 	},
 	parameters: {

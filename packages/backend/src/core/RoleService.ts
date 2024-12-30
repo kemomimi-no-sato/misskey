@@ -256,6 +256,10 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 				case 'isCat': {
 					return user.isCat;
 				}
+				// 狐である(連合してないので意味がないかも)
+				case 'isFox': {
+					return user.isFox;
+				}
 				// 「ユーザを見つけやすくする」が有効なアカウント
 				case 'isExplorable': {
 					return user.isExplorable;

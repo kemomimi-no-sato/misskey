@@ -731,6 +731,14 @@ export interface Locale extends ILocale {
      */
     "flagAsCatDescription": string;
     /**
+     * こんこんこゃこゃ
+     */
+    "flagAsFox": string;
+    /**
+     * わらわはきつねなのじゃ
+     */
+    "flagAsFoxDescription": string;
+    /**
      * タイムラインにノートへの返信を表示する
      */
     "flagShowTimelineReplies": string;

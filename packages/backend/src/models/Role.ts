@@ -84,6 +84,13 @@ type CondFormulaValueIsCat = {
 };
 
 /**
+ * きつねアカウントの場合のみ成立とする
+ */
+type CondFormulaValueIsFox = {
+	type: 'isFox';
+};
+
+/**
  * 「ユーザを見つけやすくする」が有効なアカウントの場合のみ成立とする
  */
 type CondFormulaValueIsExplorable = {
@@ -164,6 +171,7 @@ export type RoleCondFormulaValue = { id: string } & (
 	CondFormulaValueIsLocked |
 	CondFormulaValueIsBot |
 	CondFormulaValueIsCat |
+	CondFormulaValueIsFox |
 	CondFormulaValueIsExplorable |
 	CondFormulaValueRoleAssignedTo |
 	CondFormulaValueCreatedLessThan |

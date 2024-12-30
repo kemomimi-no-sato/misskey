@@ -257,7 +257,7 @@ export class ApPersonService implements OnModuleInit {
 			if (Array.isArray(img)) {
 				img = img.find(item => item && item.url) ?? null;
 			}
-			
+
 			// if we have an explicitly missing image, return an
 			// explicitly-null set of values
 			if ((img == null) || (typeof img === 'object' && img.url == null)) {
@@ -391,6 +391,7 @@ export class ApPersonService implements OnModuleInit {
 					tags,
 					isBot,
 					isCat: (person as any).isCat === true,
+					isFox: (person as any).isFox === true,
 					requireSigninToViewContents: (person as any).requireSigninToViewContents === true,
 					makeNotesFollowersOnlyBefore: (person as any).makeNotesFollowersOnlyBefore ?? null,
 					makeNotesHiddenBefore: (person as any).makeNotesHiddenBefore ?? null,
@@ -568,12 +569,13 @@ export class ApPersonService implements OnModuleInit {
 			tags,
 			isBot: getApType(object) === 'Service' || getApType(object) === 'Application',
 			isCat: (person as any).isCat === true,
+			isFox: (person as any).isFox === true,
 			isLocked: person.manuallyApprovesFollowers,
 			movedToUri: person.movedTo ?? null,
 			alsoKnownAs: person.alsoKnownAs ?? null,
 			isExplorable: person.discoverable,
 			...(await this.resolveAvatarAndBanner(exist, person.icon, person.image).catch(() => ({}))),
-		} as Partial<MiRemoteUser> & Pick<MiRemoteUser, 'isBot' | 'isCat' | 'isLocked' | 'movedToUri' | 'alsoKnownAs' | 'isExplorable'>;
+		} as Partial<MiRemoteUser> & Pick<MiRemoteUser, 'isBot' | 'isCat' | 'isFox' | 'isLocked' | 'movedToUri' | 'alsoKnownAs' | 'isExplorable'>;
 
 		const moving = ((): boolean => {
 			// 移行先がない→ある

@@ -559,6 +559,7 @@ const extension_context_definition = {
 	'_misskey_makeNotesFollowersOnlyBefore': 'misskey:_misskey_makeNotesFollowersOnlyBefore',
 	'_misskey_makeNotesHiddenBefore': 'misskey:_misskey_makeNotesHiddenBefore',
 	'isCat': 'misskey:isCat',
+	'isFox': 'misskey:isFox',
 	// vcard
 	vcard: 'http://www.w3.org/2006/vcard/ns#',
 } satisfies Context;
