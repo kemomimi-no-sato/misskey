@@ -20,7 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<div ref="bannerEl" class="banner" :style="style"></div>
 						<div class="fade"></div>
 						<div class="title">
-							<MkUserName class="name" :user="user" :nowrap="true"/>
+							<MkUserName class="name" :user="user" :nowrap="true" @click="editNickname(props.user)"/>
 							<div class="bottom">
 								<span class="username"><MkAcct :user="user" :detail="true"/></span>
 								<span v-if="user.isAdmin" :title="i18n.ts.isAdmin" style="color: var(--MI_THEME-badge);"><i class="ti ti-shield"></i></span>
@@ -184,6 +184,7 @@ import { isFollowingVisibleForMe, isFollowersVisibleForMe } from '@/scripts/isFf
 import { useRouter } from '@/router/supplier.js';
 import { getStaticImageUrl } from '@/scripts/media-proxy.js';
 import MkSparkle from '@/components/MkSparkle.vue';
+import { editNickname } from '@/scripts/edit-nickname.js';
 
 function calcAge(birthdate: string): number {
 	const date = new Date(birthdate);
@@ -408,13 +409,25 @@ onUnmounted(() => {
 						color: #fff;
 
 						> .name {
-							display: block;
+							display: flex;
 							margin: -10px;
 							padding: 10px;
 							line-height: 32px;
 							font-weight: bold;
 							font-size: 1.8em;
 							filter: drop-shadow(0 0 4px #000);
+
+							> .nickname-button {
+								-webkit-backdrop-filter: var(--blur, blur(8px));
+								backdrop-filter: var(--blur, blur(8px));
+								background: rgba(0, 0, 0, 0.2);
+								color: #ccc;
+								font-size: 0.7em;
+								line-height: 1;
+								width: 1.8em;
+								height: 1.8em;
+								border-radius: 100%;
+							}
 						}
 
 						> .bottom {
@@ -455,6 +468,10 @@ onUnmounted(() => {
 							margin-right: 8px;
 							opacity: 0.8;
 						}
+					}
+
+					> .nickname-button {
+						margin-left: 8px;
 					}
 				}
 

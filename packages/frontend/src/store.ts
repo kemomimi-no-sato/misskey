@@ -9,10 +9,10 @@ import { hemisphere } from '@@/js/intl-const.js';
 import lightTheme from '@@/themes/l-light.json5';
 import darkTheme from '@@/themes/d-green-lime.json5';
 import type { SoundType } from '@/scripts/sound.js';
+import type { Ast } from '@syuilo/aiscript';
 import { DEFAULT_DEVICE_KIND, type DeviceKind } from '@/scripts/device-kind.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { Storage } from '@/pizzax.js';
-import type { Ast } from '@syuilo/aiscript';
 
 interface PostFormAction {
 	title: string,
@@ -145,6 +145,7 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'deviceAccount',
 		default: [
 			'notifications',
+			'favorites',
 			'clips',
 			'drive',
 			'followRequests',
@@ -502,6 +503,14 @@ export const defaultStore = markRaw(new Storage('base', {
 	sound_reaction: {
 		where: 'device',
 		default: { type: 'syuilo/bubble2', volume: 1 } as SoundStore,
+	},
+	nicknameEnabled: {
+		where: 'account',
+		default: true, // from Shrimpia(Ebisskey)
+	},
+	nicknameMap: {
+		where: 'account',
+		default: {} as Record<string, string>, // from Shrimpia(Ebisskey)
 	},
 }));
 
