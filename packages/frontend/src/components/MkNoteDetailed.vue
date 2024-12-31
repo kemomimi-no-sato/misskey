@@ -133,7 +133,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 				ref="renoteButton"
 				class="_button"
 				:class="$style.noteFooterButton"
-				@mousedown.prevent="renote()"
+				@click.stop="
+					defaultStore.state.renoteQuoteButtonSeparation &&
+						((!defaultStore.state.renoteVisibilitySelection && !appearNote.channel) ||
+							(appearNote.channel && !appearNote.channel.allowRenoteToExternal) ||
+							appearNote.visibility === 'followers')
+						? renoteOnly()
+						: renote()"
 			>
 				<i class="ti ti-repeat"></i>
 				<p v-if="appearNote.renoteCount > 0" :class="$style.noteFooterButtonCount">{{ number(appearNote.renoteCount) }}</p>
@@ -141,11 +147,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<button v-else class="_button" :class="$style.noteFooterButton" disabled>
 				<i class="ti ti-ban"></i>
 			</button>
+			<button v-if="canRenote && defaultStore.state.renoteQuoteButtonSeparation" ref="quoteButton" :class="$style.noteFooterButton" class="_button" @click.stop="quote()">
+				<i class="ti ti-quote"></i>
+			</button>
+			<button v-if="stealButtonVisible" ref="stealButton" :class="$style.noteFooterButton" class="_button" @mousedown.prevent="stealMenu(appearNote, stealButton)">
+				<i class="ti ti-swipe"></i>
+			</button>
 			<button ref="reactButton" :class="$style.noteFooterButton" class="_button" @click="toggleReact()">
 				<i v-if="appearNote.reactionAcceptance === 'likeOnly' && appearNote.myReaction != null" class="ti ti-heart-filled" style="color: var(--MI_THEME-love);"></i>
-				<i v-else-if="appearNote.myReaction != null" class="ti ti-minus" style="color: var(--MI_THEME-accent);"></i>
+				<i v-else-if="appearNote.myReaction != null" class="ti ti-mood-minus" style="color: var(--MI_THEME-accent);"></i>
 				<i v-else-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
-				<i v-else class="ti ti-plus"></i>
+				<i v-else class="ti ti-mood-plus"></i>
 				<p v-if="(appearNote.reactionAcceptance === 'likeOnly' || defaultStore.state.showReactionsCount) && appearNote.reactionCount > 0" :class="$style.noteFooterButtonCount">{{ number(appearNote.reactionCount) }}</p>
 			</button>
 			<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" class="_button" :class="$style.noteFooterButton" @mousedown.prevent="clip()">
@@ -252,6 +264,7 @@ import MkButton from '@/components/MkButton.vue';
 import { isEnabledUrlPreview } from '@/instance.js';
 import { getAppearNote } from '@/scripts/get-appear-note.js';
 import { type Keymap } from '@/scripts/hotkey.js';
+import { stealMenu } from '@/scripts/steal-menu';
 
 const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note;
@@ -288,7 +301,9 @@ const isRenote = Misskey.note.isPureRenote(note.value);
 const rootEl = shallowRef<HTMLElement>();
 const menuButton = shallowRef<HTMLElement>();
 const renoteButton = shallowRef<HTMLElement>();
+const stealButton = shallowRef<HTMLElement>(); // from shrimpia
 const renoteTime = shallowRef<HTMLElement>();
+const quoteButton = shallowRef<HTMLElement>();
 const reactButton = shallowRef<HTMLElement>();
 const clipButton = shallowRef<HTMLElement>();
 const appearNote = computed(() => getAppearNote(note.value));
@@ -305,6 +320,8 @@ const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultS
 const conversation = ref<Misskey.entities.Note[]>([]);
 const replies = ref<Misskey.entities.Note[]>([]);
 const canRenote = computed(() => ['public', 'home'].includes(appearNote.value.visibility) || appearNote.value.userId === $i?.id);
+
+const stealButtonVisible = appearNote.value.text && defaultStore.state.stealEnabled; // from Shrimpia
 
 const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
 	type: 'lookup',

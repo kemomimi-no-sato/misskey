@@ -118,11 +118,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 					:class="$style.footerButton"
 					class="_button"
 					@click.stop="
-						console.log({
-							renoteVisibilitySelection: defaultStore.state.renoteVisibilitySelection,
-							channel: appearNote.channel,
-							visibility: appearNote.visibility
-						});
 						defaultStore.state.renoteQuoteButtonSeparation &&
 							((!defaultStore.state.renoteVisibilitySelection && !appearNote.channel) ||
 								(appearNote.channel && !appearNote.channel.allowRenoteToExternal) ||
