@@ -127,6 +127,11 @@ export class SignupApiService {
 			}
 		}
 
+		if (this.meta.enableLoginOnlyMode) {
+			reply.code(400);
+			return;
+		}
+
 		let ticket: MiRegistrationTicket | null = null;
 
 		if (this.meta.disableRegistration) {

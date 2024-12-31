@@ -18,13 +18,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<!-- eslint-disable-next-line vue/no-v-html -->
 				<div v-html="instance.description || i18n.ts.headlineMisskey"></div>
 			</div>
-			<div v-if="instance.disableRegistration" :class="$style.mainWarn">
+			<div v-if="instance.disableRegistration && !instance.enableLoginOnlyMode" :class="$style.mainWarn">
 				<MkInfo warn>{{ i18n.ts.invitationRequiredToRegister }}</MkInfo>
 			</div>
+			<div v-else-if="instance.enableLoginOnlyMode" :class="$style.mainWarn">
+				<MkInfo warn>{{ 'このサーバーは現在新規登録を受け付けていません' }}</MkInfo>
+			</div>
 			<div class="_gaps_s" :class="$style.mainActions">
-				<MkButton :class="$style.mainAction" full rounded gradate data-cy-signup style="margin-right: 12px;" @click="signup()">{{ i18n.ts.joinThisServer }}</MkButton>
+				<MkButton v-if="!instance.enableLoginOnlyMode" :class="$style.mainAction" full rounded gradate data-cy-signup style="margin-right: 12px;" @click="signup()">{{ i18n.ts.joinThisServer }}</MkButton>
 				<MkButton :class="$style.mainAction" full rounded link to="https://misskey-hub.net/servers/">{{ i18n.ts.exploreOtherServers }}</MkButton>
-				<MkButton :class="$style.mainAction" full rounded data-cy-signin @click="signin()">{{ i18n.ts.login }}</MkButton>
+				<MkButton v-if="!instance.enableLoginOnlyMode" :class="$style.mainAction" full rounded data-cy-signin @click="signin()">{{ i18n.ts.login }}</MkButton>
+				<MkButton v-else :class="$style.mainAction" full rounded data-cy-signin class="ti ti-lock" @click="signin()"></MkButton>
 			</div>
 		</div>
 	</div>

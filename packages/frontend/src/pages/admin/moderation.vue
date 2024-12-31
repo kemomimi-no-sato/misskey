@@ -18,6 +18,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</template>
 					</MkSwitch>
 
+					<MkSwitch v-model="enableLoginOnlyMode" @change="onChange_enableLoginOnlyMode">
+						<template #label>{{ 'ログインオンリーモードを有効にする' }}</template>
+					</MkSwitch>
+
 					<MkSwitch v-model="emailRequiredForSignup" @change="onChange_emailRequiredForSignup">
 						<template #label>{{ i18n.ts.emailRequiredForSignup }}</template>
 					</MkSwitch>
@@ -152,6 +156,7 @@ const preservedUsernames = ref<string>('');
 const blockedHosts = ref<string>('');
 const silencedHosts = ref<string>('');
 const mediaSilencedHosts = ref<string>('');
+const enableLoginOnlyMode = ref<string>('');
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
@@ -180,6 +185,14 @@ async function onChange_enableRegistration(value: boolean) {
 
 	os.apiWithDialog('admin/update-meta', {
 		disableRegistration: !value,
+	}).then(() => {
+		fetchInstance(true);
+	});
+}
+
+function onChange_enableLoginOnlyMode(value: boolean) {
+	os.apiWithDialog('admin/update-meta', {
+		enableLoginOnlyMode: value,
 	}).then(() => {
 		fetchInstance(true);
 	});

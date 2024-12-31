@@ -192,6 +192,11 @@ export class MiMeta {
 	@Column('boolean', {
 		default: false,
 	})
+	public enableLoginOnlyMode: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public enableHcaptcha: boolean;
 
 	@Column('varchar', {
