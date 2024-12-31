@@ -63,6 +63,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</MkRadios>
 				<MkSwitch v-model="limitWidthOfReaction">{{ i18n.ts.limitWidthOfReaction }}</MkSwitch>
 				<MkSwitch v-model="stealEnabled">{{ 'パクる機能を有効にする' }} <span class="_beta">独自機能</span></MkSwitch>
+				<MkSwitch v-model="renoteQuoteButtonSeparation">{{ 'リノートボタンと引用ボタンを分離する'}} <span class="_beta">独自機能</span></MkSwitch>
+				<MkSwitch v-model="renoteVisibilitySelection">{{ 'リノートの公開範囲を選択できるようにする' }} <span class="_beta">独自機能</span></MkSwitch>
+				<MkSwitch v-model="showRenoteConfirmPopup">{{ 'リノート時に確認を表示する' }} <span class="_beta">独自機能</span></MkSwitch>
 			</div>
 
 			<MkSelect v-model="instanceTicker">
@@ -322,6 +325,9 @@ const alwaysConfirmFollow = computed(defaultStore.makeGetterSetter('alwaysConfir
 const confirmWhenRevealingSensitiveMedia = computed(defaultStore.makeGetterSetter('confirmWhenRevealingSensitiveMedia'));
 const contextMenu = computed(defaultStore.makeGetterSetter('contextMenu'));
 const stealEnabled = computed(defaultStore.makeGetterSetter('stealEnabled'));
+const renoteQuoteButtonSeparation = computed(defaultStore.makeGetterSetter('renoteQuoteButtonSeparation'));
+const renoteVisibilitySelection = computed(defaultStore.makeGetterSetter('renoteVisibilitySelection'));
+const showRenoteConfirmPopup = computed(defaultStore.makeGetterSetter('showRenoteConfirmPopup'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);
@@ -366,6 +372,10 @@ watch([
 	alwaysConfirmFollow,
 	confirmWhenRevealingSensitiveMedia,
 	contextMenu,
+	stealEnabled,
+	renoteQuoteButtonSeparation,
+	renoteVisibilitySelection,
+	showRenoteConfirmPopup,
 ], async () => {
 	await reloadAsk({ reason: i18n.ts.reloadToApplySetting, unison: true });
 });

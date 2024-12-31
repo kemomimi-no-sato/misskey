@@ -528,6 +528,18 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'account',
 		default: false, // from Shrimpia(Ebisskey)
 	},
+	renoteQuoteButtonSeparation: {
+		where: 'device',
+		default: true,
+	},
+	renoteVisibilitySelection: {
+		where: 'device',
+		default: true,
+	},
+	showRenoteConfirmPopup: {
+		where: 'device',
+		default: true,
+	}
 }));
 
 // TODO: 他のタブと永続化されたstateを同期

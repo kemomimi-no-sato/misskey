@@ -117,7 +117,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 					ref="renoteButton"
 					:class="$style.footerButton"
 					class="_button"
-					@mousedown.prevent="renote()"
+					@click.stop="
+						console.log({
+							renoteVisibilitySelection: defaultStore.state.renoteVisibilitySelection,
+							channel: appearNote.channel,
+							visibility: appearNote.visibility
+						});
+						defaultStore.state.renoteQuoteButtonSeparation &&
+							((!defaultStore.state.renoteVisibilitySelection && !appearNote.channel) ||
+								(appearNote.channel && !appearNote.channel.allowRenoteToExternal) ||
+								appearNote.visibility === 'followers')
+							? renoteOnly()
+							: renote()"
 				>
 					<i class="ti ti-repeat"></i>
 					<p v-if="appearNote.renoteCount > 0" :class="$style.footerButtonCount">{{ number(appearNote.renoteCount) }}</p>
@@ -125,14 +136,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<button v-else :class="$style.footerButton" class="_button" disabled>
 					<i class="ti ti-ban"></i>
 				</button>
+				<button v-if="canRenote && defaultStore.state.renoteQuoteButtonSeparation" ref="quoteButton" :class="$style.footerButton" class="_button" @click.stop="quote()">
+					<i class="ti ti-quote"></i>
+				</button>
 				<button v-if="stealButtonVisible" ref="stealButton" :class="$style.footerButton" class="_button" @mousedown.prevent="stealMenu(appearNote, stealButton)">
 					<i class="ti ti-swipe"></i>
 				</button>
 				<button ref="reactButton" :class="$style.footerButton" class="_button" @click="toggleReact()">
 					<i v-if="appearNote.reactionAcceptance === 'likeOnly' && appearNote.myReaction != null" class="ti ti-heart-filled" style="color: var(--MI_THEME-love);"></i>
-					<i v-else-if="appearNote.myReaction != null" class="ti ti-minus" style="color: var(--MI_THEME-accent);"></i>
+					<i v-else-if="appearNote.myReaction != null" class="ti ti-mood-minus" style="color: var(--MI_THEME-accent);"></i>
 					<i v-else-if="appearNote.reactionAcceptance === 'likeOnly'" class="ti ti-heart"></i>
-					<i v-else class="ti ti-plus"></i>
+					<i v-else class="ti ti-mood-plus"></i>
 					<p v-if="(appearNote.reactionAcceptance === 'likeOnly' || defaultStore.state.showReactionsCount) && appearNote.reactionCount > 0" :class="$style.footerButtonCount">{{ number(appearNote.reactionCount) }}</p>
 				</button>
 				<button v-if="defaultStore.state.showClipButtonInNoteFooter" ref="clipButton" :class="$style.footerButton" class="_button" @mousedown.prevent="clip()">
@@ -201,7 +215,7 @@ import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
 import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
-import { getAbuseNoteMenu, getCopyNoteLinkMenu, getNoteClipMenu, getNoteMenu, getRenoteMenu } from '@/scripts/get-note-menu.js';
+import { getAbuseNoteMenu, getCopyNoteLinkMenu, getNoteClipMenu, getNoteMenu, getRenoteMenu, getRenoteOnly, getQuoteMenu } from '@/scripts/get-note-menu.js';
 import { useNoteCapture } from '@/scripts/use-note-capture.js';
 import { deepClone } from '@/scripts/clone.js';
 import { useTooltip } from '@/scripts/use-tooltip.js';
@@ -265,6 +279,7 @@ const renoteButton = shallowRef<HTMLElement>();
 const renoteTime = shallowRef<HTMLElement>();
 const stealButton = shallowRef<HTMLElement>(); // from shrimpia
 const reactButton = shallowRef<HTMLElement>();
+const quoteButton = shallowRef<HTMLElement>();
 const clipButton = shallowRef<HTMLElement>();
 const appearNote = computed(() => getAppearNote(note.value));
 const galleryEl = shallowRef<InstanceType<typeof MkMediaList>>();
@@ -429,14 +444,46 @@ if (!props.mock) {
 	}
 }
 
-function renote(viaKeyboard = false) {
+function renote() {
 	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
 	showMovedDialog();
 
 	const { menu } = getRenoteMenu({ note: note.value, renoteButton, mock: props.mock });
-	os.popupMenu(menu, renoteButton.value, {
-		viaKeyboard,
-	});
+	os.popupMenu(menu, renoteButton.value);
+}
+
+async function renoteOnly() {
+	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	showMovedDialog();
+
+	await getRenoteOnly({ note: note.value, renoteButton, mock: props.mock });
+	console.log(defaultStore.state.renoteVisibilitySelection);
+}
+
+function quote(): void {
+	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	if (props.mock) {
+		return;
+	}
+	if (appearNote.value.channel) {
+		if (appearNote.value.channel.allowRenoteToExternal) {
+			const { menu } = getQuoteMenu({ note: note.value, mock: props.mock });
+			os.popupMenu(menu, quoteButton.value);
+		} else {
+			os.post({
+				renote: appearNote.value,
+				channel: appearNote.value.channel,
+			}, () => {
+				focus();
+			});
+		}
+	} else {
+		os.post({
+			renote: appearNote.value,
+		}, () => {
+			focus();
+		});
+	}
 }
 
 function reply(): void {
