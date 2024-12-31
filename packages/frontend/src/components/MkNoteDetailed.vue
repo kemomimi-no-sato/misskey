@@ -250,7 +250,7 @@ import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
 import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
-import { getNoteClipMenu, getNoteMenu, getRenoteMenu } from '@/scripts/get-note-menu.js';
+import { getNoteClipMenu, getNoteMenu, getRenoteMenu, getRenoteOnly, getQuoteMenu } from '@/scripts/get-note-menu.js';
 import { useNoteCapture } from '@/scripts/use-note-capture.js';
 import { deepClone } from '@/scripts/clone.js';
 import { useTooltip } from '@/scripts/use-tooltip.js';
@@ -431,8 +431,42 @@ function renote() {
 	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
 	showMovedDialog();
 
-	const { menu } = getRenoteMenu({ note: note.value, renoteButton });
+	const { menu } = getRenoteMenu({ note: note.value, renoteButton, mock: props.mock });
 	os.popupMenu(menu, renoteButton.value);
+}
+
+async function renoteOnly() {
+	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	showMovedDialog();
+
+	await getRenoteOnly({ note: note.value, renoteButton, mock: props.mock });
+	console.log(defaultStore.state.renoteVisibilitySelection);
+}
+
+function quote(): void {
+	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	if (props.mock) {
+		return;
+	}
+	if (appearNote.value.channel) {
+		if (appearNote.value.channel.allowRenoteToExternal) {
+			const { menu } = getQuoteMenu({ note: note.value, mock: props.mock });
+			os.popupMenu(menu, quoteButton.value);
+		} else {
+			os.post({
+				renote: appearNote.value,
+				channel: appearNote.value.channel,
+			}, () => {
+				focus();
+			});
+		}
+	} else {
+		os.post({
+			renote: appearNote.value,
+		}, () => {
+			focus();
+		});
+	}
 }
 
 function reply(): void {
