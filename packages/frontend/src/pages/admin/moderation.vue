@@ -15,7 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #caption>{{ i18n.ts._serverSettings.thisSettingWillAutomaticallyOffWhenModeratorsInactive }}</template>
 					</MkSwitch>
 
-					<MkSwitch v-model="enableLoginOnlyMode">
+					<MkSwitch v-model="enableLoginOnlyMode" @change="onChange_enableLoginOnlyMode">
 						<template #label>{{ "ログインオンリーモードを有効にする" }}</template>
 					</MkSwitch>
 
