@@ -156,7 +156,7 @@ const preservedUsernames = ref<string>('');
 const blockedHosts = ref<string>('');
 const silencedHosts = ref<string>('');
 const mediaSilencedHosts = ref<string>('');
-const enableLoginOnlyMode = ref<string>('');
+const enableLoginOnlyMode = ref<boolean>(false);
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
