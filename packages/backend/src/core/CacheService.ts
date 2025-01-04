@@ -128,6 +128,7 @@ export class CacheService implements OnApplicationShutdown {
 			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
 			switch (type) {
 				case 'userChangeSuspendedState':
+				case 'userChangeRootState':
 				case 'userChangeDeletedState':
 				case 'remoteUserUpdated':
 				case 'localUserUpdated': {
