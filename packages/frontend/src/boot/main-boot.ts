@@ -18,6 +18,7 @@ import { $i } from '@/i.js';
 import { instance } from '@/instance.js';
 import { store } from '@/store.js';
 import { reactionPicker } from '@/utility/reaction-picker.js';
+import { emojiPicker } from '@/utility/emoji-picker.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement, claimedAchievements } from '@/utility/achievements.js';
 import { initializeSw } from '@/utility/initialize-sw.js';
@@ -61,6 +62,7 @@ export async function mainBoot() {
 	});
 
 	reactionPicker.init();
+	emojiPicker.init();
 
 	if (isClientUpdated && $i) {
 		const { dispose } = popup(defineAsyncComponent(() => import('@/components/MkUpdated.vue')), {}, {
