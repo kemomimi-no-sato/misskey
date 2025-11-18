@@ -23,7 +23,6 @@ import type { MiDriveFile } from './DriveFile.js';
 
 @Index(['userId', 'id']) // Note: this index is ("userId", "id" DESC) in production, but not in test.
 @Entity('note')
-@Index('idx_note_text_cw_pgroonga', ['text', 'cw'], { using: 'pgroonga' })
 export class MiNote {
 	@PrimaryColumn(id())
 	public id: string;

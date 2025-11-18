@@ -588,6 +588,44 @@ function smallerVisibility(a: Visibility, b: Visibility): Visibility {
 	return 'public';
 }
 
+// from kokonect-link/cherrypick
+export function getQuoteMenu(props: {
+	note: Misskey.entities.Note,
+	mock?: boolean;
+}) {
+	const menu: MenuItem[] = [];
+	const appearNote = getAppearNote(props.note);
+
+	if (appearNote && (!appearNote.channel || appearNote.channel.allowRenoteToExternal)) {
+		menu.push({
+			text: i18n.ts.quote,
+			icon: 'ti ti-quote',
+			action: () => {
+				os.post({
+					renote: appearNote,
+				});
+			},
+		});
+	}
+
+	if (appearNote && appearNote.channel) {
+		menu.push({
+			text: i18n.ts.inChannelQuote,
+			icon: 'ti ti-device-tv',
+			action: () => {
+				if (!props.mock) {
+					os.post({
+						renote: appearNote,
+						channel: appearNote.channel,
+					});
+				}
+			},
+		});
+	}
+
+	return { menu };
+}
+
 export function getRenoteMenu(props: {
 	note: Misskey.entities.Note;
 	renoteButton: ShallowRef<HTMLElement | null | undefined>;
@@ -598,6 +636,7 @@ export function getRenoteMenu(props: {
 	const channelRenoteItems: MenuItem[] = [];
 	const normalRenoteItems: MenuItem[] = [];
 	const normalExternalChannelRenoteItems: MenuItem[] = [];
+	const visibilityRenoteItems: MenuItem[] = []; // from kokonect-link/cherrypick
 
 	if (appearNote.channel) {
 		channelRenoteItems.push(...[{
@@ -639,7 +678,7 @@ export function getRenoteMenu(props: {
 	}
 
 	if (!appearNote.channel || appearNote.channel.allowRenoteToExternal) {
-		normalRenoteItems.push(...[{
+		normalRenoteItems.push({
 			text: i18n.ts.renote,
 			icon: 'ti ti-repeat',
 			action: () => {
@@ -673,15 +712,17 @@ export function getRenoteMenu(props: {
 					});
 				}
 			},
-		}, ...(props.mock ? [] : [{
-			text: i18n.ts.quote,
-			icon: 'ti ti-quote',
-			action: () => {
-				os.post({
-					renote: appearNote,
-				});
-			},
-		}])]);
+		});
+
+		if (!props.mock && !prefer.s.separateQuoteRenoteButton) {
+			normalRenoteItems.push({
+				text: i18n.ts.quote,
+				icon: 'ti ti-quote',
+				action: () => {
+					os.post({ renote: appearNote });
+				},
+			});
+		}
 
 		normalExternalChannelRenoteItems.push({
 			type: 'parent',
@@ -718,13 +759,68 @@ export function getRenoteMenu(props: {
 				}));
 			},
 		});
+		
+		// from kokonect-link/cherrypick
+		if (prefer.s.renoteVisibilitySelection && !['followers', 'specified'].includes(appearNote.visibility)) {
+			const localOnly = store.s.rememberNoteVisibility ? (store.s.localOnly ?? false) : store.s.defaultNoteLocalOnly;
+
+			// renote to public
+			if (appearNote.visibility === 'public') {
+				visibilityRenoteItems.push({
+					text: `${i18n.ts.renote} (${i18n.ts._visibility.public})`,
+					icon: 'ti ti-world',
+					action: async() => {
+						misskeyApi('notes/create', {
+							localOnly,
+							visibility: 'public',
+							renoteId: appearNote.id,
+						}).then(() => {
+							os.toast(i18n.ts.renoted);
+						})
+					}
+				});
+			}
+
+			// renote to home
+			if (['home', 'public'].includes(appearNote.visibility)) {
+				visibilityRenoteItems.push({
+					text: `${i18n.ts.renote} (${i18n.ts._visibility.home})`,
+					icon: 'ti ti-home',
+					action: async() => {
+						misskeyApi('notes/create', {
+							localOnly,
+							visibility: 'home',
+							renoteId: appearNote.id,
+						}).then(() => {
+							os.toast(i18n.ts.renoted);
+						})
+					}
+				});
+			}
+
+			// renote to follwers
+			visibilityRenoteItems.push({
+				text: `${i18n.ts.renote} (${i18n.ts._visibility.followers})`,
+				icon: 'ti ti-lock',
+				action: async() => {
+					misskeyApi('notes/create', {
+						localOnly,
+						visibility: 'followers',
+						renoteId: appearNote.id,
+					}).then(() => {
+						os.toast(i18n.ts.renoted);
+					})
+				}
+			});
+		}
 	}
 
 	const renoteItems = [
 		...normalRenoteItems,
-		...(channelRenoteItems.length > 0 && normalRenoteItems.length > 0) ? [{ type: 'divider' }] as MenuItem[] : [],
+		...visibilityRenoteItems, //from kokonect-link/cherryPick
+		...(channelRenoteItems.length > 0 && (normalRenoteItems.length > 0 || visibilityRenoteItems.length > 0)) ? [{ type: 'divider' }] as MenuItem[] : [],
 		...channelRenoteItems,
-		...(normalExternalChannelRenoteItems.length > 0 && (normalRenoteItems.length > 0 || channelRenoteItems.length > 0)) ? [{ type: 'divider' }] as MenuItem[] : [],
+		...(normalExternalChannelRenoteItems.length > 0 && ((normalRenoteItems.length > 0 || visibilityRenoteItems.length > 0) || channelRenoteItems.length > 0)) ? [{ type: 'divider' }] as MenuItem[] : [],
 		...normalExternalChannelRenoteItems,
 	];
 

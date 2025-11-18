@@ -1396,6 +1396,8 @@ scheduled: "Scheduled"
 widgets: "Widgets"
 deviceInfo: "Device information"
 deviceInfoDescription: "When making technical inquiries, including the following information may help resolve the issue."
+editNickName: "Edit nickname"
+
 _compression:
   _quality:
     high: "High quality"
@@ -1498,6 +1500,12 @@ _settings:
   showUrlPreview: "Show URL preview"
   showAvailableReactionsFirstInNote: "Show available reactions at the top."
   showPageTabBarBottom: "Show page tab bar at the bottom"
+  featuredFunctions: "Unique Features"
+  renoteVisibilitySelection: "Renote visibility selection"
+  separateQuoteRenoteButton: "Separate quote renote button"
+  enableFavoriteButton: "Enable favorite button"
+  enableNickname: "Enable nickname"
+  stealButtonVisible: "Enable note steal button"
   _chat:
     showSenderName: "Show sender's name"
     sendOnEnter: "Press Enter to send"

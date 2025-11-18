@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { IdService } from '@/core/IdService.js';
-import type { UserListsRepository, UserGroupJoiningsRepository, AntennasRepository } from '@/models/_.js';
+import type { UserListsRepository, AntennasRepository } from '@/models/_.js';
 import { GlobalEventService } from '@/core/GlobalEventService.js';
 import { AntennaEntityService } from '@/core/entities/AntennaEntityService.js';
 import { DI } from '@/di-symbols.js';
@@ -59,7 +59,7 @@ export const paramDef = {
 	type: 'object',
 	properties: {
 		name: { type: 'string', minLength: 1, maxLength: 100 },
-		src: { type: 'string', enum: ['home', 'all', 'users', 'list', 'users_blacklist', 'group'] },
+		src: { type: 'string', enum: ['home', 'all', 'users', 'list', 'users_blacklist'] },
 		userListId: { type: 'string', format: 'misskey:id', nullable: true },
 		userGroupId: { type: 'string', format: 'misskey:id', nullable: true },
 		keywords: { type: 'array', items: {
@@ -94,9 +94,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.userListsRepository)
 		private userListsRepository: UserListsRepository,
 
-		@Inject(DI.userGroupJoiningsRepository)
-		private userGroupJoiningsRepository: UserGroupJoiningsRepository,
-
 		private antennaEntityService: AntennaEntityService,
 		private roleService: RoleService,
 		private idService: IdService,
@@ -126,15 +123,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (userList == null) {
 					throw new ApiError(meta.errors.noSuchUserList);
 				}
-			} else if (ps.src === 'group' && ps.userGroupId) {
-				userGroupJoining = await this.userGroupJoiningsRepository.findOneBy({
-					userGroupId: ps.userGroupId,
-					userId: me.id,
-				});
-
-				if (userGroupJoining == null) {
-					throw new ApiError(meta.errors.noSuchUserGroup);
-				}
 			}
 
 			const now = new Date();
@@ -146,7 +134,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				name: ps.name,
 				src: ps.src,
 				userListId: userList ? userList.id : null,
-				userGroupJoiningId: userGroupJoining ? userGroupJoining.id : null,
 				keywords: ps.keywords,
 				excludeKeywords: ps.excludeKeywords,
 				users: ps.users,

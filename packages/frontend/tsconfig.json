@@ -52,7 +52,8 @@
 		"./src/**/*.vue",
 		"./test/**/*.ts",
 		"./test/**/*.vue",
-		"./@types/**/*.ts"
+		"./@types/**/*.ts",
+		"./src/vue-shims.d.ts"
 	],
 	"exclude": [
 		"./src/**/*.stories.ts"

@@ -200,12 +200,6 @@ export class MiUser {
 	})
 	public speakAsCat: boolean;
 
-	@Column('boolean', {
-		default: false,
-		comment: 'Whether the User is the root.',
-	})
-	public isRoot: boolean;
-
 	@Index()
 	@Column('boolean', {
 		default: true,

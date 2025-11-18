@@ -189,24 +189,6 @@ export class MiMeta {
 		length: 1024,
 		nullable: true,
 	})
-	public splashImageUrl: string | null;
-
-	@Column('varchar', {
-		length: 1024,
-		nullable: true,
-	})
-	public signupText: string | null;
-
-	@Column('varchar', {
-		length: 1024,
-		nullable: true,
-	})
-	public loginText: string | null;
-
-	@Column('varchar', {
-		length: 1024,
-		nullable: true,
-	})
 	public exploreOtherServersText: string | null;
 
 	@Column('boolean', {

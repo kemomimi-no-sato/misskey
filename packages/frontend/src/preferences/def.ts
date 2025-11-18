@@ -442,6 +442,35 @@ export const PREF_DEF = definePreferences({
 	defaultVideoCompressionLevel: {
 		default: 2 as 0 | 1 | 2 | 3,
 	},
+	enableFavoriteButton: {
+		default:true,
+	},
+	// from shrimpia
+	nicknameEnabled: {
+		default: true,
+	},
+	nicknameMap: {
+		default: {} as Record<string, string>,
+	},
+	stealEnabled: {
+		default: false,
+	},
+	stealConfirmed: {
+		default: false,
+	},
+	defaultNumberQuoteVisibility: {
+		default: 'inherits' as 'inherits' | 'public' | 'home' | 'followers' | 'specified',
+	},
+	defaultNumberQuoteLocalOnly: {
+		default: false,
+	},
+	// from kokonect-link/cherrypick
+	renoteVisibilitySelection: {
+		default: true,
+	},
+	separateQuoteRenoteButton: {
+		default: true,
+	},
 
 	'sound.masterVolume': {
 		default: 0.5,

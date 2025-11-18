@@ -17,7 +17,6 @@ import { RedisKVCache } from '@/misc/cache.js';
 // Defined also packages/sw/types.ts#L13
 type PushNotificationsTypes = {
 	'notification': Packed<'Notification'>;
-	'unreadMessagingMessage': Packed<'MessagingMessage'>;
 	'unreadAntennaNote': {
 		antenna: { id: string, name: string };
 		note: Packed<'Note'>;

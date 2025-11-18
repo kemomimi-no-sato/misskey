@@ -19,6 +19,8 @@ export const meta = {
 
 	prohibitMoved: true,
 
+	secure: true,	
+
 	kind: 'write:chat',
 
 	limit: {

@@ -223,7 +223,7 @@ export class UserFollowingService implements OnModuleInit {
 			}
 
 			//ローカルでフォローを許可していない人およびフォローを承認制にしている人の防御をisRootなアカウントは突破出来るようにする。オプトアウト化も検討。
-			if (follower.isRoot && ((this.userEntityService.isLocalUser(followee) && followee.isLocked) || (this.userEntityService.isLocalUser(followee) && !followeeProfile.allowFollow))) {
+			if ((follower.id === this.meta.rootUserId) && ((this.userEntityService.isLocalUser(followee) && followee.isLocked) || (this.userEntityService.isLocalUser(followee) && !followeeProfile.allowFollow))) {
 				autoAccept = true;
 			}
 

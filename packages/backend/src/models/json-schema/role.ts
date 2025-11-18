@@ -180,6 +180,10 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canRemoteNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		permissionToPostPublicly: {
 			type: 'boolean',
 			optional: false, nullable: false,
@@ -294,10 +298,6 @@ export const packedRolePoliciesSchema = {
 		},
 		avatarDecorationLimit: {
 			type: 'integer',
-			optional: false, nullable: false,
-		},
-		canRemoteNote: {
-			type: 'boolean',
 			optional: false, nullable: false,
 		},
 		canImportAntennas: {

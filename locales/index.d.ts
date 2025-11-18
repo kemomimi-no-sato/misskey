@@ -539,9 +539,29 @@ export interface Locale extends ILocale {
      */
     "reactions": string;
     /**
-     * ピッカーに表示するリアクション
+     * 絵文字ピッカー
      */
-    "reactionSetting": string;
+    "emojiPicker": string;
+    /**
+     * リアクション時にピン留め表示する絵文字を設定できます
+     */
+    "pinnedEmojisForReactionSettingDescription": string;
+    /**
+     * 絵文字入力時にピン留め表示する絵文字を設定できます
+     */
+    "pinnedEmojisSettingDescription": string;
+    /**
+     * ピッカーの表示
+     */
+    "emojiPickerDisplay": string;
+    /**
+     * リアクション設定から上書きする
+     */
+    "overwriteFromPinnedEmojisForReaction": string;
+    /**
+     * 全般設定から上書きする
+     */
+    "overwriteFromPinnedEmojis": string;
     /**
      * ドラッグして並び替え、クリックして削除、＋を押して追加します。
      */
@@ -1973,14 +1993,6 @@ export interface Locale extends ILocale {
      */
     "transfer": string;
     /**
-     * ユーザーとチャット
-     */
-    "messagingWithUser": string;
-    /**
-     * グループでチャット
-     */
-    "messagingWithGroup": string;
-    /**
      * タイトル
      */
     "title": string;
@@ -2136,14 +2148,6 @@ export interface Locale extends ILocale {
      * ポップアップ
      */
     "popup": string;
-    /**
-     * グループがありません
-     */
-    "youHaveNoGroups": string;
-    /**
-     * 既存のグループに招待してもらうか、新しくグループを作成してください。
-     */
-    "joinOrCreateGroup": string;
     /**
      * ノートのアクションをホバー時のみ表示する
      */
@@ -5643,6 +5647,10 @@ export interface Locale extends ILocale {
      * 技術的なお問い合わせの際に、以下の情報を併記すると問題の解決に役立つことがあります。
      */
     "deviceInfoDescription": string;
+    /**
+     * ニックネームを編集
+     */
+    "editNickName": string;
     "_compression": {
         "_quality": {
             /**
@@ -6035,6 +6043,30 @@ export interface Locale extends ILocale {
          * ページのタブバーを下部に表示
          */
         "showPageTabBarBottom": string;
+        /**
+         * サーバー独自機能
+         */
+        "featuredFunctions": string;
+        /**
+         * リノートの公開範囲オプションを表示
+         */
+        "renoteVisibilitySelection": string;
+        /**
+         * 引用とリノートボタンを分離
+         */
+        "separateQuoteRenoteButton": string;
+        /**
+         * お気に入りボタンを有効化
+         */
+        "enableFavoriteButton": string;
+        /**
+         * ニックネームを有効化
+         */
+        "enableNickname": string;
+        /**
+         * パクるメニューを表示
+         */
+        "stealEnabled": string;
         "_chat": {
             /**
              * 送信者の名前を表示
@@ -8061,20 +8093,6 @@ export interface Locale extends ILocale {
              * ウォーターマーク機能の使用可否
              */
             "watermarkAvailable": string;
-        };
-        "_moderator_options": {
-            /**
-             * 通報確認の許可
-             */
-            "canCheckReports": string;
-            /**
-             * ファイル確認の許可
-             */
-            "canCheckFiles": string;
-            /**
-             * 招待ボタンの非表示
-             */
-            "canHideInviteButtons": string;
         };
         "_condition": {
             /**
@@ -10458,14 +10476,6 @@ export interface Locale extends ILocale {
          * {name}がリノートしました
          */
         "youRenoted": ParameterizedString<"name">;
-        /**
-         * {name}からのチャットがあります
-         */
-        "youGotMessagingMessageFromUser": ParameterizedString<"name">;
-        /**
-         * {name}のチャットがあります
-         */
-        "youGotMessagingMessageFromGroup": ParameterizedString<"name">;
         /**
          * フォローされました
          */

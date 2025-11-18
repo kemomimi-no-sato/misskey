@@ -795,6 +795,52 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</div>
 				</MkFolder>
 			</SearchMarker>
+			<SearchMarker v-slot="slotProps" :keywords="['featuredFunctions']">
+				<MkFolder :defaultOpen="slotProps.isParentOfTarget">
+					<template #label><SearchLabel>{{ i18n.ts._settings.featuredFunctions }}</SearchLabel></template>
+					<template #icon><SearchIcon><i class="ti ti-sparkles"></i></SearchIcon></template>
+						<div class="_gaps_s">
+							<SearchMarker :keywords="['renote', 'visibility']">
+								<MkPreferenceContainer k="renoteVisibilitySelection">
+									<MkSwitch v-model="renoteVisibilitySelection">
+										<template #label><SearchLabel>{{ i18n.ts._settings.renoteVisibilitySelection }}</SearchLabel></template>
+									</MkSwitch>
+								</MkPreferenceContainer>
+							</SearchMarker>
+							<SearchMarker :keywords="['separate', 'quote', 'renote']">
+								<MkPreferenceContainer k="separateQuoteRenoteButton">
+									<MkSwitch v-model="separateQuoteRenoteButton">
+										<template #label><SearchLabel>{{ i18n.ts._settings.separateQuoteRenoteButton }}</SearchLabel></template>
+									</MkSwitch>
+								</MkPreferenceContainer>
+							</SearchMarker>
+							<SearchMarker :keywords="['favorite', 'button', 'enable']">
+								<MkPreferenceContainer k="enableFavoriteButton">
+									<MkSwitch v-model="enableFavoriteButton">
+										<template #label><SearchLabel>{{ i18n.ts._settings.enableFavoriteButton }}</SearchLabel></template>
+									</MkSwitch>
+								</MkPreferenceContainer>
+							</SearchMarker>
+							<SearchMarker :keywords="['nickname', 'enable']">
+								<MkPreferenceContainer k="nicknameEnabled">
+									<MkSwitch v-model="nicknameEnabled">
+										<template #label><SearchLabel>{{ i18n.ts._settings.enableNickname }}</SearchLabel></template>
+									</MkSwitch>
+								</MkPreferenceContainer>
+							</SearchMarker>
+							<SearchMarker :keywords="['steal']">
+								<MkPreferenceContainer k="stealEnabled">
+									<MkSwitch v-model="stealEnabled">
+										<template #label><SearchLabel>{{ i18n.ts._settings.stealEnabled }}</SearchLabel></template>
+									</MkSwitch>
+								</MkPreferenceContainer>
+							</SearchMarker>
+						</div>
+					<div class="_gaps_m">
+
+					</div>
+				</MkFolder>
+			</SearchMarker>
 		</div>
 
 		<hr>
@@ -903,6 +949,11 @@ const useNativeUiForVideoAudioPlayer = prefer.model('useNativeUiForVideoAudioPla
 const contextMenu = prefer.model('contextMenu');
 const menuStyle = prefer.model('menuStyle');
 const makeEveryTextElementsSelectable = prefer.model('makeEveryTextElementsSelectable');
+const renoteVisibilitySelection = prefer.model('renoteVisibilitySelection');
+const separateQuoteRenoteButton = prefer.model('separateQuoteRenoteButton');
+const enableFavoriteButton = prefer.model('enableFavoriteButton');
+const nicknameEnabled = prefer.model('nicknameEnabled');
+const stealEnabled = prefer.model('stealEnabled');
 
 const fontSize = ref(miLocalStorage.getItem('fontSize'));
 const useSystemFont = ref(miLocalStorage.getItem('useSystemFont') != null);
@@ -962,6 +1013,11 @@ watch([
 	showAvailableReactionsFirstInNote,
 	animatedMfm,
 	advancedMfm,
+	renoteVisibilitySelection,
+	separateQuoteRenoteButton,
+	enableFavoriteButton,
+	nicknameEnabled,
+	stealEnabled,
 ], () => {
 	suggestReload();
 });

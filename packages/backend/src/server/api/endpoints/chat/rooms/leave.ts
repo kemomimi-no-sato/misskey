@@ -14,6 +14,8 @@ export const meta = {
 
 	requireCredential: true,
 
+	secure: true,
+
 	kind: 'write:chat',
 
 	errors: {

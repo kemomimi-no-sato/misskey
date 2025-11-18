@@ -16,6 +16,8 @@ export const meta = {
 
 	kind: 'write:chat',
 
+	secure: true,
+
 	errors: {
 	},
 } as const;

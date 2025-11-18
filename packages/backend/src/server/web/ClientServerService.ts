@@ -47,6 +47,7 @@ import { FlashEntityService } from '@/core/entities/FlashEntityService.js';
 import { RoleService } from '@/core/RoleService.js';
 import { ReversiGameEntityService } from '@/core/entities/ReversiGameEntityService.js';
 import { AnnouncementEntityService } from '@/core/entities/AnnouncementEntityService.js';
+import { MetaEntityService } from '@/core/entities/MetaEntityService.js';
 import { FeedService } from './FeedService.js';
 import { UrlPreviewService } from './UrlPreviewService.js';
 import { ClientLoggerService } from './ClientLoggerService.js';
@@ -118,6 +119,7 @@ export class ClientServerService {
 		private feedService: FeedService,
 		private roleService: RoleService,
 		private clientLoggerService: ClientLoggerService,
+		private metaEntityService: MetaEntityService,
 	) {
 		//this.createServer = this.createServer.bind(this);
 	}
@@ -192,7 +194,6 @@ export class ClientServerService {
 			serverErrorImageUrl: meta.serverErrorImageUrl ?? 'https://xn--931a.moe/assets/error.jpg',
 			infoImageUrl: meta.infoImageUrl ?? 'https://xn--931a.moe/assets/info.jpg',
 			notFoundImageUrl: meta.notFoundImageUrl ?? 'https://xn--931a.moe/assets/not-found.jpg',
-			splashImageUrl: meta.splashImageUrl ?? meta.iconUrl,
 			instanceUrl: this.config.url,
 			metaJson: htmlSafeJsonStringify(await this.metaEntityService.packDetailed(meta)),
 			now: Date.now(),

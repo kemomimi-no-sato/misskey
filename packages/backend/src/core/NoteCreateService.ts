@@ -504,7 +504,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			data.localOnly = true;
 		}
 
-		//ロールにてリモート投稿が許可されていない場合
+		// ロールにてリモート投稿が許可されていない場合
 		if ((await this.roleService.getUserPolicies(user.id)).canRemoteNote === false) {
 			data.localOnly = true;
 		}

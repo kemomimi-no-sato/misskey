@@ -9,14 +9,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div :class="[$style.label, $style.item]">
 			{{ i18n.ts.visibility }}
 		</div>
-		<button key="public" :disabled="isSilenced || isReplyVisibilitySpecified || isPrivateAccount" class="_button" :class="[$style.item, { [$style.active]: v === 'public' }]" data-index="1" @click="choose('public')">
+		<button key="public" :disabled="isSilenced || isReplyVisibilitySpecified" class="_button" :class="[$style.item, { [$style.active]: v === 'public' }]" data-index="1" @click="choose('public')">
 			<div :class="$style.icon"><i class="ti ti-world"></i></div>
 			<div :class="$style.body">
 				<span :class="$style.itemTitle">{{ i18n.ts._visibility.public }}</span>
 				<span :class="$style.itemDescription">{{ i18n.ts._visibility.publicDescription }}</span>
 			</div>
 		</button>
-		<button key="home" :disabled="isReplyVisibilitySpecified || isPrivateAccount" class="_button" :class="[$style.item, { [$style.active]: v === 'home' }]" data-index="2" @click="choose('home')">
+		<button key="home" :disabled="isReplyVisibilitySpecified" class="_button" :class="[$style.item, { [$style.active]: v === 'home' }]" data-index="2" @click="choose('home')">
 			<div :class="$style.icon"><i class="ti ti-home"></i></div>
 			<div :class="$style.body">
 				<span :class="$style.itemTitle">{{ i18n.ts._visibility.home }}</span>
@@ -45,7 +45,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { nextTick, useTemplateRef, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkModal from '@/components/MkModal.vue';
-import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
 
 const modal = useTemplateRef('modal');
@@ -65,8 +64,6 @@ const emit = defineEmits<{
 }>();
 
 const v = ref(props.currentVisibility);
-
-const isPrivateAccount = ref($i.isLocked && !$i.policies.permissionToPostPublicly);
 
 function choose(visibility: typeof Misskey.noteVisibilities[number]): void {
 	v.value = visibility;

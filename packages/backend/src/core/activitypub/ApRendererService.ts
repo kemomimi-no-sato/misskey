@@ -17,7 +17,6 @@ import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
 import type { MiEmoji } from '@/models/Emoji.js';
 import type { MiPoll } from '@/models/Poll.js';
-import type { MiMessagingMessage } from '@/models/MessagingMessage.js';
 import type { MiPollVote } from '@/models/PollVote.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
 import { MfmService, type Appender } from '@/core/MfmService.js';
@@ -621,15 +620,6 @@ export class ApRendererService {
 					totalItems: poll.votes[i],
 				},
 			})),
-		};
-	}
-
-	@bindThis
-	public renderRead(user: { id: MiUser['id'] }, message: MiMessagingMessage): IRead {
-		return {
-			type: 'Read',
-			actor: `${this.config.url}/users/${user.id}`,
-			object: message.uri!,
 		};
 	}
 

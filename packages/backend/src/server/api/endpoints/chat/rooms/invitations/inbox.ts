@@ -16,6 +16,8 @@ export const meta = {
 
 	requireCredential: true,
 
+	secure: true,
+
 	kind: 'read:chat',
 
 	res: {
