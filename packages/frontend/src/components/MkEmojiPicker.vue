@@ -428,6 +428,9 @@ function chosen(emoji: string | Misskey.entities.EmojiSimple | UnicodeEmojiDef, 
 			end: () => dispose(),
 		});
 	}
+	
+	console.log(props.pinnedEmojis, 'before chosen');
+	console.log(props.asReactionPicker, 'before chosen asReactionPicker');
 
 	const key = getKey(emoji);
 	emit('chosen', key);
