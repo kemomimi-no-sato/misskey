@@ -10,6 +10,7 @@ import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
 import { isQuotePacked, isRenotePacked } from '@/misc/is-renote.js';
+import type { JsonObject } from '@/misc/json-value.js';
 import Channel, { type MiChannelService } from '../channel.js';
 
 class LocalTimelineChannel extends Channel {
@@ -33,13 +34,13 @@ class LocalTimelineChannel extends Channel {
 	}
 
 	@bindThis
-	public async init(params: any) {
+	public async init(params: JsonObject) {
 		const policies = await this.roleService.getUserPolicies(this.user ? this.user.id : null);
 		if (!policies.ltlAvailable) return;
 
-		this.withRenotes = params.withRenotes ?? true;
-		this.withReplies = params.withReplies ?? false;
-		this.withFiles = params.withFiles ?? false;
+		this.withRenotes = !!(params.withRenotes ?? true);
+		this.withReplies = !!(params.withReplies ?? false);
+		this.withFiles = !!(params.withFiles ?? false);
 
 		// Subscribe events
 		this.subscriber.on('notesStream', this.onNote);
@@ -52,6 +53,9 @@ class LocalTimelineChannel extends Channel {
 		if (note.user.host !== null) return;
 		if (note.visibility !== 'public') return;
 		if (note.channelId != null) return;
+		if (note.user.requireSigninToViewContents && this.user == null) return;
+		if (note.renote && note.renote.user.requireSigninToViewContents && this.user == null) return;
+		if (note.reply && note.reply.user.requireSigninToViewContents && this.user == null) return;
 
 		// 関係ない返信は除外
 		if (note.reply && this.user && !this.following[note.userId]?.withReplies && !this.withReplies) {
@@ -70,8 +74,6 @@ class LocalTimelineChannel extends Channel {
 				note.renote.myReaction = myRenoteReaction;
 			}
 		}
-
-		this.connection.cacheNote(note);
 
 		this.send('note', note);
 	}

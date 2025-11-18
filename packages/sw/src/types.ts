@@ -22,10 +22,8 @@ type PushNotificationDataSourceMap = {
 		antenna: { id: string; name: string };
 		note: Misskey.entities.Note;
 	};
-	unreadMessagingMessage: Misskey.entities.MessagingMessage;
 	readAllNotifications: undefined;
-	readAllMessagingMessages: undefined;
-	readAllMessagingMessagesOfARoom: { userId: string } | { groupId: string };
+	newChatMessage: Misskey.entities.ChatMessage;
 };
 
 export type PushNotificationData<K extends keyof PushNotificationDataSourceMap> = {
@@ -53,4 +51,5 @@ export type BadgeNames =
 	| 'quote'
 	| 'repeat'
 	| 'user-plus'
-	| 'users';
+	| 'users'
+	| 'login-2';

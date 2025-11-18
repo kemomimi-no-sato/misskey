@@ -6,7 +6,7 @@
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { DI } from '@/di-symbols.js';
-import type { DriveFilesRepository } from '@/models/_.js';
+import type { DriveFilesRepository, MiMeta } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
@@ -16,7 +16,6 @@ import { appendQuery, query } from '@/misc/prelude/url.js';
 import { deepClone } from '@/misc/clone.js';
 import { bindThis } from '@/decorators.js';
 import { isMimeImage } from '@/misc/is-mime-image.js';
-import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
 import { UtilityService } from '../UtilityService.js';
 import { VideoProcessingService } from '../VideoProcessingService.js';
@@ -34,6 +33,9 @@ export class DriveFileEntityService {
 	constructor(
 		@Inject(DI.config)
 		private config: Config,
+
+		@Inject(DI.meta)
+		private meta: MiMeta,
 
 		@Inject(DI.driveFilesRepository)
 		private driveFilesRepository: DriveFilesRepository,
@@ -96,7 +98,7 @@ export class DriveFileEntityService {
 			return this.getProxiedUrl(file.uri, 'static');
 		}
 
-		if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
+		if (file.uri != null && file.isLink && this.meta.proxyRemoteFiles) {
 			// リモートかつ期限切れはローカルプロキシを試みる
 			// 従来は/files/${thumbnailAccessKey}にアクセスしていたが、
 			// /filesはメディアプロキシにリダイレクトするようにしたため直接メディアプロキシを指定する
@@ -116,7 +118,7 @@ export class DriveFileEntityService {
 		}
 
 		// リモートかつ期限切れはローカルプロキシを試みる
-		if (file.uri != null && file.isLink && this.config.proxyRemoteFiles) {
+		if (file.uri != null && file.isLink && this.meta.proxyRemoteFiles) {
 			const key = file.webpublicAccessKey;
 
 			if (key && !key.match('/')) {	// 古いものはここにオブジェクトストレージキーが入ってるので除外
@@ -261,11 +263,11 @@ export class DriveFileEntityService {
 		files: MiDriveFile[],
 		options?: PackOptions,
 	): Promise<Packed<'DriveFile'>[]> {
-		const _user = files.map(({ user, userId }) => user ?? userId).filter(isNotNull);
+		const _user = files.map(({ user, userId }) => user ?? userId).filter(x => x != null);
 		const _userMap = await this.userEntityService.packMany(_user)
 			.then(users => new Map(users.map(user => [user.id, user])));
 		const items = await Promise.all(files.map(f => this.packNullable(f, options, f.userId ? { packedUser: _userMap.get(f.userId) } : {})));
-		return items.filter(isNotNull);
+		return items.filter(x => x != null);
 	}
 
 	@bindThis
@@ -290,6 +292,6 @@ export class DriveFileEntityService {
 	): Promise<Packed<'DriveFile'>[]> {
 		if (fileIds.length === 0) return [];
 		const filesMap = await this.packManyByIdsMap(fileIds, options);
-		return fileIds.map(id => filesMap.get(id)).filter(isNotNull);
+		return fileIds.map(id => filesMap.get(id)).filter(x => x != null);
 	}
 }

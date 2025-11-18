@@ -5,9 +5,87 @@
 
 import { Module } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import { MiRepository, MiAbuseUserReport, MiAccessToken, MiAd, MiAnnouncement, MiAnnouncementRead, MiAntenna, MiApp, MiAuthSession, MiAvatarDecoration, MiBlocking, MiChannel, MiChannelFavorite, MiChannelFollowing, MiClip, MiClipFavorite, MiClipNote, MiDriveFile, MiDriveFolder, MiEmoji, MiFlash, MiFlashLike, MiFollowRequest, MiFollowing, MiGalleryLike, MiGalleryPost, MiHashtag, MiInstance, MiMeta, MiModerationLog, MiMuting, MiNote, MiNoteFavorite, MiNoteReaction, MiNoteThreadMuting, MiNoteUnread, MiPage, MiPageLike, MiPasswordResetRequest, MiPoll, MiPollVote, MiPromoNote, MiPromoRead, MiRegistrationTicket, MiRegistryItem, MiRelay, MiRenoteMuting, MiRetentionAggregation, MiRole, MiRoleAssignment, MiSignin, MiSwSubscription, MiMessagingMessage, MiUsedUsername, MiUser, MiUserIp, MiUserKeypair, MiUserList, MiUserListFavorite, MiUserListMembership, MiUserGroup, MiUserGroupJoining, MiUserGroupInvitation, MiUserMemo, MiUserNotePining, MiUserPending, MiUserProfile, MiUserPublickey, MiUserSecurityKey, MiWebhook, MiBubbleGameRecord, MiReversiGame, miRepository } from './_.js';
-import type { DataSource } from 'typeorm';
+import {
+	MiAbuseReportNotificationRecipient,
+	MiAbuseUserReport,
+	MiAccessToken,
+	MiAd,
+	MiAnnouncement,
+	MiAnnouncementRead,
+	MiAntenna,
+	MiApp,
+	MiAuthSession,
+	MiAvatarDecoration,
+	MiBlocking,
+	MiBubbleGameRecord,
+	MiChannel,
+	MiChannelFavorite,
+	MiChannelFollowing,
+	MiClip,
+	MiClipFavorite,
+	MiClipNote,
+	MiDriveFile,
+	MiDriveFolder,
+	MiEmoji,
+	MiFlash,
+	MiFlashLike,
+	MiFollowing,
+	MiFollowRequest,
+	MiGalleryLike,
+	MiGalleryPost,
+	MiHashtag,
+	MiInstance,
+	MiMeta,
+	MiModerationLog,
+	MiMuting,
+	MiNote,
+	MiNoteFavorite,
+	MiNoteReaction,
+	MiNoteThreadMuting,
+	MiNoteDraft,
+	MiPage,
+	MiPageLike,
+	MiPasswordResetRequest,
+	MiPoll,
+	MiPollVote,
+	MiPromoNote,
+	MiPromoRead,
+	MiRegistrationTicket,
+	MiRegistryItem,
+	MiRelay,
+	MiRenoteMuting,
+	MiRepository,
+	miRepository,
+	MiRetentionAggregation,
+	MiReversiGame,
+	MiRole,
+	MiRoleAssignment,
+	MiSignin,
+	MiSwSubscription,
+	MiSystemAccount,
+	MiSystemWebhook,
+	MiUsedUsername,
+	MiUser,
+	MiUserIp,
+	MiUserKeypair,
+	MiUserList,
+	MiUserListFavorite,
+	MiUserListMembership,
+	MiUserMemo,
+	MiUserNotePining,
+	MiUserPending,
+	MiUserProfile,
+	MiUserPublickey,
+	MiUserSecurityKey,
+	MiWebhook,
+	MiChatMessage,
+	MiChatRoom,
+	MiChatRoomMembership,
+	MiChatRoomInvitation,
+	MiChatApproval,
+} from './_.js';
 import type { Provider } from '@nestjs/common';
+import type { DataSource } from 'typeorm';
 
 const $usersRepository: Provider = {
 	provide: DI.usersRepository,
@@ -63,9 +141,9 @@ const $noteReactionsRepository: Provider = {
 	inject: [DI.db],
 };
 
-const $noteUnreadsRepository: Provider = {
-	provide: DI.noteUnreadsRepository,
-	useFactory: (db: DataSource) => db.getRepository(MiNoteUnread).extend(miRepository as MiRepository<MiNoteUnread>),
+const $noteDraftsRepository: Provider = {
+	provide: DI.noteDraftsRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiNoteDraft).extend(miRepository as MiRepository<MiNoteDraft>),
 	inject: [DI.db],
 };
 
@@ -126,24 +204,6 @@ const $userListFavoritesRepository: Provider = {
 const $userListMembershipsRepository: Provider = {
 	provide: DI.userListMembershipsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiUserListMembership).extend(miRepository as MiRepository<MiUserListMembership>),
-	inject: [DI.db],
-};
-
-const $userGroupsRepository: Provider = {
-	provide: DI.userGroupsRepository,
-	useFactory: (db: DataSource) => db.getRepository(MiUserGroup).extend(miRepository as MiRepository<MiUserGroup>),
-	inject: [DI.db],
-};
-
-const $userGroupJoiningsRepository: Provider = {
-	provide: DI.userGroupJoiningsRepository,
-	useFactory: (db: DataSource) => db.getRepository(MiUserGroupJoining).extend(miRepository as MiRepository<MiUserGroupJoining>),
-	inject: [DI.db],
-};
-
-const $userGroupInvitationsRepository: Provider = {
-	provide: DI.userGroupInvitationsRepository,
-	useFactory: (db: DataSource) => db.getRepository(MiUserGroupInvitation).extend(miRepository as MiRepository<MiUserGroupInvitation>),
 	inject: [DI.db],
 };
 
@@ -231,6 +291,12 @@ const $swSubscriptionsRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $systemAccountsRepository: Provider = {
+	provide: DI.systemAccountsRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiSystemAccount).extend(miRepository as MiRepository<MiSystemAccount>),
+	inject: [DI.db],
+};
+
 const $hashtagsRepository: Provider = {
 	provide: DI.hashtagsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiHashtag).extend(miRepository as MiRepository<MiHashtag>),
@@ -240,6 +306,12 @@ const $hashtagsRepository: Provider = {
 const $abuseUserReportsRepository: Provider = {
 	provide: DI.abuseUserReportsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiAbuseUserReport).extend(miRepository as MiRepository<MiAbuseUserReport>),
+	inject: [DI.db],
+};
+
+const $abuseReportNotificationRecipientRepository: Provider = {
+	provide: DI.abuseReportNotificationRecipientRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiAbuseReportNotificationRecipient).extend(miRepository as MiRepository<MiAbuseReportNotificationRecipient>),
 	inject: [DI.db],
 };
 
@@ -264,12 +336,6 @@ const $accessTokensRepository: Provider = {
 const $signinsRepository: Provider = {
 	provide: DI.signinsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiSignin).extend(miRepository as MiRepository<MiSignin>),
-	inject: [DI.db],
-};
-
-const $messagingMessagesRepository: Provider = {
-	provide: DI.messagingMessagesRepository,
-	useFactory: (db: DataSource) => db.getRepository(MiMessagingMessage).extend(miRepository as MiRepository<MiMessagingMessage>),
 	inject: [DI.db],
 };
 
@@ -375,6 +441,12 @@ const $webhooksRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $systemWebhooksRepository: Provider = {
+	provide: DI.systemWebhooksRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiSystemWebhook).extend(miRepository as MiRepository<MiSystemWebhook>),
+	inject: [DI.db],
+};
+
 const $adsRepository: Provider = {
 	provide: DI.adsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiAd).extend(miRepository as MiRepository<MiAd>),
@@ -423,6 +495,36 @@ const $userMemosRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $chatMessagesRepository: Provider = {
+	provide: DI.chatMessagesRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiChatMessage).extend(miRepository as MiRepository<MiChatMessage>),
+	inject: [DI.db],
+};
+
+const $chatRoomsRepository: Provider = {
+	provide: DI.chatRoomsRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiChatRoom).extend(miRepository as MiRepository<MiChatRoom>),
+	inject: [DI.db],
+};
+
+const $chatRoomMembershipsRepository: Provider = {
+	provide: DI.chatRoomMembershipsRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiChatRoomMembership).extend(miRepository as MiRepository<MiChatRoomMembership>),
+	inject: [DI.db],
+};
+
+const $chatRoomInvitationsRepository: Provider = {
+	provide: DI.chatRoomInvitationsRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiChatRoomInvitation).extend(miRepository as MiRepository<MiChatRoomInvitation>),
+	inject: [DI.db],
+};
+
+const $chatApprovalsRepository: Provider = {
+	provide: DI.chatApprovalsRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiChatApproval).extend(miRepository as MiRepository<MiChatApproval>),
+	inject: [DI.db],
+};
+
 const $bubbleGameRecordsRepository: Provider = {
 	provide: DI.bubbleGameRecordsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiBubbleGameRecord).extend(miRepository as MiRepository<MiBubbleGameRecord>),
@@ -436,8 +538,7 @@ const $reversiGamesRepository: Provider = {
 };
 
 @Module({
-	imports: [
-	],
+	imports: [],
 	providers: [
 		$usersRepository,
 		$notesRepository,
@@ -448,7 +549,7 @@ const $reversiGamesRepository: Provider = {
 		$noteFavoritesRepository,
 		$noteThreadMutingsRepository,
 		$noteReactionsRepository,
-		$noteUnreadsRepository,
+		$noteDraftsRepository,
 		$pollsRepository,
 		$pollVotesRepository,
 		$userProfilesRepository,
@@ -459,9 +560,6 @@ const $reversiGamesRepository: Provider = {
 		$userListsRepository,
 		$userListFavoritesRepository,
 		$userListMembershipsRepository,
-		$userGroupsRepository,
-		$userGroupJoiningsRepository,
-		$userGroupInvitationsRepository,
 		$userNotePiningsRepository,
 		$userIpsRepository,
 		$usedUsernamesRepository,
@@ -476,13 +574,14 @@ const $reversiGamesRepository: Provider = {
 		$renoteMutingsRepository,
 		$blockingsRepository,
 		$swSubscriptionsRepository,
+		$systemAccountsRepository,
 		$hashtagsRepository,
 		$abuseUserReportsRepository,
+		$abuseReportNotificationRecipientRepository,
 		$registrationTicketsRepository,
 		$authSessionsRepository,
 		$accessTokensRepository,
 		$signinsRepository,
-		$messagingMessagesRepository,
 		$pagesRepository,
 		$pageLikesRepository,
 		$galleryPostsRepository,
@@ -500,6 +599,7 @@ const $reversiGamesRepository: Provider = {
 		$channelFavoritesRepository,
 		$registryItemsRepository,
 		$webhooksRepository,
+		$systemWebhooksRepository,
 		$adsRepository,
 		$passwordResetRequestsRepository,
 		$retentionAggregationsRepository,
@@ -508,6 +608,11 @@ const $reversiGamesRepository: Provider = {
 		$flashsRepository,
 		$flashLikesRepository,
 		$userMemosRepository,
+		$chatMessagesRepository,
+		$chatRoomsRepository,
+		$chatRoomMembershipsRepository,
+		$chatRoomInvitationsRepository,
+		$chatApprovalsRepository,
 		$bubbleGameRecordsRepository,
 		$reversiGamesRepository,
 	],
@@ -521,7 +626,7 @@ const $reversiGamesRepository: Provider = {
 		$noteFavoritesRepository,
 		$noteThreadMutingsRepository,
 		$noteReactionsRepository,
-		$noteUnreadsRepository,
+		$noteDraftsRepository,
 		$pollsRepository,
 		$pollVotesRepository,
 		$userProfilesRepository,
@@ -532,9 +637,6 @@ const $reversiGamesRepository: Provider = {
 		$userListsRepository,
 		$userListFavoritesRepository,
 		$userListMembershipsRepository,
-		$userGroupsRepository,
-		$userGroupJoiningsRepository,
-		$userGroupInvitationsRepository,
 		$userNotePiningsRepository,
 		$userIpsRepository,
 		$usedUsernamesRepository,
@@ -549,13 +651,14 @@ const $reversiGamesRepository: Provider = {
 		$renoteMutingsRepository,
 		$blockingsRepository,
 		$swSubscriptionsRepository,
+		$systemAccountsRepository,
 		$hashtagsRepository,
 		$abuseUserReportsRepository,
+		$abuseReportNotificationRecipientRepository,
 		$registrationTicketsRepository,
 		$authSessionsRepository,
 		$accessTokensRepository,
 		$signinsRepository,
-		$messagingMessagesRepository,
 		$pagesRepository,
 		$pageLikesRepository,
 		$galleryPostsRepository,
@@ -573,6 +676,7 @@ const $reversiGamesRepository: Provider = {
 		$channelFavoritesRepository,
 		$registryItemsRepository,
 		$webhooksRepository,
+		$systemWebhooksRepository,
 		$adsRepository,
 		$passwordResetRequestsRepository,
 		$retentionAggregationsRepository,
@@ -581,8 +685,14 @@ const $reversiGamesRepository: Provider = {
 		$flashsRepository,
 		$flashLikesRepository,
 		$userMemosRepository,
+		$chatMessagesRepository,
+		$chatRoomsRepository,
+		$chatRoomMembershipsRepository,
+		$chatRoomInvitationsRepository,
+		$chatApprovalsRepository,
 		$bubbleGameRecordsRepository,
 		$reversiGamesRepository,
 	],
 })
-export class RepositoryModule {}
+export class RepositoryModule {
+}

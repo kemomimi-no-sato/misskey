@@ -18,18 +18,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<!-- eslint-disable-next-line vue/no-v-html -->
 				<div v-html="instance.description || i18n.ts.headlineMisskey"></div>
 			</div>
-			<div v-if="instance.disableRegistration" :class="$style.mainWarn">
-				<MkInfo warn>{{ i18n.ts.invitationRequiredToRegister }}</MkInfo>
+			<div v-if="instance.disableRegistration || instance.federation !== 'all'" :class="$style.mainWarn" class="_gaps_s">
+				<MkInfo v-if="instance.disableRegistration" warn>{{ i18n.ts.invitationRequiredToRegister }}</MkInfo>
+				<MkInfo v-if="instance.federation === 'specified'" warn>{{ i18n.ts.federationSpecified }}</MkInfo>
+				<MkInfo v-else-if="instance.federation === 'none'" warn>{{ i18n.ts.federationDisabled }}</MkInfo>
 			</div>
 			<div class="_gaps_s" :class="$style.mainActions">
-				<MkButton v-if="!instance.enableLoginOnlyMode" :class="$style.mainAction" full rounded gradate data-cy-signup style="margin-right: 12px;" @click="signup()">{{ instance.signupText || i18n.ts.joinThisServer }}</MkButton>
-				<MkButton :class="$style.mainAction" full rounded @click="exploreOtherServers()">{{ instance.exploreOtherServersText || i18n.ts.exploreOtherServers }}</MkButton>
-				<MkButton v-if="!instance.enableLoginOnlyMode" :class="$style.mainAction" full rounded data-cy-signin @click="signin()">{{ instance.loginText || i18n.ts.login }}</MkButton>
-				<MkButton v-if="instance.enableLoginOnlyMode" :class="$style.mainAction" full rounded data-cy-signin @click="signin()"><i class="ti ti-lock"></i></MkButton>
+				<MkButton :class="$style.mainAction" full rounded gradate data-cy-signup style="margin-right: 12px;" @click="signup()">{{ i18n.ts.joinThisServer }}</MkButton>
+				<MkButton :class="$style.mainAction" full rounded link to="https://misskey-hub.net/servers/">{{ i18n.ts.exploreOtherServers }}</MkButton>
+				<MkButton :class="$style.mainAction" full rounded data-cy-signin @click="signin()">{{ i18n.ts.login }}</MkButton>
 			</div>
 		</div>
 	</div>
-	<div v-if="stats" :class="$style.stats">
+	<div v-if="stats && instance.clientOptions.showActivitiesForVisitor !== false" :class="$style.stats">
 		<div :class="[$style.statsItem, $style.panel]">
 			<div :class="$style.statsItemLabel">{{ i18n.ts.users }}</div>
 			<div :class="$style.statsItemCount"><MkNumber :value="stats.originalUsersCount"/></div>
@@ -39,13 +40,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div :class="$style.statsItemCount"><MkNumber :value="stats.originalNotesCount"/></div>
 		</div>
 	</div>
-	<div v-if="instance.policies.ltlAvailable" :class="[$style.tl, $style.panel]">
+	<div v-if="instance.policies.ltlAvailable && instance.clientOptions.showTimelineForVisitor !== false" :class="[$style.tl, $style.panel]">
 		<div :class="$style.tlHeader">{{ i18n.ts.letsLookAtTimeline }}</div>
 		<div :class="$style.tlBody">
-			<MkTimeline src="local"/>
+			<MkStreamingNotesTimeline src="local"/>
 		</div>
 	</div>
-	<div :class="$style.panel">
+	<div v-if="instance.clientOptions.showActivitiesForVisitor !== false" :class="$style.panel">
 		<XActiveUsersChart/>
 	</div>
 </div>
@@ -54,44 +55,47 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
+import { instanceName } from '@@/js/config.js';
+import type { MenuItem } from '@/types/menu.js';
 import XSigninDialog from '@/components/MkSigninDialog.vue';
 import XSignupDialog from '@/components/MkSignupDialog.vue';
 import MkButton from '@/components/MkButton.vue';
-import MkTimeline from '@/components/MkTimeline.vue';
+import MkStreamingNotesTimeline from '@/components/MkStreamingNotesTimeline.vue';
 import MkInfo from '@/components/MkInfo.vue';
-import { instanceName } from '@/config.js';
 import * as os from '@/os.js';
-import { misskeyApi } from '@/scripts/misskey-api.js';
+import { misskeyApi } from '@/utility/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import MkNumber from '@/components/MkNumber.vue';
 import XActiveUsersChart from '@/components/MkVisitorDashboard.ActiveUsersChart.vue';
-import { openInstanceMenu } from '@/ui/_common_/common';
+import { openInstanceMenu } from '@/ui/_common_/common.js';
 
 const stats = ref<Misskey.entities.StatsResponse | null>(null);
 
-misskeyApi('stats', {}).then((res) => {
-	stats.value = res;
-});
+if (instance.clientOptions.showActivitiesForVisitor !== false) {
+	misskeyApi('stats', {}).then((res) => {
+		stats.value = res;
+	});
+}
 
 function signin() {
-	os.popup(XSigninDialog, {
+	const { dispose } = os.popup(XSigninDialog, {
 		autoSet: true,
-	}, {}, 'closed');
+	}, {
+		closed: () => dispose(),
+	});
 }
 
 function signup() {
-	os.popup(XSignupDialog, {
+	const { dispose } = os.popup(XSignupDialog, {
 		autoSet: true,
-	}, {}, 'closed');
+	}, {
+		closed: () => dispose(),
+	});
 }
 
-function showMenu(ev) {
+function showMenu(ev: MouseEvent) {
 	openInstanceMenu(ev);
-}
-
-function exploreOtherServers() {
-	window.open('https://misskey-hub.net/servers/', '_blank', 'noopener');
 }
 </script>
 
@@ -106,8 +110,8 @@ function exploreOtherServers() {
 
 .panel {
 	position: relative;
-	background: var(--panel);
-	border-radius: var(--radius);
+	background: var(--MI_THEME-panel);
+	border-radius: var(--MI-radius);
 	box-shadow: 0 12px 32px rgb(0 0 0 / 25%);
 }
 
@@ -130,6 +134,7 @@ function exploreOtherServers() {
 	height: 32px;
 	border-radius: 8px;
 	font-size: 18px;
+	z-index: 50;
 }
 
 .mainFg {
@@ -178,14 +183,14 @@ function exploreOtherServers() {
 }
 
 .statsItemLabel {
-	color: var(--fgTransparentWeak);
+	color: color(from var(--MI_THEME-fg) srgb r g b / 0.75);
 	font-size: 0.9em;
 }
 
 .statsItemCount {
 	font-weight: bold;
 	font-size: 1.2em;
-	color: var(--accent);
+	color: var(--MI_THEME-accent);
 }
 
 .tl {
@@ -194,7 +199,7 @@ function exploreOtherServers() {
 
 .tlHeader {
 	padding: 12px 16px;
-	border-bottom: solid 1px var(--divider);
+	border-bottom: solid 1px var(--MI_THEME-divider);
 }
 
 .tlBody {

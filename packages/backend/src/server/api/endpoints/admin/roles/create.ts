@@ -38,6 +38,7 @@ export const paramDef = {
 		isExplorable: { type: 'boolean', default: false }, // optional for backward compatibility
 		isBgColor: { type: 'boolean', default: false },
 		asBadge: { type: 'boolean' },
+		preserveAssignmentOnMoveAccount: { type: 'boolean' },
 		canEditMembersByModerator: { type: 'boolean' },
 		displayOrder: { type: 'number' },
 		policies: {
