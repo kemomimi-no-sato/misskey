@@ -279,7 +279,7 @@ const emit = defineEmits<{
 
 const inTimeline = inject<boolean>('inTimeline', false);
 const tl_withSensitive = inject<Ref<boolean>>('tl_withSensitive', ref(true));
-const inChannel = inject('inChannel', null);
+const inChannel = inject(DI.inChannel, null);
 const currentClip = inject<Ref<Misskey.entities.Clip> | null>('currentClip', null);
 
 let note = deepClone(props.note);
@@ -497,8 +497,12 @@ if (!props.mock) {
 	}
 }
 
-function renote() {
-	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+async function renote() {
+	if (props.mock) return;
+
+	const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	if (!isLoggedIn) return;
+
 	showMovedDialog();
 
 	const { menu } = getRenoteMenu({ note: note, renoteButton, mock: props.mock });
@@ -537,11 +541,12 @@ function quote(): void {
 	}
 }
 
-function reply(): void {
-	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
-	if (props.mock) {
-		return;
-	}
+async function reply() {
+	if (props.mock) return;
+
+	const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	if (!isLoggedIn) return;
+
 	os.post({
 		reply: appearNote,
 		channel: appearNote.channel,
@@ -550,8 +555,10 @@ function reply(): void {
 	});
 }
 
-function react(): void {
-	pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+async function react() {
+	const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	if (!isLoggedIn) return;
+
 	showMovedDialog();
 	if (appearNote.reactionAcceptance === 'likeOnly') {
 		sound.playMisskeySfx('reaction');
@@ -676,7 +683,7 @@ async function toggleFav() {
 	isFavorited.value = !prev;
 }
 
-function onContextmenu(ev: MouseEvent): void {
+function onContextmenu(ev: PointerEvent): void {
 	if (props.mock) {
 		return;
 	}
@@ -710,10 +717,12 @@ async function clip(): Promise<void> {
 	os.popupMenu(await getNoteClipMenu({ note: note, currentClip: currentClip?.value }), clipButton.value).then(focus);
 }
 
-function showRenoteMenu(): void {
+async function showRenoteMenu() {
 	if (props.mock) {
 		return;
 	}
+	const isLoggedIn = await pleaseLogin({ openOnRemote: pleaseLoginContext.value });
+	if (!isLoggedIn) return;
 
 	function getUnrenote(): MenuItem {
 		return {
@@ -730,24 +739,35 @@ function showRenoteMenu(): void {
 		};
 	}
 
-	const renoteDetailsMenu: MenuItem = {
+	const renoteDetailsMenu: MenuItem[] = [{
 		type: 'link',
 		text: i18n.ts.renoteDetails,
 		icon: 'ti ti-info-circle',
 		to: notePage(note),
-	};
+	}];
+
+	if (
+		props.note.channelId != null &&
+		(inChannel == null || props.note.channelId !== inChannel.value)
+	) {
+		renoteDetailsMenu.push({
+			type: 'link',
+			text: i18n.ts.viewRenotedChannel,
+			icon: 'ti ti-device-tv',
+			to: `/channels/${props.note.channelId}`,
+		});
+	}
 
 	if (isMyRenote) {
-		pleaseLogin({ openOnRemote: pleaseLoginContext.value });
 		os.popupMenu([
-			renoteDetailsMenu,
+			...renoteDetailsMenu,
 			getCopyNoteLinkMenu(note, i18n.ts.copyLinkRenote),
 			{ type: 'divider' },
 			getUnrenote(),
 		], renoteTime.value);
 	} else {
 		os.popupMenu([
-			renoteDetailsMenu,
+			...renoteDetailsMenu,
 			getCopyNoteLinkMenu(note, i18n.ts.copyLinkRenote),
 			{ type: 'divider' },
 			getAbuseNoteMenu(note, i18n.ts.reportAbuseRenote),

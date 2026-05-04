@@ -76,11 +76,11 @@ const $i = ensureSignin();
 
 const emailAddress = ref($i.email ?? '');
 
-const onChangeReceiveAnnouncementEmail = (v) => {
+function onChangeReceiveAnnouncementEmail(v: boolean) {
 	misskeyApi('i/update', {
 		receiveAnnouncementEmail: v,
 	});
-};
+}
 
 const emailNotification_groupInvited = ref($i!.emailNotificationTypes.includes('groupInvited'));
 
