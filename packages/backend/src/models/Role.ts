@@ -241,6 +241,11 @@ export class MiRole {
 	@Column('boolean', {
 		default: false,
 	})
+	public isBgColor: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public isModerator: boolean;
 
 	@Column('boolean', {
@@ -252,6 +257,11 @@ export class MiRole {
 		default: false,
 	})
 	public isExplorable: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public preserveAssignmentOnMoveAccount: boolean;
 
 	@Column('boolean', {
 		default: false,

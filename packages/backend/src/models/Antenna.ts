@@ -7,7 +7,6 @@ import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typ
 import { id } from './util/id.js';
 import { MiUser } from './User.js';
 import { MiUserList } from './UserList.js';
-import { MiUserGroupJoining } from './UserGroupJoining.js';
 
 @Entity('antenna')
 export class MiAntenna {
@@ -25,7 +24,7 @@ export class MiAntenna {
 	})
 	public userId: MiUser['id'];
 
-	@ManyToOne(type => MiUser, {
+	@ManyToOne(() => MiUser, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -37,8 +36,8 @@ export class MiAntenna {
 	})
 	public name: string;
 
-	@Column('enum', { enum: ['home', 'all', 'users', 'list', 'users_blacklist', 'group'] })
-	public src: 'home' | 'all' | 'users' | 'list' | 'users_blacklist' | 'group';
+	@Column('enum', { enum: ['home', 'all', 'users', 'list', 'users_blacklist'] })
+	public src: 'home' | 'all' | 'users' | 'list' | 'users_blacklist';
 
 	@Column({
 		...id(),
@@ -46,7 +45,7 @@ export class MiAntenna {
 	})
 	public userListId: MiUserList['id'] | null;
 
-	@ManyToOne(type => MiUserList, {
+	@ManyToOne(() => MiUserList, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
@@ -55,18 +54,6 @@ export class MiAntenna {
 	@Column({
 		...id(),
 		nullable: true,
-	})
-	public userGroupJoiningId: MiUserGroupJoining['id'] | null;
-
-	@ManyToOne(type => MiUserGroupJoining, {
-		onDelete: 'CASCADE',
-	})
-	@JoinColumn()
-	public userGroupJoining: MiUserGroupJoining | null;
-
-	@Column('varchar', {
-		length: 1024, array: true,
-		default: '{}',
 	})
 	public users: string[];
 
@@ -113,4 +100,12 @@ export class MiAntenna {
 		default: false,
 	})
 	public localOnly: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public excludeNotesInSensitiveChannel: boolean;
 }
+// Note for future developers: When you added a new column,
+// You should update ExportAntennaProcessorService and ImportAntennaProcessorService
+// to export and import antennas correctly.

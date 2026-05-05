@@ -4,17 +4,28 @@
  */
 
 import { computed, reactive } from 'vue';
-import { clearCache } from './scripts/clear-cache.js';
-import { $i } from '@/account.js';
+import { ui } from '@@/js/config.js';
+import { clearCache } from './utility/clear-cache.js';
+import type { ComputedRef } from 'vue';
+import { $i } from '@/i.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { openInstanceMenu, openToolsMenu } from '@/ui/_common_/common.js';
-import { lookup } from '@/scripts/lookup.js';
+import { lookup } from '@/utility/lookup.js';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
-import { ui } from '@@/js/config.js';
-import { unisonReload } from '@/scripts/unison-reload.js';
+import { unisonReload } from '@/utility/unison-reload.js';
 
-export const navbarItemDef = reactive({
+export const navbarItemDef = reactive<{
+	[key: string]: {
+		title: string;
+		icon: string;
+		show?: ComputedRef<boolean>;
+		indicated?: ComputedRef<boolean>;
+		indicateValue?: ComputedRef<string>;
+		to?: string;
+		action?: (ev: PointerEvent) => void;
+	};
+}>({
 	notifications: {
 		title: i18n.ts.notifications,
 		icon: 'ti ti-bell',
@@ -31,13 +42,6 @@ export const navbarItemDef = reactive({
 		}),
 		to: '/my/notifications',
 	},
-	messaging: {
-		title: i18n.ts.messaging,
-		icon: 'ti ti-messages',
-		show: computed(() => $i != null),
-		indicated: computed(() => $i != null && $i.hasUnreadMessagingMessage),
-		to: '/my/messaging',
-	},
 	drive: {
 		title: i18n.ts.drive,
 		icon: 'ti ti-cloud',
@@ -47,7 +51,6 @@ export const navbarItemDef = reactive({
 	followRequests: {
 		title: i18n.ts.followRequests,
 		icon: 'ti ti-user-plus',
-		show: computed(() => $i != null && $i.isLocked),
 		indicated: computed(() => $i != null && $i.hasPendingReceivedFollowRequest),
 		to: '/my/follow-requests',
 	},
@@ -73,6 +76,12 @@ export const navbarItemDef = reactive({
 		action: (ev) => {
 			lookup();
 		},
+	},
+	qr: {
+		title: i18n.ts.qr,
+		icon: 'ti ti-qrcode',
+		show: computed(() => $i != null),
+		to: '/qr',
 	},
 	lists: {
 		title: i18n.ts.lists,
@@ -124,6 +133,13 @@ export const navbarItemDef = reactive({
 		icon: 'ti ti-device-tv',
 		to: '/channels',
 	},
+	chat: {
+		title: i18n.ts.directMessage_short,
+		icon: 'ti ti-messages',
+		to: '/chat',
+		show: computed(() => $i != null && $i.policies.chatAvailability !== 'unavailable'),
+		indicated: computed(() => $i != null && $i.hasUnreadChatMessages),
+	},
 	achievements: {
 		title: i18n.ts.achievements,
 		icon: 'ti ti-medal',
@@ -138,7 +154,7 @@ export const navbarItemDef = reactive({
 	ui: {
 		title: i18n.ts.switchUi,
 		icon: 'ti ti-devices',
-		action: (ev: MouseEvent) => {
+		action: (ev) => {
 			os.popupMenu([{
 				text: i18n.ts.default,
 				active: ui === 'default' || ui === null,
@@ -151,13 +167,6 @@ export const navbarItemDef = reactive({
 				active: ui === 'deck',
 				action: () => {
 					miLocalStorage.setItem('ui', 'deck');
-					unisonReload();
-				},
-			}, {
-				text: i18n.ts.classic,
-				active: ui === 'classic',
-				action: () => {
-					miLocalStorage.setItem('ui', 'classic');
 					unisonReload();
 				},
 			}], ev.currentTarget ?? ev.target);
@@ -181,7 +190,7 @@ export const navbarItemDef = reactive({
 		title: i18n.ts.reload,
 		icon: 'ti ti-refresh',
 		action: (ev) => {
-			location.reload();
+			window.location.reload();
 		},
 	},
 	profile: {

@@ -28,6 +28,7 @@ export const paramDef = {
 		name: { type: 'string' },
 		description: { type: 'string' },
 		color: { type: 'string', nullable: true },
+		bgColor: { type: 'string', nullable: true },
 		iconUrl: { type: 'string', nullable: true },
 		target: { type: 'string', enum: ['manual', 'conditional'] },
 		condFormula: { type: 'object' },
@@ -35,7 +36,9 @@ export const paramDef = {
 		isModerator: { type: 'boolean' },
 		isAdministrator: { type: 'boolean' },
 		isExplorable: { type: 'boolean', default: false }, // optional for backward compatibility
+		isBgColor: { type: 'boolean', default: false },
 		asBadge: { type: 'boolean' },
+		preserveAssignmentOnMoveAccount: { type: 'boolean' },
 		canEditMembersByModerator: { type: 'boolean' },
 		displayOrder: { type: 'number' },
 		policies: {
@@ -52,6 +55,7 @@ export const paramDef = {
 		'isPublic',
 		'isModerator',
 		'isAdministrator',
+		'isBgColor',
 		'asBadge',
 		'canEditMembersByModerator',
 		'displayOrder',

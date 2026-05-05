@@ -5,15 +5,15 @@
 
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import type { MessagingMessagesRepository, NotesRepository, UserPublickeysRepository, UsersRepository } from '@/models/_.js';
+import type { NotesRepository, UserPublickeysRepository, UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
 import { MemoryKVCache } from '@/misc/cache.js';
 import type { MiUserPublickey } from '@/models/UserPublickey.js';
 import { CacheService } from '@/core/CacheService.js';
+import { UtilityService } from '@/core/UtilityService.js';
 import type { MiNote } from '@/models/Note.js';
 import { bindThis } from '@/decorators.js';
 import { MiLocalUser, MiRemoteUser } from '@/models/User.js';
-import type { MiMessagingMessage } from '@/models/MessagingMessage.js';
 import { getApId } from './type.js';
 import { ApPersonService } from './models/ApPersonService.js';
 import type { IObject } from './type.js';
@@ -46,9 +46,6 @@ export class ApDbResolverService implements OnApplicationShutdown {
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
-		@Inject(DI.messagingMessagesRepository)
-		private messagingMessagesRepository: MessagingMessagesRepository,
-
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
 
@@ -57,6 +54,7 @@ export class ApDbResolverService implements OnApplicationShutdown {
 
 		private cacheService: CacheService,
 		private apPersonService: ApPersonService,
+		private utilityService: UtilityService,
 	) {
 		this.publicKeyCache = new MemoryKVCache<MiUserPublickey | null>(1000 * 60 * 60 * 12); // 12h
 		this.publicKeyByUserIdCache = new MemoryKVCache<MiUserPublickey | null>(1000 * 60 * 60 * 12); // 12h
@@ -67,7 +65,9 @@ export class ApDbResolverService implements OnApplicationShutdown {
 		const separator = '/';
 
 		const uri = new URL(getApId(value));
-		if (uri.origin !== this.config.url) return { local: false, uri: uri.href };
+		if (this.utilityService.toPuny(uri.host) !== this.utilityService.toPuny(this.config.host)) {
+			return { local: false, uri: uri.href };
+		}
 
 		const [, type, id, ...rest] = uri.pathname.split(separator);
 		return {
@@ -93,23 +93,6 @@ export class ApDbResolverService implements OnApplicationShutdown {
 			});
 		} else {
 			return await this.notesRepository.findOneBy({
-				uri: parsed.uri,
-			});
-		}
-	}
-
-	@bindThis
-	public async getMessageFromApId(value: string | IObject): Promise<MiMessagingMessage | null> {
-		const parsed = this.parseUri(value);
-
-		if (parsed.local) {
-			if (parsed.type !== 'notes') return null;
-
-			return await this.messagingMessagesRepository.findOneBy({
-				id: parsed.id,
-			});
-		} else {
-			return await this.messagingMessagesRepository.findOneBy({
 				uri: parsed.uri,
 			});
 		}

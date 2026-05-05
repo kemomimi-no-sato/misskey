@@ -33,11 +33,6 @@ export const meta = {
 			id: '1c6b35c9-943e-48c2-81e4-2844989407f7',
 		},
 
-		noSuchUserGroup: {
-			message: 'No such user group.',
-			code: 'NO_SUCH_USER_GROUP',
-			id: '109ed789-b6eb-456e-b8a9-6059d567d385',
-		},
 		emptyKeyword: {
 			message: 'Either keywords or excludeKeywords is required.',
 			code: 'EMPTY_KEYWORD',
@@ -57,7 +52,7 @@ export const paramDef = {
 	properties: {
 		antennaId: { type: 'string', format: 'misskey:id' },
 		name: { type: 'string', minLength: 1, maxLength: 100 },
-		src: { type: 'string', enum: ['home', 'all', 'users', 'list', 'users_blacklist', 'group'] },
+		src: { type: 'string', enum: ['home', 'all', 'users', 'list', 'users_blacklist'] },
 		userListId: { type: 'string', format: 'misskey:id', nullable: true },
 		userGroupId: { type: 'string', format: 'misskey:id', nullable: true },
 		keywords: { type: 'array', items: {
@@ -78,6 +73,7 @@ export const paramDef = {
 		excludeBots: { type: 'boolean' },
 		withReplies: { type: 'boolean' },
 		withFile: { type: 'boolean' },
+		excludeNotesInSensitiveChannel: { type: 'boolean' },
 	},
 	required: ['antennaId'],
 } as const;
@@ -90,9 +86,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		@Inject(DI.userListsRepository)
 		private userListsRepository: UserListsRepository,
-
-		@Inject(DI.userGroupJoiningsRepository)
-		private userGroupJoiningsRepository: UserGroupJoiningsRepository,
 
 		private antennaEntityService: AntennaEntityService,
 		private globalEventService: GlobalEventService,
@@ -125,22 +118,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (userList == null) {
 					throw new ApiError(meta.errors.noSuchUserList);
 				}
-			} else if (ps.src === 'group' && ps.userGroupId) {
-				userGroupJoining = await this.userGroupJoiningsRepository.findOneBy({
-					userGroupId: ps.userGroupId,
-					userId: me.id,
-				});
-
-				if (userGroupJoining == null) {
-					throw new ApiError(meta.errors.noSuchUserGroup);
-				}
 			}
 
 			await this.antennasRepository.update(antenna.id, {
 				name: ps.name,
 				src: ps.src,
 				userListId: ps.userListId !== undefined ? userList ? userList.id : null : undefined,
-				userGroupJoiningId: userGroupJoining ? userGroupJoining.id : null,
 				keywords: ps.keywords,
 				excludeKeywords: ps.excludeKeywords,
 				users: ps.users,
@@ -149,6 +132,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				excludeBots: ps.excludeBots,
 				withReplies: ps.withReplies,
 				withFile: ps.withFile,
+				excludeNotesInSensitiveChannel: ps.excludeNotesInSensitiveChannel,
 				isActive: true,
 				lastUsedAt: new Date(),
 			});

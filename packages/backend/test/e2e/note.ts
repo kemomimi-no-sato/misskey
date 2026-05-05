@@ -8,6 +8,7 @@ import type { Repository } from "typeorm";
 process.env.NODE_ENV = 'test';
 
 import * as assert from 'assert';
+import { describe, beforeAll, afterAll, test } from 'vitest';
 import { MiNote } from '@/models/Note.js';
 import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { api, castAsError, initTestDb, post, role, signup, uploadFile, uploadUrl } from '../utils.js';
@@ -856,6 +857,8 @@ describe('Note', () => {
 						value: 0,
 					},
 				},
+				bgColor: null,
+				isBgColor: false,
 			}, root);
 
 			assert.strictEqual(res.status, 200);

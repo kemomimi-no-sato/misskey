@@ -72,7 +72,7 @@ export class AnnouncementService {
 			updatedAt: null,
 			title: values.title,
 			text: values.text,
-			imageUrl: values.imageUrl,
+			imageUrl: values.imageUrl || null,
 			icon: values.icon,
 			display: values.display,
 			forExistingUsers: values.forExistingUsers,
@@ -205,7 +205,7 @@ export class AnnouncementService {
 				announcementId: announcementId,
 				userId: user.id,
 			});
-		} catch (e) {
+		} catch (_) {
 			return;
 		}
 

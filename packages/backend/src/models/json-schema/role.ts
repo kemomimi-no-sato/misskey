@@ -180,6 +180,18 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canRemoteNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		permissionToPostPublicly: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		canStealNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		mentionLimit: {
 			type: 'integer',
 			optional: false, nullable: false,
@@ -212,6 +224,10 @@ export const packedRolePoliciesSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		canSearchUsers: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		canUseTranslator: {
 			type: 'boolean',
 			optional: false, nullable: false,
@@ -223,6 +239,18 @@ export const packedRolePoliciesSchema = {
 		driveCapacityMb: {
 			type: 'integer',
 			optional: false, nullable: false,
+		},
+		maxFileSizeMb: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		uploadableFileTypes: {
+			type: 'array',
+			optional: false, nullable: false,
+			items: {
+				type: 'string',
+				optional: false, nullable: false,
+			},
 		},
 		alwaysMarkNsfw: {
 			type: 'boolean',
@@ -272,10 +300,6 @@ export const packedRolePoliciesSchema = {
 			type: 'integer',
 			optional: false, nullable: false,
 		},
-		canRemoteNote: {
-			type: 'boolean',
-			optional: false, nullable: false,
-		},
 		canImportAntennas: {
 			type: 'boolean',
 			optional: false, nullable: false,
@@ -293,6 +317,23 @@ export const packedRolePoliciesSchema = {
 			optional: false, nullable: false,
 		},
 		canImportUserLists: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		chatAvailability: {
+			type: 'string',
+			optional: false, nullable: false,
+			enum: ['available', 'readonly', 'unavailable'],
+		},
+		noteDraftLimit: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		scheduledNoteLimit: {
+			type: 'integer',
+			optional: false, nullable: false,
+		},
+		watermarkAvailable: {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
@@ -314,6 +355,11 @@ export const packedRoleLiteSchema = {
 			example: 'New Role',
 		},
 		color: {
+			type: 'string',
+			optional: false, nullable: true,
+			example: '#000000',
+		},
+		bgColor: {
 			type: 'string',
 			optional: false, nullable: true,
 			example: '#000000',
@@ -340,6 +386,11 @@ export const packedRoleLiteSchema = {
 			type: 'integer',
 			optional: false, nullable: false,
 			example: 0,
+		},
+		isBgColor: {
+			type: 'boolean',
+			optional: false, nullable: false,
+			example: false,
 		},
 	},
 } as const;
@@ -385,6 +436,11 @@ export const packedRoleSchema = {
 					example: false,
 				},
 				asBadge: {
+					type: 'boolean',
+					optional: false, nullable: false,
+					example: false,
+				},
+				preserveAssignmentOnMoveAccount: {
 					type: 'boolean',
 					optional: false, nullable: false,
 					example: false,

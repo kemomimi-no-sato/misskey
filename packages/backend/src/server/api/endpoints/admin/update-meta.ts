@@ -3,7 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject } from '@nestjs/common';
+import { DI } from '@/di-symbols.js';
 import type { MiMeta } from '@/models/Meta.js';
 import { ModerationLogService } from '@/core/ModerationLogService.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
@@ -59,7 +60,6 @@ export const paramDef = {
 		infoImageUrl: { type: 'string', nullable: true },
 		notFoundImageUrl: { type: 'string', nullable: true },
 		loadImageUrl: { type: 'string', nullable: true },
-		splashImageUrl: { type: 'string', nullable: true },
 		signupText: { type: 'string', nullable: true },
 		loginText: { type: 'string', nullable: true },
 		exploreOtherServersText: { type: 'string', nullable: true },
@@ -73,6 +73,14 @@ export const paramDef = {
 		description: { type: 'string', nullable: true },
 		defaultLightTheme: { type: 'string', nullable: true },
 		defaultDarkTheme: { type: 'string', nullable: true },
+		clientOptions: {
+			type: 'object', nullable: false,
+			properties: {
+				entrancePageStyle: { type: 'string', nullable: false, enum: ['classic', 'simple'] },
+				showTimelineForVisitor: { type: 'boolean', nullable: false },
+				showActivitiesForVisitor: { type: 'boolean', nullable: false },
+			},
+		},
 		cacheRemoteFiles: { type: 'boolean' },
 		cacheRemoteSensitiveFiles: { type: 'boolean' },
 		emailRequiredForSignup: { type: 'boolean' },
@@ -90,11 +98,11 @@ export const paramDef = {
 		turnstileSiteKey: { type: 'string', nullable: true },
 		turnstileSecretKey: { type: 'string', nullable: true },
 		enableTestcaptcha: { type: 'boolean' },
+		googleAnalyticsMeasurementId: { type: 'string', nullable: true },
 		sensitiveMediaDetection: { type: 'string', enum: ['none', 'all', 'local', 'remote'] },
 		sensitiveMediaDetectionSensitivity: { type: 'string', enum: ['medium', 'low', 'high', 'veryLow', 'veryHigh'] },
 		setSensitiveFlagAutomatically: { type: 'boolean' },
 		enableSensitiveMediaDetectionForVideos: { type: 'boolean' },
-		proxyAccountId: { type: 'string', format: 'misskey:id', nullable: true },
 		maintainerName: { type: 'string', nullable: true },
 		maintainerEmail: { type: 'string', nullable: true },
 		langs: {
@@ -123,7 +131,7 @@ export const paramDef = {
 		useObjectStorage: { type: 'boolean' },
 		objectStorageBaseUrl: { type: 'string', nullable: true },
 		objectStorageBucket: { type: 'string', nullable: true },
-		objectStoragePrefix: { type: 'string', nullable: true },
+		objectStoragePrefix: { type: 'string', pattern: /^[a-zA-Z0-9-._]*$/.source, nullable: true },
 		objectStorageEndpoint: { type: 'string', nullable: true },
 		objectStorageRegion: { type: 'string', nullable: true },
 		objectStoragePort: { type: 'integer', nullable: true },
@@ -176,6 +184,7 @@ export const paramDef = {
 			description: '[Deprecated] Use "urlPreviewSummaryProxyUrl" instead.',
 		},
 		urlPreviewEnabled: { type: 'boolean' },
+		urlPreviewAllowRedirect: { type: 'boolean' },
 		urlPreviewTimeout: { type: 'integer' },
 		urlPreviewMaximumContentLength: { type: 'integer' },
 		urlPreviewRequireContentLength: { type: 'boolean' },
@@ -191,6 +200,29 @@ export const paramDef = {
 				type: 'string',
 			},
 		},
+		deliverSuspendedSoftware: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					software: { type: 'string' },
+					versionRange: { type: 'string' },
+				},
+				required: ['software', 'versionRange'],
+			},
+		},
+		singleUserMode: { type: 'boolean' },
+		ugcVisibilityForVisitor: {
+			type: 'string',
+			enum: ['all', 'local', 'none'],
+		},
+		proxyRemoteFiles: { type: 'boolean' },
+		signToActivityPubGet: { type: 'boolean' },
+		allowExternalApRedirect: { type: 'boolean' },
+		enableRemoteNotesCleaning: { type: 'boolean' },
+		remoteNotesCleaningExpiryDaysForEachNotes: { type: 'number' },
+		remoteNotesCleaningMaxProcessingDurationInMinutes: { type: 'number' },
+		showRoleBadgesOfRemoteUsers: { type: 'boolean' },
 	},
 	required: [],
 } as const;
@@ -198,6 +230,9 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
+		@Inject(DI.meta)
+		private serverSettings: MiMeta,
+
 		private metaService: MetaService,
 		private moderationLogService: ModerationLogService,
 	) {
@@ -289,18 +324,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				set.loadImageUrl = ps.loadImageUrl;
 			}
 
-			if (ps.splashImageUrl !== undefined) {
-				set.splashImageUrl = ps.splashImageUrl;
-			}
-
-			if (ps.signupText !== undefined) {
-				set.signupText = ps.signupText;
-			}
-
-			if (ps.loginText !== undefined) {
-				set.loginText = ps.loginText;
-			}
-
 			if (ps.exploreOtherServersText !== undefined) {
 				set.exploreOtherServersText = ps.exploreOtherServersText;
 			}
@@ -331,6 +354,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.defaultDarkTheme !== undefined) {
 				set.defaultDarkTheme = ps.defaultDarkTheme;
+			}
+
+			if (ps.clientOptions !== undefined) {
+				set.clientOptions = {
+					...this.serverSettings.clientOptions,
+					...ps.clientOptions,
+				};
 			}
 
 			if (ps.cacheRemoteFiles !== undefined) {
@@ -401,6 +431,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				set.enableTestcaptcha = ps.enableTestcaptcha;
 			}
 
+			if (ps.googleAnalyticsMeasurementId !== undefined) {
+				// 空文字列をnullにしたいので??は使わない
+				// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
+				set.googleAnalyticsMeasurementId = ps.googleAnalyticsMeasurementId || null;
+			}
+
 			if (ps.sensitiveMediaDetection !== undefined) {
 				set.sensitiveMediaDetection = ps.sensitiveMediaDetection;
 			}
@@ -415,10 +451,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.enableSensitiveMediaDetectionForVideos !== undefined) {
 				set.enableSensitiveMediaDetectionForVideos = ps.enableSensitiveMediaDetectionForVideos;
-			}
-
-			if (ps.proxyAccountId !== undefined) {
-				set.proxyAccountId = ps.proxyAccountId;
 			}
 
 			if (ps.maintainerName !== undefined) {
@@ -673,6 +705,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				set.urlPreviewEnabled = ps.urlPreviewEnabled;
 			}
 
+			if (ps.urlPreviewAllowRedirect !== undefined) {
+				set.urlPreviewAllowRedirect = ps.urlPreviewAllowRedirect;
+			}
+
 			if (ps.urlPreviewTimeout !== undefined) {
 				set.urlPreviewTimeout = ps.urlPreviewTimeout;
 			}
@@ -699,8 +735,48 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				set.federation = ps.federation;
 			}
 
+			if (ps.deliverSuspendedSoftware !== undefined) {
+				set.deliverSuspendedSoftware = ps.deliverSuspendedSoftware;
+			}
+
 			if (Array.isArray(ps.federationHosts)) {
 				set.federationHosts = ps.federationHosts.filter(Boolean).map(x => x.toLowerCase());
+			}
+
+			if (ps.singleUserMode !== undefined) {
+				set.singleUserMode = ps.singleUserMode;
+			}
+
+			if (ps.ugcVisibilityForVisitor !== undefined) {
+				set.ugcVisibilityForVisitor = ps.ugcVisibilityForVisitor;
+			}
+
+			if (ps.proxyRemoteFiles !== undefined) {
+				set.proxyRemoteFiles = ps.proxyRemoteFiles;
+			}
+
+			if (ps.signToActivityPubGet !== undefined) {
+				set.signToActivityPubGet = ps.signToActivityPubGet;
+			}
+
+			if (ps.allowExternalApRedirect !== undefined) {
+				set.allowExternalApRedirect = ps.allowExternalApRedirect;
+			}
+
+			if (ps.enableRemoteNotesCleaning !== undefined) {
+				set.enableRemoteNotesCleaning = ps.enableRemoteNotesCleaning;
+			}
+
+			if (ps.remoteNotesCleaningExpiryDaysForEachNotes !== undefined) {
+				set.remoteNotesCleaningExpiryDaysForEachNotes = ps.remoteNotesCleaningExpiryDaysForEachNotes;
+			}
+
+			if (ps.remoteNotesCleaningMaxProcessingDurationInMinutes !== undefined) {
+				set.remoteNotesCleaningMaxProcessingDurationInMinutes = ps.remoteNotesCleaningMaxProcessingDurationInMinutes;
+			}
+
+			if (ps.showRoleBadgesOfRemoteUsers !== undefined) {
+				set.showRoleBadgesOfRemoteUsers = ps.showRoleBadgesOfRemoteUsers;
 			}
 
 			const before = await this.metaService.fetch(true);

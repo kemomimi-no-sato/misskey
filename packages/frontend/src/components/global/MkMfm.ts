@@ -3,10 +3,12 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { VNode, h, SetupContext, provide } from 'vue';
+import { h } from 'vue';
 import * as mfm from 'mfm-js';
 import * as Misskey from 'misskey-js';
 import { host } from '@@/js/config.js';
+import type { VNode, SetupContext } from 'vue';
+import type { MkABehavior } from '@/components/global/MkA.vue';
 import MkUrl from '@/components/global/MkUrl.vue';
 import MkTime from '@/components/global/MkTime.vue';
 import MkLink from '@/components/MkLink.vue';
@@ -18,8 +20,8 @@ import MkCode from '@/components/MkCode.vue';
 import MkCodeInline from '@/components/MkCodeInline.vue';
 import MkGoogle from '@/components/MkGoogle.vue';
 import MkSparkle from '@/components/MkSparkle.vue';
-import MkA, { MkABehavior } from '@/components/global/MkA.vue';
-import { defaultStore } from '@/store.js';
+import MkA from '@/components/global/MkA.vue';
+import { prefer } from '@/preferences.js';
 
 function safeParseFloat(str: unknown): number | null {
 	if (typeof str !== 'string' || str === '') return null;
@@ -78,7 +80,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 		return c.match(/^[0-9a-f]{3,6}$/i) ? c : null;
 	};
 
-	const useAnim = defaultStore.state.advancedMfm && defaultStore.state.animatedMfm;
+	const useAnim = prefer.s.advancedMfm && prefer.s.animatedMfm;
 
 	/**
 	 * Gen Vue Elements from MFM AST
@@ -181,17 +183,17 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 					}
 					case 'x2': {
 						return h('span', {
-							class: defaultStore.state.advancedMfm ? 'mfm-x2' : '',
+							class: prefer.s.advancedMfm ? 'mfm-x2' : '',
 						}, genEl(token.children, scale * 2));
 					}
 					case 'x3': {
 						return h('span', {
-							class: defaultStore.state.advancedMfm ? 'mfm-x3' : '',
+							class: prefer.s.advancedMfm ? 'mfm-x3' : '',
 						}, genEl(token.children, scale * 3));
 					}
 					case 'x4': {
 						return h('span', {
-							class: defaultStore.state.advancedMfm ? 'mfm-x4' : '',
+							class: prefer.s.advancedMfm ? 'mfm-x4' : '',
 						}, genEl(token.children, scale * 4));
 					}
 					case 'font': {
@@ -226,7 +228,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 						if (!useAnim) {
 							return genEl(token.children, scale);
 						}
-						return h(MkSparkle, {}, genEl(token.children, scale));
+						return h(MkSparkle, {}, { default: () => genEl(token.children, scale) });
 					}
 					case 'rotate': {
 						const degrees = safeParseFloat(token.props.args.deg) ?? 90;
@@ -234,14 +236,14 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 						break;
 					}
 					case 'position': {
-						if (!defaultStore.state.advancedMfm) break;
+						if (!prefer.s.advancedMfm) break;
 						const x = safeParseFloat(token.props.args.x) ?? 0;
 						const y = safeParseFloat(token.props.args.y) ?? 0;
 						style = `transform: translateX(${x}em) translateY(${y}em);`;
 						break;
 					}
 					case 'scale': {
-						if (!defaultStore.state.advancedMfm) {
+						if (!prefer.s.advancedMfm) {
 							style = '';
 							break;
 						}
@@ -306,7 +308,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 						]);
 					}
 					case 'clickable': {
-						return h('span', { onClick(ev: MouseEvent): void {
+						return h('span', { onClick(ev: PointerEvent): void {
 							ev.stopPropagation();
 							ev.preventDefault();
 							const clickEv = typeof token.props.args.ev === 'string' ? token.props.args.ev : '';
@@ -350,7 +352,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 					url: token.props.url,
 					rel: 'nofollow noopener',
 					navigationBehavior: props.linkNavigationBehavior,
-				}, genEl(token.children, scale, true))];
+				}, { default: () => genEl(token.children, scale, true) })];
 			}
 
 			case 'mention': {
@@ -368,7 +370,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 					to: isNote ? `/tags/${encodeURIComponent(token.props.hashtag)}` : `/user-tags/${encodeURIComponent(token.props.hashtag)}`,
 					style: 'color:var(--MI_THEME-hashtag);',
 					behavior: props.linkNavigationBehavior,
-				}, `#${token.props.hashtag}`)];
+				}, { default: () => `#${token.props.hashtag}` })];
 			}
 
 			case 'blockCode': {
@@ -423,7 +425,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 							host: props.author.host,
 							useOriginalSize: scale >= 2.5,
 							menu: props.enableEmojiMenu,
-							menuReaction: props.enableEmojiMenuReaction,
+							menuReaction: false,
 						})];
 					}
 				}
@@ -466,8 +468,8 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 			}
 
 			default: {
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any
-				console.error('unrecognized ast type:', (token as any).type);
+				// @ts-expect-error 存在しないASTタイプ
+				console.error('unrecognized ast type:', token.type);
 
 				return [];
 			}
