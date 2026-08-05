@@ -6,7 +6,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <template>
 <SearchMarker path="/settings/preferences" :label="i18n.ts.preferences" :keywords="['general', 'preferences']" icon="ti ti-adjustments">
 	<div class="_gaps_m">
-		<MkFeatureBanner icon="/client-assets/gear_3d.png" color="#00ff9d">
+		<MkFeatureBanner icon="/fluent-emoji/2699.png" color="#00ff9d">
 			<SearchText>{{ i18n.ts._settings.preferencesBanner }}</SearchText>
 		</MkFeatureBanner>
 
@@ -491,7 +491,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<template #icon><SearchIcon><i class="ti ti-accessible"></i></SearchIcon></template>
 
 					<div class="_gaps_m">
-						<MkFeatureBanner icon="/client-assets/mens_room_3d.png" color="#0011ff">
+						<MkFeatureBanner icon="/fluent-emoji/1f6b9.png" color="#0011ff">
 							<SearchText>{{ i18n.ts._settings.accessibilityBanner }}</SearchText>
 						</MkFeatureBanner>
 
@@ -1096,9 +1096,9 @@ function downloadEmojiIndex(lang: typeof emojiIndexLangs[number]) {
 
 		function download() {
 			switch (lang) {
-				case 'en-US': return import('../../unicode-emoji-indexes/en-US.json').then(x => x.default);
-				case 'ja-JP': return import('../../unicode-emoji-indexes/ja-JP.json').then(x => x.default);
-				case 'ja-JP_hira': return import('../../unicode-emoji-indexes/ja-JP_hira.json').then(x => x.default);
+				case 'en-US': return import('@misskey-dev/emoji-data/indexes/en-US.json').then(x => x.default);
+				case 'ja-JP': return import('@misskey-dev/emoji-data/indexes/ja-JP.json').then(x => x.default);
+				case 'ja-JP_hira': return import('@misskey-dev/emoji-data/indexes/ja-JP_hira.json').then(x => x.default);
 				default: throw new Error('unrecognized lang: ' + lang);
 			}
 		}
