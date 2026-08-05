@@ -161,6 +161,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 		</XFolder>
 
+		<XFolder v-if="matchQuery([i18n.ts._role._options.canCreateChannel, 'canCreateChannel'])" v-model:policyMeta="policyMetaModel.canCreateChannel" :isBaseRole="isBaseRole" :readonly="readonly">
+			<template #label>{{ i18n.ts._role._options.canCreateChannel }}</template>
+			<template #valueText>{{ valuesModel.canCreateChannel ? i18n.ts.yes : i18n.ts.no }}</template>
+			<template #default="{ disabled }">
+				<MkSwitch v-model="valuesModel.canCreateChannel" :disabled="disabled">
+					<template #label>{{ i18n.ts.enable }}</template>
+				</MkSwitch>
+			</template>
+		</XFolder>
+
 		<XFolder v-if="matchQuery([i18n.ts._role._options.driveCapacity, 'driveCapacityMb'])" v-model:policyMeta="policyMetaModel.driveCapacityMb" :isBaseRole="isBaseRole" :readonly="readonly">
 			<template #label>{{ i18n.ts._role._options.driveCapacity }}</template>
 			<template #valueText>{{ valuesModel.driveCapacityMb }}MB</template>
@@ -178,6 +188,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkInput v-model="valuesModel.maxFileSizeMb" type="number" :disabled="disabled">
 					<template #suffix>MB</template>
 					<template #caption>
+						<div>{{ i18n.tsx._role._options.maxFileSize_caption2({ max: `${Math.floor(instance.maxFileSize / (1024 * 1024))}MB` }) }}</div>
 						<div><i class="ti ti-alert-triangle" style="color: var(--MI_THEME-warn);"></i> {{ i18n.ts._role._options.maxFileSize_caption }}</div>
 					</template>
 				</MkInput>
@@ -391,6 +402,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts">
 import * as Misskey from 'misskey-js';
+import { instance } from '@/instance.js';
 
 export type PolicyMeta = {
 	useDefault: boolean;
